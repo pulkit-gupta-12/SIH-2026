@@ -1,8 +1,10 @@
 """
-Scans URL configuration.
+Scans app URL configuration.
 """
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import ScanViewSet
 
-urlpatterns = [
-    # Endpoints to be added in later phases.
-]
+router = DefaultRouter()
+router.register(r"", ScanViewSet, basename="scan")
+
+urlpatterns = router.urls

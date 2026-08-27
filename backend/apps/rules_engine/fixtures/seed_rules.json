@@ -311,7 +311,8 @@
       "type": "conditional_required_field",
       "field": "country_of_origin",
       "applies_if": {
-        "category": "import"
+        "category": "import",
+        "channel": "physical"
       }
     },
     "effective_from": "2011-01-01",
@@ -333,6 +334,7 @@
       "type": "conditional_required_field",
       "field": "country_of_origin",
       "applies_if": {
+        "channel": "ecommerce",
         "category": "import"
       }
     },

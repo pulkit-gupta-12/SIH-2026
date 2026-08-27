@@ -16,6 +16,7 @@ class Scan(models.Model):
     ROLE_CONTEXT_CHOICES = [
         ("citizen", "Citizen"),
         ("officer", "Field Officer"),
+        ("field_officer", "Field Officer"),
     ]
     STATUS_CHOICES = [
         ("pending", "Pending"),
