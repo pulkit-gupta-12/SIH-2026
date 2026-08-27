@@ -1,0 +1,415 @@
+[
+  {
+    "rule_id_code": "PCR2011-R6-1-A-NAME",
+    "section_ref": "PC Rules 2011, Rule 6(1)(a)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "manufacturer_name",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-A-ADDR",
+    "section_ref": "PC Rules 2011, Rule 6(1)(a)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "manufacturer_address",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-B-GENERICNAME",
+    "section_ref": "PC Rules 2011, Rule 6(1)(b)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "product_name",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-C-NETQTY",
+    "section_ref": "PC Rules 2011, Rule 6(1)(c)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "net_quantity",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-C-NETQTY-FMT",
+    "section_ref": "PC Rules 2011, Rule 12 & Rule 6(1)(c)",
+    "category": "general",
+    "condition": {
+      "type": "format_check",
+      "field": "net_quantity",
+      "format": "standard_metric_units"
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-D-MFGDATE",
+    "section_ref": "PC Rules 2011, Rule 6(1)(d)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "mfg_date",
+      "exemptions": ["spare_parts_with_warranty_not_for_end_sale"]
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": "2024-01-01",
+    "superseded_by": "PCR2023-R6-1-D-MFGDATE-V2",
+    "status": "repealed",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2023-R6-1-D-MFGDATE-V2",
+    "section_ref": "PC (Amendment) Rules 2023, Rule 6(1)(d)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "mfg_date",
+      "exemptions": ["spare_parts_with_warranty_not_for_end_sale"]
+    },
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 720(E)",
+      "title": "Legal Metrology (Packaged Commodities) Amendment Rules, 2023",
+      "gazette_url": "https://egazette.gov.in",
+      "published_date": "2023-10-06"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-D-MFGDATE-FMT",
+    "section_ref": "PC Rules 2011, Rule 6(1)(d)",
+    "category": "general",
+    "condition": {
+      "type": "format_check",
+      "field": "mfg_date",
+      "format": "month_year"
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-DA-UNITMRP",
+    "section_ref": "PC (Second Amendment) Rules 2021, Rule 6(1)(e)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "unit_sale_price",
+      "exemptions": []
+    },
+    "effective_from": "2022-12-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 779(E)",
+      "title": "Legal Metrology (Packaged Commodities) Second Amendment Rules, 2021",
+      "gazette_url": "https://egazette.gov.in",
+      "published_date": "2021-11-02"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-E-MRP",
+    "section_ref": "PC Rules 2011, Rule 6(1)(e)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "mrp",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-E-MRP-FMT",
+    "section_ref": "PC Rules 2011, Rule 6(1)(e)",
+    "category": "general",
+    "condition": {
+      "type": "format_check",
+      "field": "mrp",
+      "format": "currency_inr_incl_taxes"
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-F-CONSUMERCARE",
+    "section_ref": "PC Rules 2011, Rule 6(1)(n)",
+    "category": "general",
+    "condition": {
+      "type": "required_field",
+      "field": "consumer_care_details",
+      "exemptions": []
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-F-CONSUMERCARE-ZONE",
+    "section_ref": "PC Rules 2011, Rule 6(1)(n) & Rule 7",
+    "category": "general",
+    "condition": {
+      "type": "placement_check",
+      "field": "consumer_care_details",
+      "must_appear_in_zone": "declaration_panel"
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR-NETQTY-FONTSIZE",
+    "section_ref": "PC Rules 2011, Rule 18",
+    "category": "general",
+    "condition": {
+      "type": "font_size_check",
+      "field": "net_quantity",
+      "min_height_mm": 2.0,
+      "min_height_mm_large_pack": 6.0,
+      "pack_size_threshold_g": 1000
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR-MRP-FONTSIZE",
+    "section_ref": "PC Rules 2011, Rule 18 & Table II",
+    "category": "general",
+    "condition": {
+      "type": "font_size_check",
+      "field": "mrp",
+      "min_height_mm": 2.0,
+      "min_height_mm_large_pack": 4.0,
+      "pack_size_threshold_g": 1000
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2011-R6-1-G-COO-IMPORT",
+    "section_ref": "PC Rules 2011, Rule 6(1)(a) proviso & Rule 6(10)",
+    "category": "import",
+    "condition": {
+      "type": "conditional_required_field",
+      "field": "country_of_origin",
+      "applies_if": {
+        "category": "import"
+      }
+    },
+    "effective_from": "2011-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 202(E)",
+      "title": "Legal Metrology (Packaged Commodities) Rules, 2011",
+      "gazette_url": "https://consumeraffairs.nic.in/acts-and-rules/legal-metrology/rules",
+      "published_date": "2011-03-07"
+    }
+  },
+  {
+    "rule_id_code": "PCR2026-ECOMM-COO-FILTER",
+    "section_ref": "PC (Packaged Commodities) Amendment Rules 2026, Rule 6(10)",
+    "category": "ecommerce",
+    "condition": {
+      "type": "conditional_required_field",
+      "field": "country_of_origin",
+      "applies_if": {
+        "category": "import"
+      }
+    },
+    "effective_from": "2026-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 112(E)",
+      "title": "Legal Metrology (Packaged Commodities) Amendment Rules, 2026",
+      "gazette_url": "https://egazette.gov.in",
+      "published_date": "2026-01-15"
+    }
+  },
+  {
+    "rule_id_code": "PCR-FOOD-FSSAI-LIC",
+    "section_ref": "Food Safety and Standards (Packaging and Labelling) Regulations & LM Rule 6(1)",
+    "category": "food",
+    "condition": {
+      "type": "conditional_required_field",
+      "field": "fssai_license_no",
+      "applies_if": {
+        "category": "food"
+      }
+    },
+    "effective_from": "2011-08-05",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "F.No. 2-15015/30/2010",
+      "title": "Food Safety and Standards (Packaging and Labelling) Regulations, 2011",
+      "gazette_url": "https://fssai.gov.in",
+      "published_date": "2011-08-01"
+    }
+  },
+  {
+    "rule_id_code": "PCR-FOOD-BESTBEFORE",
+    "section_ref": "PC Rules 2011 Rule 6(1)(d) & FSSAI Labelling Regulations",
+    "category": "food",
+    "condition": {
+      "type": "conditional_required_field",
+      "field": "best_before_date",
+      "applies_if": {
+        "category": "food"
+      }
+    },
+    "effective_from": "2011-08-05",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "F.No. 2-15015/30/2010",
+      "title": "Food Safety and Standards (Packaging and Labelling) Regulations, 2011",
+      "gazette_url": "https://fssai.gov.in",
+      "published_date": "2011-08-01"
+    }
+  },
+  {
+    "rule_id_code": "PCR2025-MEDDEV-PDP-EXEMPT",
+    "section_ref": "PC (Packaged Commodities) Amendment Rules 2025",
+    "category": "medical_device",
+    "condition": {
+      "type": "required_field",
+      "field": "principal_display_panel_declaration",
+      "exemptions": ["all"],
+      "note": "Medical Devices Rules 2017 governs display instead"
+    },
+    "effective_from": "2025-01-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "status": "in_force",
+    "source": {
+      "notification_no": "G.S.R. 45(E)",
+      "title": "Legal Metrology (Packaged Commodities) Amendment Rules, 2025",
+      "gazette_url": "https://egazette.gov.in",
+      "published_date": "2025-01-10"
+    }
+  }
+]

@@ -1,11 +1,24 @@
 /**
- * Auth Service — login, refresh, me endpoints.
+ * Auth Service — login, register, refresh, me endpoints.
  */
 import apiClient from './apiClient';
+import type { UserRole } from '../store/authStore';
 
 export interface LoginCredentials {
   username: string;
   password: string;
+}
+
+export interface RegisterData {
+  username: string;
+  password: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  role: UserRole;
+  state?: string;
+  organization?: string;
 }
 
 export interface AuthUser {
@@ -25,6 +38,11 @@ export interface LoginResponse {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const { data } = await apiClient.post<LoginResponse>('/auth/login/', credentials);
+    return data;
+  },
+
+  async register(registerData: RegisterData): Promise<LoginResponse> {
+    const { data } = await apiClient.post<LoginResponse>('/auth/register/', registerData);
     return data;
   },
 

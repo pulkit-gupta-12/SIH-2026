@@ -1,69 +1,89 @@
-# PROGRESS REPORT — Phase 1: Foundation
+# PROGRESS REPORT — Phase 2: Data Layer
 
 ## What was built this session
 
-### Backend (Django 5.x + DRF + PostgreSQL)
-- **Docker Compose**: `docker-compose.yml` — PostgreSQL 16 + Redis 7, both running
-- **Django project**: `backend/config/` — split settings (`base.py`, `dev.py`, `prod.py`), root URLs, WSGI/ASGI, Celery placeholder
-- **12 Django apps**: all scaffolded under `backend/apps/`
-  - `accounts/` — **fully implemented**: custom `User` model (extends `AbstractUser`), `Role` model (7 predefined roles), `RoleAssignment` model with state/organization metadata
-  - `common/` — **fully implemented**: 7 permission classes (`IsCitizen`, `IsFieldOfficer`, `IsStateController`, `IsNationalAdmin`, `IsBusiness`, `IsEcommercePartner`, `IsRuleAdmin`), `AuditLoggedMixin` (graceful no-op until `AuditLog` model exists)
-  - `product_master/`, `scans/`, `rules_engine/`, `compliance/`, `cases/`, `complaints/`, `inspections/`, `reports/`, `ecommerce_integration/`, `notifications/`, `dashboards/` — **empty scaffolds** with `__init__.py`, `apps.py`, `models.py`, `urls.py`, `admin.py`
-- **JWT auth**: `POST /api/auth/login/` (returns access + refresh tokens + user info with roles), `POST /api/auth/refresh/`, `POST /api/auth/verify/`, `GET /api/auth/me/`
-- **Seed command**: `python manage.py seed_roles` — creates 7 roles + 7 demo users (citizen_demo, officer_demo, controller_demo, admin_demo, business_demo, ecommerce_demo, ruleadmin_demo), password: `demo1234`
-- **Migrations**: all applied successfully, database tables created
-- **`ml_services/ocr_stub/`**: placeholder directory (FastAPI service to be built in Phase 3)
-- **`tests/`**: placeholder directory
+### Phase 1 Verification & Tailwind v3 Confirmation
+- **Tailwind CSS v3 Downgrade**: Verified clean resolution via `npm ls tailwindcss` in `frontend/` resolving to `3.4.19` (0 errors).
+- **Design Tokens**: Verified `frontend/tailwind.config.js` exists with all 7 lane-color tokens (`citizen`, `officer`, `controller`, `national`, `business`, `ecommerce`, `ruleadmin`) in `theme.extend.colors`, along with dark surfaces, status colors, and animation keyframes.
+- **Global Styles**: Verified `frontend/src/index.css` uses standard `@tailwind base;`, `@tailwind components;`, `@tailwind utilities;` with no `@import "tailwindcss"` or `@theme` blocks.
+- **Demo Logins & Lane Colors**: Verified API login and frontend role configs across demo accounts.
 
-### Frontend (React 18 + Vite + TypeScript + Tailwind CSS 4)
-- **Vite config**: Tailwind CSS v4 plugin, API proxy to Django `:8000`, `@` path alias
-- **Design system** (`src/index.css`): dark-mode theme with 7 lane colors (citizen=green, officer=blue, controller=purple, national=indigo, business=teal, ecommerce=pink, ruleadmin=orange), glassmorphism utilities, animations, custom scrollbar, Google Fonts (Inter)
-- **API client** (`src/services/apiClient.ts`): Axios wrapper with JWT auto-attach, auto-refresh on 401
-- **Auth service** (`src/services/authService.ts`): login, refresh, getMe wrappers
-- **Auth store** (`src/store/authStore.ts`): Zustand store with user, role, tokens, login/logout/hydrate, localStorage persistence
-- **Role config** (`src/utils/roleConfig.ts`): centralized role → color/icon/path/label mapping for all 7 roles
-- **Layout components**:
-  - `AppShell` — main layout with Header + Sidebar + content (Outlet) + BottomNav
-  - `Header` — sticky header with role-colored logo, user info, role badge, logout
-  - `Sidebar` — desktop nav with role-specific nav items, hidden on mobile
-  - `BottomNav` — mobile nav with role-specific tabs, hidden on desktop
-- **Route system** (`src/app/routes.tsx`): `RequireRole` guard wrapping 7 role-gated route groups, login page, catch-all redirects
-- **Login page** (`src/features/auth/LoginPage.tsx`): premium dark glassmorphism design with manual login form + 7 demo-user quick-login cards, gradient backgrounds, micro-animations
-- **7 dashboard pages**: one per role under `src/features/<role>/pages/DashboardPage.tsx`, each showing role-specific welcome banner, stats cards, and Phase 1 notice
-- **React Query**: configured globally with 30s stale time
+### Backend Data Layer (Django 5.x + PostgreSQL)
+- **10 Django Apps Fully Modeled** per `05_Database_Schema.md`:
+  1. `apps/product_master/models.py`: `Product` (`products` table) with GTIN barcode, brand, category choices, business registration FK.
+  2. `apps/scans/models.py`: `Scan` (`scans`), `ScanImage` (`scan_images` with 5 angle types), `ExtractedField` (`extracted_fields` with placement zone and font size metrics).
+  3. `apps/rules_engine/models.py`: `RuleSource` (`rule_sources`), `Rule` (`rules` with JSONB conditions, versioning, status, and `superseded_by` self-referencing FK).
+  4. `apps/compliance/models.py`: `ComplianceCheck` (`compliance_checks`), `Violation` (`violations`), `ProductComplianceHistory` (`product_compliance_history`).
+  5. `apps/cases/models.py`: `Case` (`cases` with first_time/repeat/fraud classifications), `ImprovementNotice` (`improvement_notices`), `PenaltyCase` (`penalty_cases`).
+  6. `apps/complaints/models.py`: `Complaint` (`complaints` with photo URLs, geo-location, risk score, and state routing).
+  7. `apps/inspections/models.py`: `InspectionTarget` (`inspection_targets` with priority scores and source tracking).
+  8. `apps/reports/models.py`: `Report` (`reports` with PDF/DOCX format, signing flag, and storage URLs).
+  9. `apps/ecommerce_integration/models.py`: `EcommerceListing` (`ecommerce_listings` with JSONB raw listing data and screening status).
+  10. `apps/notifications/models.py`: `Notification` (`notifications`), `AuditLog` (`audit_logs` with JSONB metadata).
+  11. `apps/dashboards/models.py`: Verified as an aggregation-only app (owns no tables).
 
-### Verified end-to-end
-- API: `POST /api/auth/login/` returns correct JWT + user data for all 7 demo users
-- Browser: login as Citizen → `/citizen` (green, "Priya Sharma"), Officer → `/officer` (blue, "Rajesh Kumar"), Business → `/business` (teal, "Arun Patel"), Rule Admin → `/rule-admin` (orange, "Sunil Verma")
-- Role-based route guards: unauthorized routes redirect to user's own dashboard (not 403)
+- **AuditLog Model & Mixin Integration**:
+  - Implemented `AuditLog` model in `apps/notifications/models.py`.
+  - Updated `AuditLoggedMixin` in `apps/common/mixins.py` to directly persist create, update, and delete actions with user attribution and metadata — no longer a no-op.
+
+- **Migrations**:
+  - Generated and applied migrations for all 10 apps without conflicts.
+  - All 21 tables created and verified in PostgreSQL (`legalmetro_db`).
+
+- **Rule Engine Dataset**:
+  - Created `backend/apps/rules_engine/fixtures/seed_rules.json` with 20 real Legal Metrology obligations covering:
+    - Manufacturer/packer name & address declarations (Rule 6(1)(a))
+    - Generic/common commodity name (Rule 6(1)(b))
+    - Net quantity declaration & standard metric format (Rule 6(1)(c), Rule 12)
+    - Month/year of manufacture with pre-2024 vs post-2023 amendment versioning (Rule 6(1)(d))
+    - Unit sale price (Second Amendment 2021, Rule 6(1)(e))
+    - MRP declaration & tax-inclusive format (Rule 6(1)(e))
+    - Consumer care details & declaration panel placement (Rule 6(1)(n), Rule 7)
+    - Net quantity & MRP font size minimums + 1000g large pack threshold (Rule 18, Table II)
+    - Country of origin for imported goods (Rule 6(10))
+    - E-commerce country of origin filtering (Amendment Rules 2026)
+    - FSSAI license & best-before dates for food packages
+    - Medical devices PDP exemptions under MDR 2017 (Amendment Rules 2025)
+
+- **Management Commands**:
+  - `seed_rules` (`apps/rules_engine/management/commands/seed_rules.py`): Two-pass loader that imports `seed_rules.json`, populates `RuleSource` and `Rule` tables, and resolves `superseded_by` self-referencing foreign keys.
+  - `seed_demo_data` (`apps/accounts/management/commands/seed_demo_data.py`): Populates realistic linked records across all 21 tables tied to the 7 demo users (`citizen_demo`, `officer_demo`, `controller_demo`, `admin_demo`, `business_demo`, `ecommerce_demo`, `ruleadmin_demo`).
+
+- **Django Admin**:
+  - Registered all models across all apps in `admin.py` with custom list displays, filters, search fields, and inlines.
+
+### Verified End-to-End
+- `python manage.py check`: 0 issues found.
+- `python manage.py seed_rules`: 20 rules, 6 rule sources loaded successfully.
+- `python manage.py seed_demo_data`: 8 products, 3 scans, 4 scan images, 13 extracted fields, 3 compliance checks, 3 violations, 3 compliance history records, 2 cases (1 improvement notice, 1 penalty case), 2 complaints, 3 inspection targets, 2 reports, 3 e-commerce listings, 7 notifications, 6 audit logs.
+- Python shell FK integrity check: All foreign keys, inlines, and one-to-one relationships resolve correctly.
+- `AuditLoggedMixin`: Verified write operations create `AuditLog` rows with user metadata.
 
 ## What is stubbed or mocked (and why)
 
 | Stub | Location | Why | Real implementation TODO |
 |------|----------|-----|--------------------------|
-| AuditLoggedMixin | `apps/common/mixins.py` | `AuditLog` model doesn't exist yet | Phase 2: create `notifications.AuditLog` model |
-| OCR Stub directory | `ml_services/ocr_stub/` | FastAPI service not built yet | Phase 3: build FastAPI service with fixed contract |
-| Dashboard stats | Frontend `DashboardHome.tsx` | No data models/APIs exist yet | Phase 2: models + seed data; Phase 4: real API queries |
-| 10 empty Django apps | `apps/product_master/` through `apps/dashboards/` | Only `accounts` and `common` needed in Phase 1 | Phase 2: implement models; Phase 3-4: implement endpoints |
-| Celery config | `config/celery.py` | No async tasks yet | Future: background task processing |
-| Prod settings | `config/settings/prod.py` | Placeholder | Before deployment |
+| OCR Stub service | `ml_services/ocr_stub/` | FastAPI service not built yet | Phase 3: build FastAPI service with fixed JSON contract |
+| Rule Evaluation Engine | `apps/rules_engine/` | Evaluation logic to be built in Phase 3 | Phase 3: build condition checkers and evaluator function |
+| Dashboard API endpoints | `apps/dashboards/` & feature apps | Views/serializers to be built in Phase 3-4 | Phase 3-4: implement DRF viewsets and serializers |
+| Report PDF generator | `apps/reports/` | Dummy file URLs used in seed data | Phase 4: build ReportLab / WeasyPrint PDF generation |
+| E-commerce Crawler | `apps/ecommerce_integration/` | Static listing rows in DB | Phase 4/Future: live crawler / marketplace webhook |
+| Cross-regulator API calls | `apps/compliance/` | Mocked via Rule conditions | Phase 4/Future: FSSAI/BIS API clients |
 
 ## What's left before this phase is complete
 
-**Phase 1 is complete.** All exit criteria met:
-- ✅ Logging in as each of the 7 roles lands on a distinct, correctly-gated placeholder page with the role's lane color
-- ✅ JWT authentication with access + refresh tokens
-- ✅ Role-based route guards (RequireRole)
-- ✅ Mobile-first responsive layout (sidebar desktop, bottom-nav mobile)
-- ✅ Feature-sliced folder structure matching the spec
+**Phase 2 is complete.** All exit criteria met:
+- ✅ All 10 apps have working models with applied migrations
+- ✅ Django admin shows populated data in every new table, matching the ERD in `05_Database_Schema.md`
+- ✅ `seed_rules.json` has 20 obligations loaded into the database via `seed_rules`
+- ✅ `seed_demo_data` has created realistic linked records for all 7 demo users
+- ✅ `AuditLog` model exists and `AuditLoggedMixin` is no longer a no-op
 
 ## Known issues / risks
 
-1. **Password security**: Demo users all use `demo1234` — fine for dev, must be changed before any staging deployment.
-2. **Token storage**: JWTs stored in localStorage — acceptable for demo/SIH, but XSS-vulnerable. Consider httpOnly cookies for production.
-3. **Tailwind CSS v4**: Using the new `@theme` directive and `@tailwindcss/vite` plugin (not v3 `tailwind.config.js`). This is the latest stable approach but some Tailwind v3 examples in the spec won't apply directly.
-4. **No CSRF for API**: DRF JWT endpoints don't use Django CSRF tokens — correct for API-only usage, but worth noting.
+1. **Password security**: Demo users all use `demo1234` — fine for local development, must be changed for production deployments.
+2. **Media/Image storage**: Scan images and report files currently use external URLs; production should configure S3/MinIO backend.
 
 ## Suggested next prompt
 
-Build Phase 2 (Data Layer): implement all Django models in the 10 empty apps per `05_Database_Schema.md`, create and run migrations, build the `seed_rules.json` fixture with ~15-20 real obligations per `08_Rule_Engine_Dataset_Build_Instructions.md`, create `seed_rules` and `seed_demo_data` management commands to populate products/scans/cases, and verify all tables are populated via Django admin. Exit check: Django admin shows all tables populated with seed data; migrations match the ERD.
+Build Phase 3 (Rule Engine & Compliance Core): Implement the condition checkers (`check_required_field`, `check_format`, `check_font_size`, `check_placement`, `check_conditional_required`) and evaluator function in `apps/rules_engine/`, build the first-time vs. repeat violation classification in `apps/compliance/history.py`, write and pass unit tests per `08_Rule_Engine_Dataset_Build_Instructions.md`, and build the FastAPI OCR stub service in `ml_services/ocr_stub/` following the fixed API contract in `03_Backend_Specification.md`.
