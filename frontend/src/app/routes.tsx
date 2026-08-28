@@ -7,9 +7,22 @@ import AppShell from '../components/layout/AppShell';
 import RequireRole from './guards/RequireRole';
 import LoginPage from '../features/auth/LoginPage';
 
-// Dashboard pages (lazy-loadable in future, direct imports for Phase 1)
+// Dashboard pages
 import CitizenDashboardPage from '../features/citizen/pages/DashboardPage';
+import ScanSearchPage from '../features/citizen/pages/ScanSearchPage';
+import ComplianceSnapshotPage from '../features/citizen/pages/ComplianceSnapshotPage';
+import ProductInfoPage from '../features/citizen/pages/ProductInfoPage';
+import FileComplaintPage from '../features/citizen/pages/FileComplaintPage';
+import ComplaintStatusPage from '../features/citizen/pages/ComplaintStatusPage';
+
 import OfficerDashboardPage from '../features/officer/pages/DashboardPage';
+import InspectionQueuePage from '../features/officer/pages/InspectionQueuePage';
+import GuidedCapturePage from '../features/officer/pages/GuidedCapturePage';
+import ProcessingResultPage from '../features/officer/pages/ProcessingResultPage';
+import ReviewFindingsPage from '../features/officer/pages/ReviewFindingsPage';
+import ViolationHistoryPage from '../features/officer/pages/ViolationHistoryPage';
+import CaseCreationPage from '../features/officer/pages/CaseCreationPage';
+
 import ControllerDashboardPage from '../features/controller/pages/DashboardPage';
 import NationalAdminDashboardPage from '../features/national-admin/pages/DashboardPage';
 import BusinessDashboardPage from '../features/business-portal/pages/DashboardPage';
@@ -31,21 +44,31 @@ export const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      // === Citizen ===
+      // === Citizen (Phase 4.1) ===
       {
         element: <RequireRole allowedRoles={['citizen']} />,
         children: [
           { path: '/citizen', element: <CitizenDashboardPage /> },
-          // Phase 4: more citizen screens will be added here
+          { path: '/citizen/scan', element: <ScanSearchPage /> },
+          { path: '/citizen/product/:productId/snapshot', element: <ComplianceSnapshotPage /> },
+          { path: '/citizen/product/:productId', element: <ProductInfoPage /> },
+          { path: '/citizen/complaint/new', element: <FileComplaintPage /> },
+          { path: '/citizen/complaints', element: <ComplaintStatusPage /> },
         ],
       },
 
-      // === Field Officer ===
+      // === Field Officer (Phase 4.2) ===
       {
         element: <RequireRole allowedRoles={['field_officer']} />,
         children: [
           { path: '/officer', element: <OfficerDashboardPage /> },
-          // Phase 4: queue, capture, cases screens
+          { path: '/officer/queue', element: <InspectionQueuePage /> },
+          { path: '/officer/capture', element: <GuidedCapturePage /> },
+          { path: '/officer/scan/:scanId/result', element: <ProcessingResultPage /> },
+          { path: '/officer/check/:checkId/review', element: <ReviewFindingsPage /> },
+          { path: '/officer/product/:productId/history', element: <ViolationHistoryPage /> },
+          { path: '/officer/case/new', element: <CaseCreationPage /> },
+          { path: '/officer/cases', element: <CaseCreationPage /> },
         ],
       },
 

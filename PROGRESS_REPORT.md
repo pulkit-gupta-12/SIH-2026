@@ -1,55 +1,98 @@
-# PROGRESS REPORT — Phase 3: Rule Engine & Compliance Core
+# PROGRESS REPORT — Phase 4.1 & Phase 4.2
 
-## What was built this session
+## Database Confirmation
+- **Database Engine**: PostgreSQL 16 (running via Docker Compose `legalmetro_db` on port 5432, with Redis on 6379).
+- **Confirmation**: All unit tests, seed operations, and live verifications executed strictly against PostgreSQL. Zero fallback to SQLite was triggered.
+- **Settings & Config Integrity**: `settings.py` and database configurations were left untouched.
 
-### Rule Engine Core (`apps/rules_engine/`)
-- **Condition Checkers** (`apps/rules_engine/checks.py`): Implemented all 5 condition checkers dispatched by `condition['type']`:
-  1. `check_required_field`: Validates mandatory field presence; handles category and `"all"` exemptions (e.g. spare parts, medical devices PDP).
-  2. `check_format`: Validates string formats (`month_year`, `standard_metric_units`, `currency_inr_incl_taxes`).
-  3. `check_font_size`: Validates font height minimums; applies pack size thresholds (`pack_size_threshold_g: 1000`) for large packages.
-  4. `check_placement`: Validates declaration zone constraints (e.g. `declaration_panel`).
-  5. `check_conditional_required`: Evaluates conditional mandatory fields based on category (`food`, `import`) or channel (`ecommerce`).
-- **Evaluator** (`apps/rules_engine/evaluate.py`): Implemented pure `evaluate_scan()` function that filters active rules by temporal validity window (`effective_from <= scan_date < effective_to`) and category, dispatches to checkers, and returns structured violation outputs.
-- **Rule Dataset Fixes**: Updated `PCR2026-ECOMM-COO-FILTER` in `seed_rules.json` to explicitly mandate `channel: "ecommerce"` in `applies_if`, differentiating digital listing screening from physical import scans (`PCR2011-R6-1-G-COO-IMPORT`).
+---
 
-### Compliance History & Classification (`apps/compliance/`)
-- **First-time vs. Repeat Offense Classification** (`apps/compliance/history.py`): Implemented `classify_and_record()` function querying prior violations for product + rule. Returns `'improvement_notice'` on first offense and `'penalty_case'` on repeat offenses, persisting to `ProductComplianceHistory`.
+## Phase 4.2: Field Officer Console — Completion Report
 
-### OCR Stub Service (`ml_services/ocr_stub/`)
-- **FastAPI OCR Stub** (`ml_services/ocr_stub/main.py`): Built and deployed FastAPI service running on port `8001`. Implements fixed JSON contract (`POST /process`), returning structured `extracted_fields`, `confidence_score`, `font_size_mm`, `placement_zone`, `barcode`, and `quality_flags`.
+### 1. Architecture & Design Resolutions
+- **Double-Counting Prevention**: Case Creation (`POST /api/cases/`) strictly **READS** the classification recorded in `ProductComplianceHistory` at scan time. It **does NOT call `classify_and_record()` again**, ensuring total integrity of first-time vs repeat offense counts.
+- **Multiple Violations Handling**: Supports single and multiple violations per `ComplianceCheck`, creating distinct statutory cases (`Case` model with single `violation` FK) linked to their respective compliance history entries without duplicating records.
+- **Role-Based Statutory Branching**:
+  - **First-Time Offense** (`classification="first_time"`): Automatically spawns a **Section 29 Improvement Notice** with a 30-day statutory rectification deadline (`status="notice_sent"`).
+  - **Repeat Offense** (`classification="repeat"`): Automatically spawns a **Section 39 Penalty Case** escalated to the State Controller (`status="escalated"`).
 
-### End-to-End Scan Pipeline (`apps/scans/`)
-- **Pipeline Integration** (`apps/scans/services.py`): Connected `POST /api/scans/` to call OCR Stub service over HTTP, save `ExtractedField` rows, run `evaluate_scan()`, and persist `ComplianceCheck` and `Violation` records in PostgreSQL.
+---
 
-### Verified End-to-End & Automated Unit Tests
-- **Automated Unit Tests** (`tests/test_rule_engine.py`): All 5 test cases passing cleanly (`python manage.py test tests`):
-  1. `test_missing_mfg_date_flagged`: PASSED
-  2. `test_exempted_category_not_flagged`: PASSED
-  3. `test_rule_versioning_respected`: PASSED (pre-2024 scan evaluates repealed V1 rule; post-2024 scan evaluates V2 in-force rule)
-  4. `test_font_size_large_pack_threshold`: PASSED (>1000g threshold requires 6.0mm font)
-  5. `test_first_time_vs_repeat_classification`: PASSED (1st offense = improvement notice, 2nd offense = penalty case)
-- **Live HTTP Pipeline Verification**: Tested `POST /api/scans/` via JWT-authenticated API call. Successfully called OCR Stub service, extracted 10 fields, evaluated rules, and created DB-persisted `ComplianceCheck` & `Violation` records.
+### 2. Backend Endpoints & Architecture (`06_Dashboard_Specs_All7.md`)
 
-## What is stubbed or mocked (and why)
+1. **Screen 1: Inspection Queue (`GET /api/inspections/queue/`)**:
+   - Aggregates automated risk-engine targets (`InspectionTarget`) and open citizen grievances (`Complaint`).
+   - Prioritizes by descending risk score with live state jurisdiction filtering (`state="DL"`).
+2. **Screen 2: Guided Capture Scan (`POST /api/scans/`)**:
+   - Multi-image statutory capture pipeline (`role_context="officer"`, `capture_method="guided_capture"`).
+   - Ingests up to 6 distinct package angles with automated OCR extraction and rules evaluation.
+3. **Screen 3: Processing Result (`GET /api/scans/{id}/processing-result/`)**:
+   - Returns extracted statutory fields (MRP, Net Quantity, Mfg Date, Packer Address) with OCR confidence, font sizes in mm, placement zones, and rule-by-rule verdicts.
+4. **Screen 4: Review Findings Confirm & Override (`POST /api/compliance-checks/{id}/confirm|override/`)**:
+   - Officer audit action allowing confirmation or manual override of automated OCR/rule verdicts with mandatory officer notes.
+5. **Screen 5: Violation History Timeline (`GET /api/products/{id}/violation-history/`)**:
+   - Returns chronological statutory timeline of past non-compliance events, repeat offense indicators, and associated case numbers.
+6. **Screen 6: Case Creation & Statutory Notices (`POST /api/cases/`)**:
+   - Generates Section 29 Improvement Notices (1st offense) or Section 39 Penalty Cases (repeat) with strict permission gating (`IsOfficerOrController`). Citizen users receive **HTTP 403 Forbidden**.
 
-| Stub | Location | Why | Real implementation TODO |
-|------|----------|-----|--------------------------|
-| OCR/CV accuracy | `ml_services/ocr_stub/` | Stub service returns realistic extracted fields | Future: replace stub service backend with trained Yolov8/EasyOCR model |
-| Manual Rule Drafting AI | `apps/rules_engine/` | Rule ingestion uses structured form / JSON | Future: LLM-assisted draft parser from raw Gazette PDF text |
-| E-commerce Scraping | `apps/ecommerce_integration/` | Static listing rows in DB | Phase 4/Future: live marketplace scraper |
+---
 
-## What's left before this phase is complete
+### 3. Frontend Implementation (`frontend/src/features/officer/`)
 
-**Phase 3 is complete.** All exit criteria met:
-- ✅ `POST /api/scans/` with a seeded image returns a DB-persisted compliance verdict citing real rule IDs.
-- ✅ Unit tests pass (`python manage.py test tests` ran 5/5 OK).
-- ✅ OCR Stub service running with fixed API contract.
-- ✅ First-time vs repeat classification working.
+Built with React 18, Vite, TypeScript, and Tailwind CSS using a sleek Blue/Navy enforcement theme (`#1e3a8a`, `#3b82f6`):
+- `InspectionQueuePage.tsx` (`/officer/queue`): Filterable, risk-scored queue displaying citizen complaints and risk targets.
+- `GuidedCapturePage.tsx` (`/officer/capture`): 6-step guided camera capture wizard with angle guidance and live quality checks.
+- `ProcessingResultPage.tsx` (`/officer/scan/:scanId/result`): Rule-by-rule verdicts breakdown and OCR bounding details.
+- `ReviewFindingsPage.tsx` (`/officer/check/:checkId/review`): Officer verdict review with one-click Confirm and Override modal.
+- `ViolationHistoryPage.tsx` (`/officer/product/:productId/history`): Product compliance history timeline with first-time vs repeat badges.
+- `CaseCreationPage.tsx` (`/officer/case/new` & `/officer/cases`): Enforcement notice filing interface with statutory classification banners and active case list.
+- `DashboardPage.tsx` (`/officer`): Dedicated Officer Command Hub with live queue counts, high-risk targets, active Section 29 notices countdowns, and quick actions.
+- **Routing & Guards**: Registered inside `<RequireRole allowedRoles={['field_officer']} />` in `frontend/src/app/routes.tsx`.
 
-## Known issues / risks
+---
 
-1. **OCR Port Dependency**: Django pipeline calls `http://localhost:8001/process`; fallback inline mock is present if FastAPI service is stopped.
+## Verification & Test Results
 
-## Suggested next prompt
+### 1. Full Automated Django Test Suite (`python manage.py test`)
+**23 / 23 Tests Passed Cleanly on PostgreSQL in 51.7s**:
+```text
+Creating test database for alias 'default'...
+.......................
+----------------------------------------------------------------------
+Ran 23 tests in 51.721s
 
-Proceed with Phase 4 (Dashboards): Build the 7 dashboards row-by-row in the order specified in `06_Dashboard_Specs_All7.md`: (4.1) Citizen App -> (4.2) Field Officer Console -> (4.3) State Controller Dashboard -> (4.4) National Admin Dashboard -> (4.5) Business Portal -> (4.6) E-commerce Integration -> (4.7) Rule Engine Admin Console.
+OK
+Destroying test database for alias 'default'...
+Found 23 test(s).
+```
+
+### 2. Frontend Production Build (`npm run build`)
+**TypeScript + Vite Build**: Passed cleanly with zero compilation errors.
+```text
+vite v8.2.2 building client environment for production...
+✓ 160 modules transformed.
+dist/index.html                   0.90 kB │ gzip:   0.49 kB
+dist/assets/index-BXrPJAsn.css   34.73 kB │ gzip:   7.09 kB
+dist/assets/index-BDpKCHF8.js   503.97 kB │ gzip: 145.36 kB
+✓ built in 5.41s
+```
+
+### 3. Live PostgreSQL API Responses & Case Evidence
+- **First-Time Offense Case**:
+  - Target Product: `Pure Shilajit Resin 20g` (GTIN: `8909999111101`)
+  - **Case ID**: `5` (`classification="first_time"`, `status="notice_sent"`)
+  - **ImprovementNotice ID**: `3` (`rectification_deadline="2026-09-27"`, `outcome="pending"`)
+  - **PenaltyCase**: `null`
+  - **Double-write Verification**: `ProductComplianceHistory` row count before = 7, after = 7 (`Double-write prevented: True`).
+- **Repeat Offense Case**:
+  - Target Product: `Mustard Oil 1L` (GTIN: `8909999222202`)
+  - **Case ID**: `6` (`classification="repeat"`, `status="escalated"`)
+  - **PenaltyCase ID**: `3` (`payment_status="pending"`, `appeal_status="none"`)
+  - **ImprovementNotice**: `null`
+  - **Double-write Verification**: `ProductComplianceHistory` row count before = 8, after = 8 (`Double-write prevented: True`).
+
+---
+
+## Suggested Next Steps
+
+Proceed with **Phase 4.3: State Controller Dashboard** per `06_Dashboard_Specs_All7.md` (State-level Compliance Heatmap, Officer Inspection Assignment Dispatch, Penalty Approval Workflow for Section 39 cases, and Escalation Queue).

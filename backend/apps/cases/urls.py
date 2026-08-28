@@ -1,8 +1,10 @@
 """
 Cases URL configuration.
 """
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import CaseViewSet
 
-urlpatterns = [
-    # Endpoints to be added in later phases.
-]
+router = DefaultRouter()
+router.register(r"", CaseViewSet, basename="case")
+
+urlpatterns = router.urls

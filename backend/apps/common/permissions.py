@@ -52,15 +52,14 @@ class IsRuleAdmin(_HasRole):
     message = "Rule Admin role required."
 
 
-class IsAnyRole(BasePermission):
-    """Allow access if user has any of the specified roles."""
-
-    def __init__(self, *roles):
-        self.roles = roles
+class IsCitizenOrFieldOfficer(BasePermission):
+    """Allow access to citizens and field officers (e.g. shared scan endpoint)."""
+    message = "Citizen or Field Officer role required."
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
         return request.user.role_assignments.filter(
-            role__name__in=self.roles
+            role__name__in=["citizen", "field_officer"]
         ).exists()
+

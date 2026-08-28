@@ -2,23 +2,65 @@
 Scans processing service.
 Calls OCR stub, persists ExtractedFields, runs evaluate_scan(), and persists ComplianceCheck + Violations.
 """
+import logging
 import requests
 from django.conf import settings
 from datetime import date
-from .models import ScanImage, ExtractedField
+from .models import Scan, ScanImage, ExtractedField
+from apps.product_master.models import Product
 from apps.rules_engine.evaluate import evaluate_scan
 from apps.compliance.models import ComplianceCheck, Violation
 from apps.compliance.history import classify_and_record
 
+logger = logging.getLogger(__name__)
 
-def process_scan_pipeline(scan, image_urls=None, category="general"):
+
+def resolve_product_from_barcode(barcode, category=None, name_hint=None):
+    """
+    Looks up a Product by barcode/GTIN. If it doesn't exist yet, creates a
+    minimal placeholder record so the scan can proceed.
+    """
+    if not barcode:
+        return None
+
+    product, created = Product.objects.get_or_create(
+        gtin_barcode=barcode,
+        defaults={
+            "product_name": name_hint or f"Unregistered product ({barcode})",
+            "brand_name": "Generic / Unregistered",
+            "category": category or "general",
+            "manufacturer_name": "Unspecified Manufacturer",
+            "manufacturer_address": "Unspecified Address",
+        },
+    )
+    if created:
+        logger.info("Auto-created Product %s from barcode %s", product.id, barcode)
+    return product
+
+
+def get_existing_compliance_result(product):
+    """
+    Returns the latest ComplianceCheck for this product if it has ever been
+    scanned before (by any role), else None.
+    """
+    if product is None:
+        return None
+    return (
+        ComplianceCheck.objects.filter(scan__product=product)
+        .order_by("-created_at")
+        .first()
+    )
+
+
+def process_scan_pipeline(scan, image_urls=None, category="general", is_citizen_scan=False):
     """
     Executes complete scan pipeline:
     1. Call OCR Stub service (http://localhost:8001/process or fallback)
     2. Save extracted fields to DB
     3. Run Rule Engine evaluate_scan()
     4. Save ComplianceCheck and Violation objects
-    5. Update scan status to 'processed'
+    5. Call classify_and_record (case=None if citizen)
+    6. Update scan status to 'processed'
     """
     if image_urls:
         for url in image_urls:
@@ -45,7 +87,7 @@ def process_scan_pipeline(scan, image_urls=None, category="general"):
             extracted_items = data.get("extracted_fields", [])
         else:
             print(f"OCR: live stub returned status {resp.status_code}, using fallback")
-            raise Exception("Non-200 status")
+            raise Exception(f"Non-200 status {resp.status_code}")
     except Exception as e:
         # Fallback to direct OCR mock generator if FastAPI process isn't running
         print(f"OCR: used fallback mock (Reason: {str(e)})")
@@ -96,7 +138,8 @@ def process_scan_pipeline(scan, image_urls=None, category="general"):
             description=v["message"],
         )
         if product:
-            classify_and_record(product, viol)
+            # For citizen scans, case is strictly None (no case auto-created)
+            classify_and_record(product, viol, case=None if is_citizen_scan else None)
 
     scan.status = "processed"
     scan.save()

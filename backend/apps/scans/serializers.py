@@ -4,6 +4,7 @@ Serializers for Scans app.
 from rest_framework import serializers
 from .models import Scan, ScanImage, ExtractedField
 from apps.compliance.models import ComplianceCheck, Violation
+from apps.product_master.models import Product
 
 
 class ScanImageSerializer(serializers.ModelSerializer):
@@ -45,9 +46,10 @@ class ComplianceCheckSerializer(serializers.ModelSerializer):
 
 
 class ScanDetailSerializer(serializers.ModelSerializer):
-    scan_images = ScanImageSerializer(many=True, read_only=True)
+    scan_images = ScanImageSerializer(source="images", many=True, read_only=True)
     extracted_fields = ExtractedFieldSerializer(many=True, read_only=True)
-    compliance_check = ComplianceCheckSerializer(source="compliancecheck", read_only=True)
+    compliance_check = ComplianceCheckSerializer(read_only=True)
+
 
     class Meta:
         model = Scan
@@ -59,12 +61,37 @@ class ScanDetailSerializer(serializers.ModelSerializer):
 
 
 class ScanCreateSerializer(serializers.ModelSerializer):
-    image_urls = serializers.ListField(child=serializers.CharField(), required=False, write_only=True)
+    barcode = serializers.CharField(required=False, write_only=True, allow_blank=True)
+    image_urls = serializers.ListField(child=serializers.CharField(), required=False, write_only=True, default=list)
     category = serializers.CharField(required=False, write_only=True, default="general")
 
     class Meta:
         model = Scan
         fields = [
             "id", "product", "role_context", "location",
-            "capture_method", "image_urls", "category",
+            "capture_method", "barcode", "image_urls", "category",
         ]
+        extra_kwargs = {
+            "role_context": {"required": False, "default": "citizen"},
+            "capture_method": {"required": False, "default": "single_image"},
+        }
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        is_citizen = False
+        if request and request.user and request.user.is_authenticated:
+            is_citizen = request.user.role_assignments.filter(role__name="citizen").exists()
+
+        if is_citizen:
+            barcode = attrs.get("barcode")
+            image_urls = attrs.get("image_urls") or []
+            product = attrs.get("product")
+            if not barcode and not image_urls and not product:
+                raise serializers.ValidationError(
+                    "Provide a barcode to look up, or an image to scan a new product."
+                )
+            if len(image_urls) > 1:
+                raise serializers.ValidationError(
+                    "Citizen scans support a single image only."
+                )
+        return attrs
