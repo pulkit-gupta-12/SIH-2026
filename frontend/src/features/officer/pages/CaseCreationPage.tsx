@@ -57,10 +57,14 @@ export default function CaseCreationPage() {
   });
 
   // Fetch recent cases opened by officer
-  const { data: recentCases = [], isLoading: isLoadingCases } = useQuery<EnforcementCaseResult[]>({
+  const { data: recentCasesData = [], isLoading: isLoadingCases } = useQuery<EnforcementCaseResult[]>({
     queryKey: ['officer-cases-list'],
     queryFn: fetchOfficerCases,
   });
+
+  const recentCases: EnforcementCaseResult[] = Array.isArray(recentCasesData)
+    ? recentCasesData
+    : (recentCasesData as { results?: EnforcementCaseResult[] })?.results ?? [];
 
   useEffect(() => {
     if (prefilledProduct) setProductId(prefilledProduct);
@@ -69,7 +73,8 @@ export default function CaseCreationPage() {
   }, [prefilledProduct, prefilledViolation, prefilledComplaint]);
 
   // Selected violation detail from timeline if available
-  const selectedViolationEntry = timeline?.history.find(
+  const historyList = Array.isArray(timeline?.history) ? timeline.history : [];
+  const selectedViolationEntry = historyList.find(
     (h) => String(h.violation_id) === String(violationId)
   );
 
@@ -220,7 +225,7 @@ export default function CaseCreationPage() {
             </div>
 
             {/* Violation Selection from History */}
-            {timeline && timeline.history.length > 0 && (
+            {historyList.length > 0 && (
               <div className="space-y-2">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider">
                   Associated Violation Finding (Optional)
@@ -231,7 +236,7 @@ export default function CaseCreationPage() {
                   className="w-full px-4 py-2.5 rounded-lg bg-card/80 border border-border text-foreground text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
                 >
                   <option value="">Apply to product general non-compliance</option>
-                  {timeline.history.map((h) => (
+                  {historyList.map((h) => (
                     <option key={h.violation_id} value={h.violation_id}>
                       [{h.rule_id_code}] {h.section_ref}: {h.description.slice(0, 60)}... ({h.is_first_time ? '1st Offense' : 'Repeat'})
                     </option>

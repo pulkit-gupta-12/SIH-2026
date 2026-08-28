@@ -128,8 +128,12 @@ export interface EnforcementCaseResult {
 }
 
 export async function fetchInspectionQueue(): Promise<InspectionQueueItem[]> {
-  const { data } = await apiClient.get<InspectionQueueItem[]>('/inspections/queue/');
-  return data;
+  const { data } = await apiClient.get<InspectionQueueItem[] | { results: InspectionQueueItem[] }>('/inspections/queue/');
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray((data as { results?: InspectionQueueItem[] }).results)) {
+    return (data as { results: InspectionQueueItem[] }).results;
+  }
+  return [];
 }
 
 export async function submitOfficerGuidedScan(payload: {
@@ -173,6 +177,9 @@ export async function overrideComplianceFinding(
 
 export async function fetchProductViolationHistory(productId: string | number): Promise<ProductViolationTimeline> {
   const { data } = await apiClient.get<ProductViolationTimeline>(`/products/${productId}/violation-history/`);
+  if (data && !Array.isArray(data.history)) {
+    data.history = [];
+  }
   return data;
 }
 
@@ -188,6 +195,10 @@ export async function createEnforcementCase(payload: {
 }
 
 export async function fetchOfficerCases(): Promise<EnforcementCaseResult[]> {
-  const { data } = await apiClient.get<EnforcementCaseResult[]>('/cases/');
-  return data;
+  const { data } = await apiClient.get<EnforcementCaseResult[] | { results: EnforcementCaseResult[] }>('/cases/');
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray((data as { results?: EnforcementCaseResult[] }).results)) {
+    return (data as { results: EnforcementCaseResult[] }).results;
+  }
+  return [];
 }

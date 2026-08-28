@@ -34,6 +34,8 @@ export default function ViolationHistoryPage() {
     );
   }
 
+  const historyList = Array.isArray(timeline?.history) ? timeline.history : [];
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
       {/* Header */}
@@ -111,11 +113,11 @@ export default function ViolationHistoryPage() {
             <span>Chronological Violation History</span>
           </h2>
           <span className="text-xs text-muted-foreground font-medium">
-            {timeline.history.length} Event{timeline.history.length === 1 ? '' : 's'}
+            {historyList.length} Event{historyList.length === 1 ? '' : 's'}
           </span>
         </div>
 
-        {timeline.history.length === 0 ? (
+        {historyList.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground border border-dashed border-border/60 rounded-xl">
             <span className="text-3xl block mb-2">✅</span>
             <p className="text-sm font-medium text-foreground">No prior violations found for this commodity.</p>
@@ -123,7 +125,7 @@ export default function ViolationHistoryPage() {
           </div>
         ) : (
           <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
-            {timeline.history.map((event, index) => (
+            {historyList.map((event, index) => (
               <div key={event.id || index} className="relative space-y-2 group">
                 {/* Dot */}
                 <div

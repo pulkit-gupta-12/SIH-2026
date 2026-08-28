@@ -10,19 +10,27 @@ import {
 export default function OfficerDashboardPage() {
   const navigate = useNavigate();
 
-  const { data: queue = [], isLoading: isLoadingQueue } = useQuery<InspectionQueueItem[]>({
+  const { data: queueData = [], isLoading: isLoadingQueue } = useQuery<InspectionQueueItem[]>({
     queryKey: ['inspection-queue'],
     queryFn: fetchInspectionQueue,
     staleTime: 30_000,
   });
 
-  const { data: cases = [], isLoading: isLoadingCases } = useQuery<EnforcementCaseResult[]>({
+  const { data: casesData = [], isLoading: isLoadingCases } = useQuery<EnforcementCaseResult[]>({
     queryKey: ['officer-cases-list'],
     queryFn: fetchOfficerCases,
     staleTime: 30_000,
   });
 
-  const highPriorityTargets = queue.filter((q) => q.priority_score >= 75);
+  const queue: InspectionQueueItem[] = Array.isArray(queueData)
+    ? queueData
+    : (queueData as { results?: InspectionQueueItem[] })?.results ?? [];
+
+  const cases: EnforcementCaseResult[] = Array.isArray(casesData)
+    ? casesData
+    : (casesData as { results?: EnforcementCaseResult[] })?.results ?? [];
+
+  const highPriorityTargets = queue.filter((q) => (q.priority_score ?? 0) >= 75);
   const citizenComplaintsCount = queue.filter((q) => q.source === 'complaint').length;
   const section29Notices = cases.filter((c) => c.classification === 'first_time');
   const section39Penalties = cases.filter((c) => c.classification === 'repeat');
@@ -188,10 +196,12 @@ export default function OfficerDashboardPage() {
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-white truncate">{item.product_detail.brand_name} — {item.product_detail.product_name}</span>
+                      <span className="font-bold text-white truncate">
+                        {item.product_detail?.brand_name ?? 'Target'} — {item.product_detail?.product_name ?? 'Inspection Item'}
+                      </span>
                     </div>
                     <p className="text-slate-400 text-[11px] truncate">
-                      Source: {item.source === 'complaint' ? '📢 Citizen Complaint' : '⚡ Risk Engine'} • GTIN: {item.product_detail.gtin_barcode}
+                      Source: {item.source === 'complaint' ? '📢 Citizen Complaint' : '⚡ Risk Engine'} • GTIN: {item.product_detail?.gtin_barcode ?? 'N/A'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">

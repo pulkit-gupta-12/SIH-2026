@@ -9,18 +9,25 @@ export default function InspectionQueuePage() {
   const [filterSource, setFilterSource] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const { data: queue = [], isLoading, error, refetch } = useQuery<InspectionQueueItem[]>({
+  const { data: queueData = [], isLoading, error, refetch } = useQuery<InspectionQueueItem[]>({
     queryKey: ['inspection-queue'],
     queryFn: fetchInspectionQueue,
   });
 
-  const filteredQueue = queue.filter((item) => {
+  const queueList: InspectionQueueItem[] = Array.isArray(queueData)
+    ? queueData
+    : (queueData as { results?: InspectionQueueItem[] })?.results ?? [];
+
+  const filteredQueue = queueList.filter((item) => {
     const matchesSource = filterSource === 'all' || item.source === filterSource;
+    const productName = item.product_detail?.product_name ?? '';
+    const brandName = item.product_detail?.brand_name ?? '';
+    const barcode = item.product_detail?.gtin_barcode ?? '';
     const matchesSearch =
       !searchTerm ||
-      item.product_detail.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.product_detail.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.product_detail.gtin_barcode.includes(searchTerm);
+      productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      brandName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      barcode.includes(searchTerm);
     return matchesSource && matchesSearch;
   });
 
@@ -92,7 +99,7 @@ export default function InspectionQueuePage() {
             onChange={(e) => setFilterSource(e.target.value)}
             className="w-full px-3 py-2 rounded-lg bg-card/60 border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           >
-            <option value="all">All Sources ({queue.length})</option>
+            <option value="all">All Sources ({queueList.length})</option>
             <option value="complaint">Citizen Complaints</option>
             <option value="risk_engine">Risk Engine Prioritization</option>
             <option value="ecommerce_flag">E-commerce Flagged</option>
@@ -138,12 +145,12 @@ export default function InspectionQueuePage() {
                   </div>
 
                   <h3 className="text-base font-bold text-foreground">
-                    {item.product_detail.brand_name} — {item.product_detail.product_name}
+                    {item.product_detail?.brand_name ?? 'Target'} — {item.product_detail?.product_name ?? 'Market Inspection'}
                   </h3>
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span>Barcode: <span className="font-mono text-foreground/80">{item.product_detail.gtin_barcode}</span></span>
-                    <span>Category: <span className="capitalize">{item.product_detail.category}</span></span>
+                    <span>Barcode: <span className="font-mono text-foreground/80">{item.product_detail?.gtin_barcode ?? 'N/A'}</span></span>
+                    <span>Category: <span className="capitalize">{item.product_detail?.category ?? 'general'}</span></span>
                     {item.complaint_detail && (
                       <span className="text-amber-300">
                         Location: {item.complaint_detail.location}
@@ -170,10 +177,10 @@ export default function InspectionQueuePage() {
                     onClick={() =>
                       navigate('/officer/capture', {
                         state: {
-                          barcode: item.product_detail.gtin_barcode,
+                          barcode: item.product_detail?.gtin_barcode,
                           productId: item.product,
                           complaintId: item.complaint,
-                          category: item.product_detail.category,
+                          category: item.product_detail?.category,
                         },
                       })
                     }
