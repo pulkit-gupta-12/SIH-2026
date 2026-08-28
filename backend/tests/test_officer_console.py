@@ -313,3 +313,68 @@ class FieldOfficerConsoleTests(TestCase):
 
         response = self.client.post("/api/cases/", payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_09_multi_violation_check_creates_distinct_cases(self):
+        """Multi-violation check: ComplianceCheck with 2+ violations produces 2+ distinct Case rows."""
+        self.client.force_authenticate(user=self.officer_user)
+
+        # Create a second rule
+        rule_mrp = Rule.objects.create(
+            rule_id_code="PCR-OFFICER-MRP",
+            section_ref="Rule 6(1)(e)",
+            category="general",
+            condition={"type": "required_field", "field": "mrp"},
+            effective_from=date(2022, 1, 1),
+            status="in_force",
+            source=self.source,
+        )
+
+        # Single check with 2 distinct violations on product_first_time
+        viol_a = Violation.objects.create(
+            compliance_check=self.check1,
+            rule=self.rule_mfg,
+            description="Violation A: Missing Mfg Date",
+        )
+        hist_a = ProductComplianceHistory.objects.create(
+            product=self.product_first_time,
+            violation=viol_a,
+            is_first_time=True,
+        )
+
+        viol_b = Violation.objects.create(
+            compliance_check=self.check1,
+            rule=rule_mrp,
+            description="Violation B: Missing MRP declaration",
+        )
+        hist_b = ProductComplianceHistory.objects.create(
+            product=self.product_first_time,
+            violation=viol_b,
+            is_first_time=True,
+        )
+
+        # Create Case for Violation A
+        resp_a = self.client.post("/api/cases/", {
+            "product": self.product_first_time.id,
+            "violation": viol_a.id,
+            "rectification_days": 30,
+        }, format="json")
+        self.assertEqual(resp_a.status_code, status.HTTP_201_CREATED)
+        case_a_id = resp_a.json()["id"]
+
+        # Create Case for Violation B
+        resp_b = self.client.post("/api/cases/", {
+            "product": self.product_first_time.id,
+            "violation": viol_b.id,
+            "rectification_days": 30,
+        }, format="json")
+        self.assertEqual(resp_b.status_code, status.HTTP_201_CREATED)
+        case_b_id = resp_b.json()["id"]
+
+        # Assert two distinct case rows were created
+        self.assertNotEqual(case_a_id, case_b_id)
+        
+        hist_a.refresh_from_db()
+        hist_b.refresh_from_db()
+        self.assertEqual(hist_a.case_id, case_a_id)
+        self.assertEqual(hist_b.case_id, case_b_id)
+

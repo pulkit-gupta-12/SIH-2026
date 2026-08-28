@@ -10,6 +10,7 @@ from .serializers import CaseDetailSerializer, CaseCreateSerializer
 from apps.compliance.models import ProductComplianceHistory, Violation
 from apps.complaints.models import Complaint
 from apps.product_master.models import Product
+from apps.common.permissions import IsOfficerOrController
 
 
 class CaseViewSet(viewsets.ModelViewSet):
@@ -24,7 +25,7 @@ class CaseViewSet(viewsets.ModelViewSet):
         .prefetch_related("violation__rule")
         .order_by("-created_at")
     )
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOfficerOrController]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -33,15 +34,6 @@ class CaseViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         user = request.user
-        is_authorized = user.role_assignments.filter(
-            role__name__in=["field_officer", "state_controller", "national_admin"]
-        ).exists()
-
-        if not is_authorized:
-            return Response(
-                {"detail": "Field Officer or Controller role required to open enforcement cases."},
-                status=status.HTTP_403_FORBIDDEN,
-            )
 
         serializer = CaseCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
