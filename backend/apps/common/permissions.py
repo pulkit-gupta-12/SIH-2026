@@ -32,9 +32,16 @@ class IsStateController(_HasRole):
     message = "State Controller role required."
 
 
-class IsNationalAdmin(_HasRole):
-    required_role = "national_admin"
+class IsNationalAdmin(BasePermission):
+    """Allow access to National Admins and Rule Admins."""
     message = "National Admin role required."
+
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.role_assignments.filter(
+            role__name__in=["national_admin", "rule_admin"]
+        ).exists()
 
 
 class IsBusiness(_HasRole):
@@ -74,5 +81,3 @@ class IsOfficerOrController(BasePermission):
         return request.user.role_assignments.filter(
             role__name__in=["field_officer", "state_controller", "national_admin"]
         ).exists()
-
-

@@ -7,7 +7,7 @@ import AppShell from '../components/layout/AppShell';
 import RequireRole from './guards/RequireRole';
 import LoginPage from '../features/auth/LoginPage';
 
-// Dashboard pages
+// Citizen Pages (Phase 4.1)
 import CitizenDashboardPage from '../features/citizen/pages/DashboardPage';
 import ScanSearchPage from '../features/citizen/pages/ScanSearchPage';
 import ComplianceSnapshotPage from '../features/citizen/pages/ComplianceSnapshotPage';
@@ -15,6 +15,7 @@ import ProductInfoPage from '../features/citizen/pages/ProductInfoPage';
 import FileComplaintPage from '../features/citizen/pages/FileComplaintPage';
 import ComplaintStatusPage from '../features/citizen/pages/ComplaintStatusPage';
 
+// Field Officer Pages (Phase 4.2)
 import OfficerDashboardPage from '../features/officer/pages/DashboardPage';
 import InspectionQueuePage from '../features/officer/pages/InspectionQueuePage';
 import GuidedCapturePage from '../features/officer/pages/GuidedCapturePage';
@@ -23,11 +24,20 @@ import ReviewFindingsPage from '../features/officer/pages/ReviewFindingsPage';
 import ViolationHistoryPage from '../features/officer/pages/ViolationHistoryPage';
 import CaseCreationPage from '../features/officer/pages/CaseCreationPage';
 
+// State Controller Pages
 import ControllerDashboardPage from '../features/controller/pages/DashboardPage';
-import NationalAdminDashboardPage from '../features/national-admin/pages/DashboardPage';
+
+// National Admin & Rule Admin Pages (Phase 4.3)
+import AdminDashboardPage from '../features/admin/pages/AdminDashboardPage';
+import NotificationMonitorPage from '../features/admin/pages/NotificationMonitorPage';
+import DraftReviewPage from '../features/admin/pages/DraftReviewPage';
+import SimulationPage from '../features/admin/pages/SimulationPage';
+import PublishRulePage from '../features/admin/pages/PublishRulePage';
+import RuleRepositoryPage from '../features/admin/pages/RuleRepositoryPage';
+
+// Other Role Portals
 import BusinessDashboardPage from '../features/business-portal/pages/DashboardPage';
 import EcommerceDashboardPage from '../features/ecommerce-integration/pages/DashboardPage';
-import RuleAdminDashboardPage from '../features/rule-admin/pages/DashboardPage';
 
 export const router = createBrowserRouter([
   // Public routes
@@ -77,16 +87,21 @@ export const router = createBrowserRouter([
         element: <RequireRole allowedRoles={['state_controller']} />,
         children: [
           { path: '/controller', element: <ControllerDashboardPage /> },
-          // Phase 4: heatmap, assignments, escalations
         ],
       },
 
-      // === National Admin ===
+      // === National Admin & Rule Admin (Phase 4.3) ===
       {
-        element: <RequireRole allowedRoles={['national_admin']} />,
+        element: <RequireRole allowedRoles={['national_admin', 'rule_admin']} />,
         children: [
-          { path: '/national', element: <NationalAdminDashboardPage /> },
-          // Phase 4: analytics, violators, policy, reports
+          { path: '/admin', element: <AdminDashboardPage /> },
+          { path: '/national', element: <AdminDashboardPage /> },
+          { path: '/rule-admin', element: <AdminDashboardPage /> },
+          { path: '/admin/rules', element: <RuleRepositoryPage /> },
+          { path: '/admin/rules/notifications', element: <NotificationMonitorPage /> },
+          { path: '/admin/rules/:id/review', element: <DraftReviewPage /> },
+          { path: '/admin/rules/:id/simulate', element: <SimulationPage /> },
+          { path: '/admin/rules/:id/publish', element: <PublishRulePage /> },
         ],
       },
 
@@ -95,7 +110,6 @@ export const router = createBrowserRouter([
         element: <RequireRole allowedRoles={['business']} />,
         children: [
           { path: '/business', element: <BusinessDashboardPage /> },
-          // Phase 4: pre-check, compliance, notices
         ],
       },
 
@@ -104,16 +118,6 @@ export const router = createBrowserRouter([
         element: <RequireRole allowedRoles={['ecommerce_partner']} />,
         children: [
           { path: '/ecommerce', element: <EcommerceDashboardPage /> },
-          // Phase 4: upload, flagged
-        ],
-      },
-
-      // === Rule Admin ===
-      {
-        element: <RequireRole allowedRoles={['rule_admin']} />,
-        children: [
-          { path: '/rule-admin', element: <RuleAdminDashboardPage /> },
-          // Phase 4: rules, drafts, sandbox
         ],
       },
     ],

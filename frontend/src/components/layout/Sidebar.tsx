@@ -32,11 +32,9 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Escalations', path: '/controller/escalations', icon: '⚠️' },
   ],
   national_admin: [
-    { label: 'Command Center', path: '/national', icon: '🏠' },
-    { label: 'Analytics', path: '/national/analytics', icon: '📊' },
-    { label: 'Top Violators', path: '/national/violators', icon: '🔴' },
-    { label: 'Policy', path: '/national/policy', icon: '📜' },
-    { label: 'Reports', path: '/national/reports', icon: '📄' },
+    { label: 'Admin Console', path: '/admin', icon: '🇮🇳' },
+    { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
+    { label: 'Rule Repository', path: '/admin/rules', icon: '📜' },
   ],
   business: [
     { label: 'Dashboard', path: '/business', icon: '🏠' },
@@ -50,10 +48,9 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Flagged', path: '/ecommerce/flagged', icon: '🚩' },
   ],
   rule_admin: [
-    { label: 'Dashboard', path: '/rule-admin', icon: '🏠' },
-    { label: 'Rules', path: '/rule-admin/rules', icon: '📚' },
-    { label: 'Drafts', path: '/rule-admin/drafts', icon: '✏️' },
-    { label: 'Sandbox', path: '/rule-admin/sandbox', icon: '🧪' },
+    { label: 'Admin Console', path: '/admin', icon: '⚖️' },
+    { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
+    { label: 'Rule Repository', path: '/admin/rules', icon: '📜' },
   ],
 };
 
@@ -92,7 +89,7 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === `/${activeRole === 'field_officer' ? 'officer' : activeRole === 'state_controller' ? 'controller' : activeRole === 'national_admin' ? 'national' : activeRole === 'ecommerce_partner' ? 'ecommerce' : activeRole === 'rule_admin' ? 'rule-admin' : activeRole}`}
+            end={item.path === '/admin' || item.path === '/citizen' || item.path === '/officer' || item.path === '/controller' || item.path === '/business' || item.path === '/ecommerce'}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 no-underline"
             style={({ isActive }) => ({
               background: isActive ? `${roleConfig.color}20` : 'transparent',
@@ -108,7 +105,7 @@ export default function Sidebar() {
 
       {/* Bottom: platform version */}
       <div className="px-3 py-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-        v1.0.0 · Phase 1
+        v1.0.0 · Phase 4.3
       </div>
     </aside>
   );

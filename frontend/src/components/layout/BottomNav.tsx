@@ -30,9 +30,9 @@ const BOTTOM_NAV_ITEMS: Record<UserRole, BottomNavItem[]> = {
     { label: 'Escalations', path: '/controller/escalations', icon: '⚠️' },
   ],
   national_admin: [
-    { label: 'Home', path: '/national', icon: '🏠' },
-    { label: 'Analytics', path: '/national/analytics', icon: '📊' },
-    { label: 'Reports', path: '/national/reports', icon: '📄' },
+    { label: 'Console', path: '/admin', icon: '🇮🇳' },
+    { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },
+    { label: 'Rules', path: '/admin/rules', icon: '📜' },
   ],
   business: [
     { label: 'Home', path: '/business', icon: '🏠' },
@@ -45,9 +45,9 @@ const BOTTOM_NAV_ITEMS: Record<UserRole, BottomNavItem[]> = {
     { label: 'Flagged', path: '/ecommerce/flagged', icon: '🚩' },
   ],
   rule_admin: [
-    { label: 'Home', path: '/rule-admin', icon: '🏠' },
-    { label: 'Rules', path: '/rule-admin/rules', icon: '📚' },
-    { label: 'Sandbox', path: '/rule-admin/sandbox', icon: '🧪' },
+    { label: 'Console', path: '/admin', icon: '⚖️' },
+    { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },
+    { label: 'Rules', path: '/admin/rules', icon: '📜' },
   ],
 };
 

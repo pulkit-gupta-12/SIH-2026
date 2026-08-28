@@ -57,8 +57,8 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     colorLight: 'var(--color-national-light)',
     colorDark: 'var(--color-national-dark)',
     icon: '🇮🇳',
-    homePath: '/national',
-    description: 'Cross-state analytics, policy simulation, transparency',
+    homePath: '/admin',
+    description: 'Cross-state analytics, policy simulation, rule publishing',
   },
   business: {
     id: 'business',
@@ -90,7 +90,7 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     colorLight: 'var(--color-ruleadmin-light)',
     colorDark: 'var(--color-ruleadmin-dark)',
     icon: '⚖️',
-    homePath: '/rule-admin',
+    homePath: '/admin',
     description: 'Draft, simulate, and publish compliance rules',
   },
 };
