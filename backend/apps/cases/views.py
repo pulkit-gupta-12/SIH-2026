@@ -11,6 +11,7 @@ from apps.compliance.models import ProductComplianceHistory, Violation
 from apps.complaints.models import Complaint
 from apps.product_master.models import Product
 from apps.common.permissions import IsOfficerOrController
+from apps.notifications.models import AuditLog
 
 
 class CaseViewSet(viewsets.ModelViewSet):
@@ -97,6 +98,20 @@ class CaseViewSet(viewsets.ModelViewSet):
         # If opened from a citizen complaint, update complaint status to 'under_investigation'
         if complaint_id:
             Complaint.objects.filter(id=complaint_id).update(status="under_investigation")
+
+        AuditLog.objects.create(
+            user=user,
+            action="create_case",
+            target_type="Case",
+            target_id=str(case.id),
+            metadata={
+                "classification": case.classification,
+                "status": case.status,
+                "product_id": getattr(product, "id", None),
+                "violation_id": getattr(violation, "id", None),
+                "complaint_id": complaint_id,
+            },
+        )
 
         detail_serializer = CaseDetailSerializer(case)
         return Response(detail_serializer.data, status=status.HTTP_201_CREATED)

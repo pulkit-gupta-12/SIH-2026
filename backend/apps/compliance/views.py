@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from .models import ComplianceCheck, Violation, ProductComplianceHistory
 from .serializers import ComplianceCheckDetailSerializer, ProductViolationHistorySerializer
 from apps.common.permissions import IsFieldOfficer, IsStateController, IsNationalAdmin
+from apps.notifications.models import AuditLog
 
 
 class ComplianceCheckViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,14 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
         check.reviewed_by_officer = request.user
         check.save(update_fields=["reviewed_by_officer"])
 
+        AuditLog.objects.create(
+            user=request.user,
+            action="confirm_compliance_check",
+            target_type="ComplianceCheck",
+            target_id=str(check.id),
+            metadata={"verdict": check.verdict},
+        )
+
         serializer = self.get_serializer(check)
         return Response(
             {
@@ -50,6 +59,7 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
         Officer overrides verdict (e.g. non_compliant -> compliant or vice-versa) with notes.
         """
         check = self.get_object()
+        old_verdict = check.verdict
         new_verdict = request.data.get("verdict")
         notes = request.data.get("notes", "")
 
@@ -62,6 +72,14 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
         check.verdict = new_verdict
         check.reviewed_by_officer = request.user
         check.save(update_fields=["verdict", "reviewed_by_officer"])
+
+        AuditLog.objects.create(
+            user=request.user,
+            action="override_compliance_check",
+            target_type="ComplianceCheck",
+            target_id=str(check.id),
+            metadata={"old_verdict": old_verdict, "new_verdict": new_verdict, "notes": notes},
+        )
 
         serializer = self.get_serializer(check)
         return Response(

@@ -9,6 +9,7 @@ from .models import Complaint
 from .serializers import ComplaintSerializer
 from .services import calculate_complaint_risk_score, determine_routed_state
 from apps.common.permissions import IsCitizen
+from apps.notifications.models import AuditLog
 
 
 class ComplaintViewSet(viewsets.ModelViewSet):
@@ -47,11 +48,24 @@ class ComplaintViewSet(viewsets.ModelViewSet):
             user=self.request.user,
         )
 
-        serializer.save(
+        instance = serializer.save(
             filed_by=self.request.user,
             status="open",
             risk_score=risk_score,
             routed_to_state=routed_state,
+        )
+
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="create_complaint",
+            target_type="Complaint",
+            target_id=str(instance.id),
+            metadata={
+                "product_id": instance.product_id,
+                "risk_score": instance.risk_score,
+                "routed_to_state": instance.routed_to_state,
+                "location": instance.location,
+            },
         )
 
     @action(detail=False, methods=["get"], url_path="mine")

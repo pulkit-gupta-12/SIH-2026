@@ -1,0 +1,491 @@
+{
+  "citizen_first_scan_no_photo": {
+    "detail": "This product has not been scanned before \u2014 please provide a photo.",
+    "needs_photo": true,
+    "product_id": 20,
+    "barcode": "8909998015249"
+  },
+  "citizen_first_scan_with_photo": {
+    "product_id": 20,
+    "product_name": "Unregistered product (8909998015249)",
+    "brand_name": "Generic / Unregistered",
+    "gtin_barcode": "8909998015249",
+    "category": "food",
+    "has_been_scanned": true,
+    "verdict": "compliant",
+    "last_checked_at": "2026-08-29T20:24:14.057240+05:30",
+    "violation_count": 0,
+    "violations": []
+  },
+  "citizen_filed_complaint": {
+    "id": 9,
+    "product": 20,
+    "product_name": "Unregistered product (8909998015249)",
+    "brand_name": "Generic / Unregistered",
+    "gtin_barcode": "8909998015249",
+    "description": "Overcharging observed at retail outlet: Net quantity numeral height smudged and unreadable.",
+    "photo_urls": [
+      "http://localhost:8000/media/complaint_ghee.jpg"
+    ],
+    "location": "Connaught Place, New Delhi, Delhi",
+    "risk_score": 80.0,
+    "routed_to_state": "Delhi",
+    "status": "open",
+    "filed_by": 17,
+    "filed_by_username": "kanishk",
+    "created_at": "2026-08-29T20:24:14.087831+05:30"
+  },
+  "officer_queue_item": {
+    "id": "cmp-9",
+    "product": 20,
+    "product_detail": {
+      "id": 20,
+      "gtin_barcode": "8909998015249",
+      "brand_name": "Generic / Unregistered",
+      "product_name": "Unregistered product (8909998015249)",
+      "category": "food",
+      "manufacturer_name": "Unspecified Manufacturer",
+      "manufacturer_address": "Unspecified Address"
+    },
+    "assigned_to": 11,
+    "assigned_to_username": "new_user_officer2",
+    "source": "complaint",
+    "priority_score": 80.0,
+    "complaint": 9,
+    "complaint_detail": {
+      "id": 9,
+      "description": "Overcharging observed at retail outlet: Net quantity numeral height smudged and unreadable.",
+      "photo_urls": [
+        "http://localhost:8000/media/complaint_ghee.jpg"
+      ],
+      "location": "Connaught Place, New Delhi, Delhi",
+      "risk_score": 80.0,
+      "routed_to_state": "Delhi",
+      "status": "open",
+      "created_at": "2026-08-29T14:54:14.087831+00:00"
+    },
+    "status": "pending",
+    "created_at": "2026-08-29T14:54:14.087831+00:00"
+  },
+  "officer_scan": {
+    "id": 15,
+    "product": 21,
+    "performed_by": 11,
+    "role_context": "officer",
+    "location": "INA Market, New Delhi",
+    "capture_method": "guided_capture",
+    "status": "processed",
+    "scan_images": [
+      {
+        "id": 22,
+        "image_url": "http://localhost:8000/media/officer_front.jpg",
+        "angle_type": "declaration_panel",
+        "quality_check_passed": true,
+        "created_at": "2026-08-29T20:24:14.136270+05:30"
+      },
+      {
+        "id": 23,
+        "image_url": "http://localhost:8000/media/officer_back.jpg",
+        "angle_type": "declaration_panel",
+        "quality_check_passed": true,
+        "created_at": "2026-08-29T20:24:14.137995+05:30"
+      }
+    ],
+    "extracted_fields": [
+      {
+        "id": 124,
+        "field_type": "manufacturer_name",
+        "extracted_value": "Heritage Foods Ltd.",
+        "confidence_score": 0.95,
+        "font_size_mm": 3.5,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 125,
+        "field_type": "manufacturer_address",
+        "extracted_value": "Plot 12, Industrial Area, Pune, Maharashtra 411018",
+        "confidence_score": 0.91,
+        "font_size_mm": 2.5,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 126,
+        "field_type": "product_name",
+        "extracted_value": "Pure Desi Ghee",
+        "confidence_score": 0.96,
+        "font_size_mm": 5.0,
+        "placement_zone": "principal_display_panel"
+      },
+      {
+        "id": 127,
+        "field_type": "net_quantity",
+        "extracted_value": "500 ml",
+        "confidence_score": 0.92,
+        "font_size_mm": 3.0,
+        "placement_zone": "principal_display_panel"
+      },
+      {
+        "id": 128,
+        "field_type": "mrp",
+        "extracted_value": "\u20b9349.00 (Incl. of all taxes)",
+        "confidence_score": 0.94,
+        "font_size_mm": 3.2,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 129,
+        "field_type": "unit_sale_price",
+        "extracted_value": "\u20b90.70 / ml",
+        "confidence_score": 0.89,
+        "font_size_mm": 2.2,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 130,
+        "field_type": "mfg_date",
+        "extracted_value": "01/2026",
+        "confidence_score": 0.9,
+        "font_size_mm": 2.8,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 131,
+        "field_type": "consumer_care_details",
+        "extracted_value": "Careline: 1800-111-222, email: care@heritage.com",
+        "confidence_score": 0.88,
+        "font_size_mm": 2.0,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 132,
+        "field_type": "fssai_license_no",
+        "extracted_value": "10015022003344",
+        "confidence_score": 0.93,
+        "font_size_mm": 2.2,
+        "placement_zone": "declaration_panel"
+      },
+      {
+        "id": 133,
+        "field_type": "best_before_date",
+        "extracted_value": "09/2026",
+        "confidence_score": 0.91,
+        "font_size_mm": 2.5,
+        "placement_zone": "declaration_panel"
+      }
+    ],
+    "compliance_check": {
+      "id": 15,
+      "verdict": "compliant",
+      "overall_confidence": 0.9189999999999999,
+      "evaluated_against_rule_set_date": "2026-08-29",
+      "violations": [],
+      "created_at": "2026-08-29T20:24:18.233573+05:30"
+    },
+    "created_at": "2026-08-29T20:24:14.132823+05:30"
+  },
+  "officer_confirm_check": {
+    "message": "Compliance check verdict confirmed by officer.",
+    "compliance_check": {
+      "id": 15,
+      "scan": 15,
+      "product_id": 21,
+      "product_name": "Unregistered product (8908888015254)",
+      "brand_name": "Generic / Unregistered",
+      "verdict": "compliant",
+      "overall_confidence": 0.9189999999999999,
+      "evaluated_against_rule_set_date": "2026-08-29",
+      "reviewed_by_officer": 11,
+      "reviewed_by_officer_username": "new_user_officer2",
+      "violations": [],
+      "created_at": "2026-08-29T20:24:18.233573+05:30"
+    }
+  },
+  "officer_violation_history": {
+    "product_id": 21,
+    "product_name": "Unregistered product (8908888015254)",
+    "brand_name": "Generic / Unregistered",
+    "gtin_barcode": "8908888015254",
+    "total_violations": 0,
+    "has_repeat_offenses": false,
+    "history": []
+  },
+  "officer_created_case": {
+    "id": 7,
+    "product": 21,
+    "product_name": "Unregistered product (8908888015254)",
+    "brand_name": "Generic / Unregistered",
+    "gtin_barcode": "8908888015254",
+    "violation": null,
+    "complaint": null,
+    "classification": "first_time",
+    "status": "notice_sent",
+    "opened_by": 11,
+    "opened_by_username": "new_user_officer2",
+    "improvement_notice": {
+      "id": 6,
+      "case": 7,
+      "issued_by": 11,
+      "issued_by_username": "new_user_officer2",
+      "rectification_deadline": "2026-09-28",
+      "business_response": null,
+      "outcome": "pending"
+    },
+    "penalty_case": null,
+    "created_at": "2026-08-29T20:24:18.287999+05:30",
+    "closed_at": null
+  },
+  "admin_notification": {
+    "id": 3,
+    "notification_no": "G.S.R. 89(E)/2026",
+    "title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+    "source_text": "In Rule 6(1)(d), Month and Year of manufacture or packing shall be declared in words or numerals with high contrast and minimum font height 2.0 mm across all food & beverage commodities.",
+    "gazette_url": "https://egazette.gov.in/notifications/gsr89e.pdf",
+    "published_date": "2026-01-05",
+    "date_detected": "2026-08-28T22:36:20.524328+05:30",
+    "category": "food",
+    "status": "published",
+    "draft_count": 3
+  },
+  "admin_generated_draft": {
+    "id": 4,
+    "notification": 3,
+    "notification_title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+    "notification_no": "G.S.R. 89(E)/2026",
+    "rule_id_code": "PCR2026-FONT-AMEND-FOOD",
+    "section_ref": "PC (Amendment) Rules 2026, Rule 18 & Table II",
+    "category": "general",
+    "old_clause_text": "The minimum height of numeral in declarations shall be 2.0 mm for packs up to 1000g.",
+    "new_clause_text": "The minimum height of numerals for net quantity and MRP shall be 2.5 mm for packs up to 1000g, and 6.5 mm for packages exceeding 1000g.",
+    "proposed_condition": {
+      "type": "font_size_check",
+      "field": "net_quantity",
+      "min_height_mm": 2.5,
+      "min_height_mm_large_pack": 6.5,
+      "pack_size_threshold_g": 1000
+    },
+    "effective_date": null,
+    "status": "pending_review",
+    "comments": [
+      {
+        "admin": "new_user_admin2",
+        "action": "draft_created",
+        "comment": "Draft automatically generated from notification G.S.R. 89(E)/2026.",
+        "timestamp": "2026-08-29T14:54:18.337168+00:00"
+      }
+    ],
+    "reviewing_admin": 13,
+    "reviewing_admin_name": "New_user_admin2",
+    "supersedes_rule": 23,
+    "supersedes_rule_code": "PCR2026-FONT-AMEND-FOOD-V2",
+    "simulation_results": [],
+    "created_at": "2026-08-29T20:24:18.337405+05:30",
+    "updated_at": "2026-08-29T20:24:18.337411+05:30"
+  },
+  "admin_revised_draft": {
+    "id": 4,
+    "notification": 3,
+    "notification_title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+    "notification_no": "G.S.R. 89(E)/2026",
+    "rule_id_code": "PCR2026-FONT-AMEND-FOOD",
+    "section_ref": "PC (Amendment) Rules 2026, Rule 18 & Table II",
+    "category": "general",
+    "old_clause_text": "The minimum height of numeral in declarations shall be 2.0 mm for packs up to 1000g.",
+    "new_clause_text": "The minimum height of numerals for net quantity and MRP shall be 2.5 mm for packs up to 1000g, and 6.5 mm for packages exceeding 1000g. (Revised with PDP prominent display requirements)",
+    "proposed_condition": {
+      "type": "font_size_check",
+      "field": "net_quantity",
+      "min_height_mm": 2.5,
+      "pack_size_threshold_g": 1000,
+      "min_height_mm_large_pack": 6.5
+    },
+    "effective_date": null,
+    "status": "revised",
+    "comments": [
+      {
+        "admin": "new_user_admin2",
+        "action": "draft_created",
+        "comment": "Draft automatically generated from notification G.S.R. 89(E)/2026.",
+        "timestamp": "2026-08-29T14:54:18.337168+00:00"
+      },
+      {
+        "admin": "new_user_admin2",
+        "action": "revised",
+        "comment": "Admin updated clause wording following legal review.",
+        "timestamp": "2026-08-29T14:54:18.357716+00:00"
+      }
+    ],
+    "reviewing_admin": 13,
+    "reviewing_admin_name": "New_user_admin2",
+    "supersedes_rule": 23,
+    "supersedes_rule_code": "PCR2026-FONT-AMEND-FOOD-V2",
+    "simulation_results": [],
+    "created_at": "2026-08-29T20:24:18.337405+05:30",
+    "updated_at": "2026-08-29T20:24:18.357774+05:30"
+  },
+  "admin_approved_draft": {
+    "id": 4,
+    "notification": 3,
+    "notification_title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+    "notification_no": "G.S.R. 89(E)/2026",
+    "rule_id_code": "PCR2026-FONT-AMEND-FOOD",
+    "section_ref": "PC (Amendment) Rules 2026, Rule 18 & Table II",
+    "category": "general",
+    "old_clause_text": "The minimum height of numeral in declarations shall be 2.0 mm for packs up to 1000g.",
+    "new_clause_text": "The minimum height of numerals for net quantity and MRP shall be 2.5 mm for packs up to 1000g, and 6.5 mm for packages exceeding 1000g. (Revised with PDP prominent display requirements)",
+    "proposed_condition": {
+      "type": "font_size_check",
+      "field": "net_quantity",
+      "min_height_mm": 2.5,
+      "pack_size_threshold_g": 1000,
+      "min_height_mm_large_pack": 6.5
+    },
+    "effective_date": "2026-05-01",
+    "status": "approved",
+    "comments": [
+      {
+        "admin": "new_user_admin2",
+        "action": "draft_created",
+        "comment": "Draft automatically generated from notification G.S.R. 89(E)/2026.",
+        "timestamp": "2026-08-29T14:54:18.337168+00:00"
+      },
+      {
+        "admin": "new_user_admin2",
+        "action": "revised",
+        "comment": "Admin updated clause wording following legal review.",
+        "timestamp": "2026-08-29T14:54:18.357716+00:00"
+      },
+      {
+        "admin": "new_user_admin2",
+        "action": "approved",
+        "comment": "Approved by National Admin with effective date 2026-05-01.",
+        "effective_date": "2026-05-01",
+        "timestamp": "2026-08-29T14:54:18.377156+00:00"
+      }
+    ],
+    "reviewing_admin": 13,
+    "reviewing_admin_name": "New_user_admin2",
+    "supersedes_rule": 23,
+    "supersedes_rule_code": "PCR2026-FONT-AMEND-FOOD-V2",
+    "simulation_results": [],
+    "created_at": "2026-08-29T20:24:18.337405+05:30",
+    "updated_at": "2026-08-29T20:24:18.377217+05:30"
+  },
+  "admin_simulation": {
+    "id": 4,
+    "draft": 4,
+    "total_scans_evaluated": 15,
+    "before_compliance_rate": 86.7,
+    "after_compliance_rate": 86.7,
+    "projected_violation_diff": 0,
+    "metrics": {
+      "evaluated_scans_count": 15,
+      "category": "general",
+      "condition_type": "font_size_check",
+      "impact_summary": "Evaluated against 15 historical inspections. Compliance rate changes from 86.7% to 86.7%.",
+      "category_breakdown": {
+        "food": {
+          "before_compliant": 12,
+          "after_compliant": 12,
+          "new_violations": 0
+        },
+        "electronics": {
+          "before_compliant": 1,
+          "after_compliant": 1,
+          "new_violations": 0
+        },
+        "import": {
+          "before_compliant": 0,
+          "after_compliant": 0,
+          "new_violations": 0
+        }
+      },
+      "affected_brands_sample": []
+    },
+    "created_at": "2026-08-29T20:24:18.406745+05:30"
+  },
+  "admin_published_rule": {
+    "id": 24,
+    "rule_id_code": "PCR2026-FONT-AMEND-FOOD-V3",
+    "section_ref": "PC (Amendment) Rules 2026, Rule 18 & Table II",
+    "category": "general",
+    "condition": {
+      "type": "font_size_check",
+      "field": "net_quantity",
+      "min_height_mm": 2.5,
+      "pack_size_threshold_g": 1000,
+      "min_height_mm_large_pack": 6.5
+    },
+    "effective_from": "2026-05-01",
+    "effective_to": null,
+    "superseded_by": null,
+    "superseded_by_code": null,
+    "status": "in_force",
+    "source": 7,
+    "source_title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+    "source_notification_no": "G.S.R. 89(E)/2026"
+  },
+  "admin_dashboard_summary": {
+    "kpis": {
+      "total_active_rules": 19,
+      "pending_drafts": 0,
+      "new_notifications": 2,
+      "total_cases": 7,
+      "open_cases": 6,
+      "escalated_cases": 1,
+      "national_compliance_rate": 86.7
+    },
+    "violations_by_category": [
+      {
+        "category": "general",
+        "violations": 2
+      },
+      {
+        "category": "import",
+        "violations": 1
+      }
+    ],
+    "violations_by_region": [
+      {
+        "region": "Delhi",
+        "complaints": 8,
+        "inspections": 1,
+        "compliance_rate": 84.0
+      },
+      {
+        "region": "Uttar Pradesh",
+        "complaints": 1,
+        "inspections": 1,
+        "compliance_rate": 84.0
+      }
+    ],
+    "officer_performance": [
+      {
+        "officer_id": 11,
+        "name": "New_user_officer2",
+        "username": "new_user_officer2",
+        "cases_opened": 5,
+        "scans_conducted": 5,
+        "inspections_completed": 0,
+        "inspections_pending": 0
+      },
+      {
+        "officer_id": 8,
+        "name": "Amit Verma",
+        "username": "test_new_officer",
+        "cases_opened": 0,
+        "scans_conducted": 0,
+        "inspections_completed": 0,
+        "inspections_pending": 0
+      },
+      {
+        "officer_id": 2,
+        "name": "Rajesh Kumar",
+        "username": "officer_demo",
+        "cases_opened": 2,
+        "scans_conducted": 3,
+        "inspections_completed": 0,
+        "inspections_pending": 2
+      }
+    ]
+  }
+}
