@@ -3,16 +3,15 @@ AI Rule Draft Generator (Step B).
 Generates structured old vs. new clause diffs and formal JSON condition schemas
 from raw legal notification / amendment texts.
 """
-import re
-from datetime import date
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from .models import RuleNotification, Rule
 
 
 def generate_rule_draft_from_notification(notification: RuleNotification) -> Dict[str, Any]:
     """
     Analyzes notification text and generates a structured draft rule.
-    Deterministic and rule-aware.
+    Deterministic and rule-aware. Accurately binds supersedes_rule_id by matching
+    exact condition type, field, and category.
     """
     text = (notification.source_text + " " + notification.title).lower()
     cat = notification.category or "general"
@@ -41,7 +40,12 @@ def generate_rule_draft_from_notification(notification: RuleNotification) -> Dic
             "min_height_mm_large_pack": 6.5,
             "pack_size_threshold_g": 1000,
         }
-        existing = Rule.objects.filter(rule_id_code__icontains="FONTSIZE", status="in_force").first()
+        # Match EXACT condition type and field (net_quantity)
+        existing = Rule.objects.filter(
+            condition__type="font_size_check",
+            condition__field="net_quantity",
+            status="in_force",
+        ).first()
         if existing:
             supersedes_rule_id = existing.id
 
@@ -56,7 +60,11 @@ def generate_rule_draft_from_notification(notification: RuleNotification) -> Dic
             "field": "unit_sale_price",
             "exemptions": [],
         }
-        existing = Rule.objects.filter(rule_id_code__icontains="UNITMRP", status="in_force").first()
+        existing = Rule.objects.filter(
+            condition__type="required_field",
+            condition__field="unit_sale_price",
+            status="in_force",
+        ).first()
         if existing:
             supersedes_rule_id = existing.id
 
@@ -74,6 +82,13 @@ def generate_rule_draft_from_notification(notification: RuleNotification) -> Dic
             "field": "qr_code_declaration",
             "exemptions": ["bulk_industrial_packages"],
         }
+        existing = Rule.objects.filter(
+            condition__type="required_field",
+            condition__field="qr_code_declaration",
+            status="in_force",
+        ).first()
+        if existing:
+            supersedes_rule_id = existing.id
 
     # Pattern 4: Country of Origin (Imported Goods / E-commerce filter)
     elif "country of origin" in text or "coo" in text or "imported" in text or "import" in text:
@@ -89,7 +104,12 @@ def generate_rule_draft_from_notification(notification: RuleNotification) -> Dic
             "field": "country_of_origin",
             "applies_if": {"category": "import"},
         }
-        existing = Rule.objects.filter(rule_id_code__icontains="COO", status="in_force").first()
+        existing = Rule.objects.filter(
+            condition__type="conditional_required_field",
+            condition__field="country_of_origin",
+            category="import",
+            status="in_force",
+        ).first()
         if existing:
             supersedes_rule_id = existing.id
 
@@ -107,7 +127,11 @@ def generate_rule_draft_from_notification(notification: RuleNotification) -> Dic
             "field": "mfg_date",
             "format": "month_year",
         }
-        existing = Rule.objects.filter(rule_id_code__icontains="MFGDATE-V2", status="in_force").first()
+        existing = Rule.objects.filter(
+            condition__type="format_check",
+            condition__field="mfg_date",
+            status="in_force",
+        ).first()
         if existing:
             supersedes_rule_id = existing.id
 

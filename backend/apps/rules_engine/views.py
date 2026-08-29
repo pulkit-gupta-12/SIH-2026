@@ -329,6 +329,7 @@ class RuleDraftPublishView(APIView):
     POST /api/rules/{id}/publish/
     Creates a new live versioned Rule effective as of effective_date,
     archives/supersedes prior rule versions, and sets draft status to published.
+    Ensures zero overlapping active rules checking the same condition field + category.
     """
     permission_classes = [permissions.IsAuthenticated, IsNationalAdmin]
 
@@ -375,9 +376,31 @@ class RuleDraftPublishView(APIView):
                 source=source,
             )
 
-            # 3. If replacing an older rule, link supersedes and update old rule's effective_to
+            # 3. Identify and supersede prior overlapping rule versions
+            rules_to_supersede = set()
             if draft.supersedes_rule:
-                old_rule = draft.supersedes_rule
+                rules_to_supersede.add(draft.supersedes_rule)
+
+            # Auto-detect any active in-force rule that matches same condition type, field, and category
+            cond_type = draft.proposed_condition.get("type")
+            cond_field = draft.proposed_condition.get("field")
+            if cond_type:
+                q_overlap = Rule.objects.filter(
+                    status="in_force",
+                    effective_to__isnull=True,
+                    condition__type=cond_type,
+                ).exclude(pk=live_rule.pk)
+                if cond_field:
+                    q_overlap = q_overlap.filter(condition__field=cond_field)
+                if draft.category and draft.category != "general":
+                    q_overlap = q_overlap.filter(category__in=[draft.category, "general"])
+                elif draft.category == "general":
+                    q_overlap = q_overlap.filter(category="general")
+
+                for old_rule in q_overlap:
+                    rules_to_supersede.add(old_rule)
+
+            for old_rule in rules_to_supersede:
                 old_rule.superseded_by = live_rule
                 old_rule.effective_to = effective_date
                 old_rule.status = "repealed"
@@ -409,7 +432,7 @@ class RuleDraftPublishView(APIView):
                 metadata={
                     "rule_id_code": live_rule.rule_id_code,
                     "effective_from": str(live_rule.effective_from),
-                    "superseded_rule_id": draft.supersedes_rule_id,
+                    "superseded_rule_ids": [r.id for r in rules_to_supersede],
                 },
             )
 
