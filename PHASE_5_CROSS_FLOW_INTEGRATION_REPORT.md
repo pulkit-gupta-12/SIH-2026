@@ -47,6 +47,7 @@ ID: 21 | Code: PCR2026-FONT-AMEND-FOOD | Status: in_force | Effective: 2026-04-0
 ID: 14 | Code: PCR-NETQTY-FONTSIZE     | Status: repealed | Effective: 2011-01-01 to 2026-04-01 | Superseded By: 21   | Cond: font_size_check(net_quantity, 2.0mm)
 ID: 15 | Code: PCR-MRP-FONTSIZE        | Status: in_force | Effective: 2011-01-01 to None       | Superseded By: None | Cond: font_size_check(mrp, 2.0mm)
 ID: 21 | Code: PCR2026-FONT-AMEND-FOOD | Status: in_force | Effective: 2026-04-01 to None       | Superseded By: None | Cond: font_size_check(net_quantity, 2.5mm)
+
 ```
 
 ### 2.3 End-to-End Temporal Evaluation Verification

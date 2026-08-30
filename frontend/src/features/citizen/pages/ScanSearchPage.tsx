@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { scanOrLookupProduct, searchProducts, type ComplianceSnapshot } from "../api";
+import CameraCaptureView from "../../../components/camera/CameraCaptureView";
+import type { CapturedFrame } from "../../../components/camera/useCamera";
 
 const POPULAR_DEMO_BARCODES = [
   { barcode: "8901030865412", name: "Amul Butter 500g", category: "food" },
@@ -11,10 +13,11 @@ const POPULAR_DEMO_BARCODES = [
 
 export default function ScanSearchPage() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"camera" | "barcode">("camera");
   const [barcode, setBarcode] = useState("");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("general");
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [capturedFrame, setCapturedFrame] = useState<CapturedFrame | null>(null);
   const [needsPhoto, setNeedsPhoto] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,8 +30,9 @@ export default function ScanSearchPage() {
     onError: (err: any) => {
       if (err?.response?.status === 400 && err?.response?.data?.needs_photo) {
         setNeedsPhoto(true);
+        setActiveTab("camera");
         setErrorMessage(
-          "First-time scan: This product hasn't been scanned yet. Please upload a photo of the label declarations."
+          "First-time scan: This product hasn't been scanned yet. Please snap a photo of the label declarations using the live camera."
         );
       } else {
         const detail = err?.response?.data?.detail || "Unable to look up product. Please try again.";
@@ -45,6 +49,7 @@ export default function ScanSearchPage() {
     staleTime: 10_000,
   });
 
+  // Handle barcode verification
   const handleBarcodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!barcode.trim()) return;
@@ -52,24 +57,19 @@ export default function ScanSearchPage() {
     scanMutation.mutate({ barcode: barcode.trim(), category });
   };
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setPhotoPreview(URL.createObjectURL(file));
-    } else {
-      setPhotoPreview(null);
-    }
+  // Handle frame capture from live camera or file fallback
+  const handleCameraCapture = (frame: CapturedFrame) => {
+    setCapturedFrame(frame);
+    setErrorMessage(null);
   };
 
-  const handlePhotoSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!photoPreview) return;
+  // Submit captured camera photo to scan pipeline
+  const handleSubmitPhotoScan = () => {
+    if (!capturedFrame) return;
     setErrorMessage(null);
-    // In production or demo, use object URL or media URL
-    const imageUrl = photoPreview || "http://localhost:8000/media/sample_label.jpg";
     scanMutation.mutate({
       barcode: barcode.trim() || undefined,
-      imageUrl,
+      imageUrl: capturedFrame.dataUrl,
       category,
     });
   };
@@ -94,10 +94,126 @@ export default function ScanSearchPage() {
         </div>
       </div>
 
-      {/* Main Scan Form */}
+      {/* Mode Selector Tabs */}
+      <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("camera");
+            setErrorMessage(null);
+          }}
+          className={`py-2.5 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "camera"
+              ? "bg-emerald-600 text-white shadow-lg shadow-emerald-950/50"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <span>📸</span>
+          <span>Live Camera Scan</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("barcode");
+            setErrorMessage(null);
+          }}
+          className={`py-2.5 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "barcode"
+              ? "bg-emerald-600 text-white shadow-lg shadow-emerald-950/50"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <span>🔢</span>
+          <span>Barcode / GTIN Lookup</span>
+        </button>
+      </div>
+
+      {/* Main Scan Card */}
       <div className="glass-card p-6 rounded-2xl space-y-6">
-        {!needsPhoto ? (
-          <form onSubmit={handleBarcodeSubmit} className="space-y-4">
+        {/* Category selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
+          <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            Commodity Category
+          </label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-1.5 text-white text-xs focus:outline-none focus:border-emerald-500"
+          >
+            <option value="general">General Commodities</option>
+            <option value="food">Food & Beverages</option>
+            <option value="electronics">Electronics</option>
+            <option value="medical_device">Medical Devices</option>
+            <option value="import">Imported Goods</option>
+          </select>
+        </div>
+
+        {/* TAB 1: LIVE CAMERA CAPTURE */}
+        {activeTab === "camera" && (
+          <div className="space-y-5 animate-fade-in">
+            {needsPhoto && (
+              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 space-y-1">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
+                  <span>📸 First-Time Scan Required</span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  Barcode <span className="font-mono text-white">{barcode}</span> has not been scanned yet. Snap a clear photo of the declaration panel to analyze.
+                </p>
+              </div>
+            )}
+
+            {/* Live Camera Viewfinder */}
+            <CameraCaptureView
+              title="Declaration Panel"
+              instruction="Point rear camera at MRP, Net Qty & Manufacturer info"
+              capturedImage={capturedFrame?.dataUrl || null}
+              onCapture={handleCameraCapture}
+              onRetake={() => setCapturedFrame(null)}
+              isProcessing={scanMutation.isPending}
+              reticleType="declarations"
+              autoStart={true}
+              defaultFacingMode="environment"
+            />
+
+            {/* Optional Barcode association field */}
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">
+                Barcode Number (Optional, if visible on package)
+              </label>
+              <input
+                type="text"
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                placeholder="e.g. 8901030865412 (optional)"
+                className="w-full rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono text-xs"
+              />
+            </div>
+
+            {/* Action Submit Button */}
+            {capturedFrame && (
+              <button
+                type="button"
+                onClick={handleSubmitPhotoScan}
+                disabled={scanMutation.isPending}
+                className="w-full py-3.5 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-950/50 disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+              >
+                {scanMutation.isPending ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Running OCR & Rules Engine...</span>
+                  </>
+                ) : (
+                  <span>⚡ Analyze Label Photo & Verify Compliance</span>
+                )}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: BARCODE & GTIN LOOKUP */}
+        {activeTab === "barcode" && (
+          <form onSubmit={handleBarcodeSubmit} className="space-y-4 animate-fade-in">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
                 Scan or Enter Barcode (GTIN)
@@ -121,23 +237,6 @@ export default function ScanSearchPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Category (optional)
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl bg-slate-900/80 border border-slate-700/80 px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500"
-              >
-                <option value="general">General Commodities</option>
-                <option value="food">Food & Beverages</option>
-                <option value="electronics">Electronics</option>
-                <option value="medical_device">Medical Devices</option>
-                <option value="import">Imported Goods</option>
-              </select>
-            </div>
-
             <button
               type="submit"
               disabled={scanMutation.isPending || !barcode.trim()}
@@ -154,64 +253,6 @@ export default function ScanSearchPage() {
                 </>
               )}
             </button>
-          </form>
-        ) : (
-          /* First-Time Scan: Photo Upload Required */
-          <form onSubmit={handlePhotoSubmit} className="space-y-4 animate-fade-in">
-            <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
-                <span>📸 First-Time Scan Required</span>
-              </div>
-              <p className="text-xs text-slate-300">
-                Barcode <span className="font-mono text-white">{barcode}</span> hasn&apos;t been verified yet. Upload a photo of the product package declaration panel to trigger automated verification.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-300">
-                Take or Upload Label Photo
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhotoSelect}
-                className="w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-500/20 file:text-emerald-400 hover:file:bg-emerald-500/30 file:cursor-pointer cursor-pointer border border-dashed border-slate-700 rounded-xl p-3 bg-slate-900/50"
-                required
-              />
-              {photoPreview && (
-                <div className="mt-3 relative rounded-xl overflow-hidden max-h-48 border border-slate-700 bg-black/40 flex items-center justify-center">
-                  <img src={photoPreview} alt="Label preview" className="object-contain max-h-48 w-full" />
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setNeedsPhoto(false);
-                  setErrorMessage(null);
-                }}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                disabled={scanMutation.isPending || !photoPreview}
-                className="flex-1 py-2.5 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {scanMutation.isPending ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Running OCR & Rules Engine...</span>
-                  </>
-                ) : (
-                  <span>⚡ Analyze Label Photo</span>
-                )}
-              </button>
-            </div>
           </form>
         )}
 

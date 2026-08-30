@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProcessingResult, type ScanProcessingResult } from '../api';
 import StatusPill from '../../../components/ui/StatusPill';
@@ -6,10 +6,13 @@ import StatusPill from '../../../components/ui/StatusPill';
 export default function ProcessingResultPage() {
   const { scanId } = useParams<{ scanId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const stateScanData = location.state?.scanData as ScanProcessingResult | undefined;
 
   const { data: scan, isLoading, error } = useQuery<ScanProcessingResult>({
     queryKey: ['scan-processing-result', scanId],
     queryFn: () => fetchProcessingResult(scanId || '0'),
+    initialData: stateScanData,
     enabled: Boolean(scanId),
   });
 

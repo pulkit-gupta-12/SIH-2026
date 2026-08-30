@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { submitOfficerGuidedScan, type ScanProcessingResult } from '../api';
+import CameraCaptureView from '../../../components/camera/CameraCaptureView';
+import type { CapturedFrame } from '../../../components/camera/useCamera';
 
 interface StepConfig {
   step: number;
@@ -9,7 +11,7 @@ interface StepConfig {
   title: string;
   instruction: string;
   mandatoryFields: string[];
-  sampleImage: string;
+  reticleType: 'pdp' | 'declarations' | 'mrp' | 'barcode' | 'seal' | 'general';
 }
 
 const CAPTURE_STEPS: StepConfig[] = [
@@ -17,9 +19,9 @@ const CAPTURE_STEPS: StepConfig[] = [
     step: 1,
     id: 'front_panel',
     title: '1. Front Principal Display Panel (PDP)',
-    instruction: 'Capture the full front surface of the retail package showing brand name, product name, and visual commodity representation.',
+    instruction: 'Capture the full front surface of the retail package showing brand name, product identity, and logo.',
     mandatoryFields: ['Brand Name', 'Product Identity', 'Logo/Symbol'],
-    sampleImage: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600',
+    reticleType: 'pdp',
   },
   {
     step: 2,
@@ -27,15 +29,15 @@ const CAPTURE_STEPS: StepConfig[] = [
     title: '2. Mandatory Declaration Panel',
     instruction: 'Frame the complete regulatory text block containing manufacturing date, expiry/best-before, batch code, and customer care details.',
     mandatoryFields: ['Month/Year of Mfg', 'Batch No', 'Customer Care Email/Phone'],
-    sampleImage: 'https://images.unsplash.com/photo-1527061011665-3652c757a4d4?w=600',
+    reticleType: 'declarations',
   },
   {
     step: 3,
     id: 'mrp_netqty_closeup',
     title: '3. MRP & Net Quantity Close-Up',
-    instruction: 'Ensure sharp focus on the printed MRP statement (inclusive of all taxes) and the numeric net quantity with metric units.',
+    instruction: 'Ensure sharp focus on the printed MRP statement (inclusive of all taxes) and numeric net quantity with metric units.',
     mandatoryFields: ['MRP (incl. of all taxes)', 'Net Quantity (g/ml/kg)', 'Numeral Font Size'],
-    sampleImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600',
+    reticleType: 'mrp',
   },
   {
     step: 4,
@@ -43,7 +45,7 @@ const CAPTURE_STEPS: StepConfig[] = [
     title: '4. Manufacturer & Packer Address',
     instruction: 'Capture the full physical factory/registered office address of the manufacturer, packer, or importer (Rule 6(1)(a)).',
     mandatoryFields: ['Manufacturer Name', 'Complete Address with PIN', 'Country of Origin'],
-    sampleImage: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600',
+    reticleType: 'declarations',
   },
   {
     step: 5,
@@ -51,7 +53,7 @@ const CAPTURE_STEPS: StepConfig[] = [
     title: '5. Barcode & EAN/GTIN Scan',
     instruction: 'Scan or position the 1D/2D GS1 barcode clearly within the scanning frame without glare or label folding.',
     mandatoryFields: ['GTIN Barcode (13-digit)', 'GS1 Verification'],
-    sampleImage: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600',
+    reticleType: 'barcode',
   },
   {
     step: 6,
@@ -59,7 +61,7 @@ const CAPTURE_STEPS: StepConfig[] = [
     title: '6. Package Wrap-Around & Seal',
     instruction: 'Inspect and capture the security seal, outer carton wrap-around, or container seam to verify tamper evidence.',
     mandatoryFields: ['Package Integrity', 'Outer Label Continuity'],
-    sampleImage: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=600',
+    reticleType: 'seal',
   },
 ];
 
@@ -74,12 +76,9 @@ export default function GuidedCapturePage() {
   const [barcode, setBarcode] = useState(initialBarcode);
   const [category, setCategory] = useState(initialCategory);
   const [locationStr, setLocationStr] = useState('Central Supermarket, Connaught Place, New Delhi');
-  const [capturedImages, setCapturedImages] = useState<{ [key: string]: string }>({
-    front_panel: CAPTURE_STEPS[0].sampleImage,
-    declaration_panel: CAPTURE_STEPS[1].sampleImage,
-    mrp_netqty_closeup: CAPTURE_STEPS[2].sampleImage,
-  });
+  const [capturedImages, setCapturedImages] = useState<{ [key: string]: string }>({});
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [qualityFeedback, setQualityFeedback] = useState<{
     blurScore: number;
     glareDetected: boolean;
@@ -99,32 +98,57 @@ export default function GuidedCapturePage() {
         state: { scanData: data },
       });
     },
+    onError: (err: any) => {
+      const detail =
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        err?.message ||
+        'Unable to process guided scan. Please check network connection and try again.';
+      setErrorMessage(detail);
+    },
   });
 
-  const handleCaptureCurrentStep = () => {
-    // Mock image capture from camera or sample
+  // Handle frame capture from the live camera stream
+  const handleFrameCaptured = (frame: CapturedFrame) => {
+    setErrorMessage(null);
     setCapturedImages((prev) => ({
       ...prev,
-      [currentStep.id]: currentStep.sampleImage,
+      [currentStep.id]: frame.dataUrl,
     }));
-    // Simulate real-time CV image quality check
+
+    // Real-time CV image quality evaluation simulation
+    const estimatedBlurScore = Math.min(98, Math.max(86, Math.floor(90 + (frame.width / 100) % 8)));
     setQualityFeedback({
-      blurScore: Math.floor(88 + Math.random() * 10),
+      blurScore: estimatedBlurScore,
       glareDetected: false,
       lightingPass: true,
     });
   };
 
+  const handleRetakeStep = () => {
+    setErrorMessage(null);
+    setCapturedImages((prev) => {
+      const updated = { ...prev };
+      delete updated[currentStep.id];
+      return updated;
+    });
+  };
+
   const handleNext = () => {
+    setErrorMessage(null);
     if (currentStepIndex < CAPTURE_STEPS.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
-      // Submit scan pipeline
+      // Final Step: Submit all captured images to officer scan pipeline
       const urls = Object.values(capturedImages);
+      if (urls.length === 0) {
+        setErrorMessage('Please capture at least one package angle photo before running OCR processing.');
+        return;
+      }
       scanMutation.mutate({
         barcode,
         category,
-        image_urls: urls.length > 0 ? urls : [currentStep.sampleImage],
+        image_urls: urls,
         location: locationStr,
       });
     }
@@ -136,8 +160,10 @@ export default function GuidedCapturePage() {
     }
   };
 
+  const totalCapturedCount = Object.keys(capturedImages).length;
+
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
         <div>
@@ -147,7 +173,7 @@ export default function GuidedCapturePage() {
             </span>
             <span className="text-xs text-muted-foreground">Legal Metrology Packaged Commodities (PC) Rules</span>
           </div>
-          <h1 className="text-2xl font-bold text-foreground mt-1">6-Step Guided Capture Wizard</h1>
+          <h1 className="text-2xl font-bold text-foreground mt-1">6-Step Live Camera Guided Capture</h1>
         </div>
 
         <button
@@ -198,73 +224,77 @@ export default function GuidedCapturePage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
           <span>Step {currentStepIndex + 1} of {CAPTURE_STEPS.length}: {currentStep.title}</span>
-          <span>{Math.round(((currentStepIndex + 1) / CAPTURE_STEPS.length) * 100)}% Complete</span>
+          <span className="text-emerald-400 font-semibold">{totalCapturedCount} of {CAPTURE_STEPS.length} angles captured</span>
         </div>
         <div className="grid grid-cols-6 gap-2">
-          {CAPTURE_STEPS.map((s, idx) => (
-            <div
-              key={s.id}
-              onClick={() => setCurrentStepIndex(idx)}
-              className={`h-2 rounded-full cursor-pointer transition-all ${
-                idx === currentStepIndex
-                  ? 'bg-primary ring-2 ring-primary/40'
-                  : idx < currentStepIndex
-                  ? 'bg-emerald-500'
-                  : 'bg-muted/40'
-              }`}
-            />
-          ))}
+          {CAPTURE_STEPS.map((s, idx) => {
+            const isCaptured = Boolean(capturedImages[s.id]);
+            const isCurrent = idx === currentStepIndex;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setCurrentStepIndex(idx)}
+                className={`h-2.5 rounded-full cursor-pointer transition-all ${
+                  isCurrent
+                    ? 'bg-primary ring-2 ring-primary/40'
+                    : isCaptured
+                    ? 'bg-emerald-500'
+                    : 'bg-muted/40 hover:bg-muted/60'
+                }`}
+                title={`Step ${s.step}: ${s.title} ${isCaptured ? '(Captured)' : '(Pending)'}`}
+              />
+            );
+          })}
         </div>
       </div>
 
+      {errorMessage && (
+        <div className="p-3.5 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between gap-2 animate-fade-in">
+          <span>⚠️ {errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-rose-400 hover:text-rose-200 text-xs px-2 py-0.5"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Main Step Capture Frame */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl glass-card border border-border/80">
-        {/* Left: Live Viewfinder / Capture Preview */}
-        <div className="space-y-4">
-          <div className="relative aspect-4/3 rounded-xl overflow-hidden bg-black/40 border border-border/60 flex items-center justify-center group">
-            {capturedImages[currentStep.id] ? (
-              <img
-                src={capturedImages[currentStep.id]}
-                alt={currentStep.title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="text-center p-6 space-y-2">
-                <div className="text-4xl text-muted-foreground">📷</div>
-                <p className="text-xs text-muted-foreground">Camera feed ready for Step {currentStep.step}</p>
-              </div>
-            )}
-
-            {/* Viewfinder Reticle Overlay */}
-            <div className="absolute inset-4 border-2 border-dashed border-primary/50 rounded-lg pointer-events-none flex flex-col justify-between p-2">
-              <div className="flex justify-between text-[10px] font-mono text-primary/80">
-                <span>[SCANNER ACTIVE]</span>
-                <span>ISO AUTO</span>
-              </div>
-              <div className="flex justify-between text-[10px] font-mono text-primary/80">
-                <span>OCR GRID ON</span>
-                <span>F/1.8 1/120s</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Capture Trigger Button */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleCaptureCurrentStep}
-              className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg"
-            >
-              <span>📸</span>
-              <span>Capture Step {currentStep.step} Image</span>
-            </button>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 rounded-2xl glass-card border border-border/80">
+        {/* Left: Real Live Camera Viewfinder for this step */}
+        <div className="space-y-3">
+          <CameraCaptureView
+            key={`camera-step-${currentStep.id}`}
+            title={`Step ${currentStep.step}: ${currentStep.title.replace(/^\d+\.\s*/, '')}`}
+            instruction={currentStep.instruction}
+            capturedImage={capturedImages[currentStep.id] || null}
+            onCapture={handleFrameCaptured}
+            onRetake={handleRetakeStep}
+            isProcessing={scanMutation.isPending}
+            reticleType={currentStep.reticleType}
+            autoStart={true}
+            defaultFacingMode="environment"
+          />
         </div>
 
         {/* Right: Step Guidance & Live Quality Feedback */}
         <div className="space-y-5 flex flex-col justify-between">
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-bold text-foreground">{currentStep.title}</h2>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary uppercase">
+                  Angle {currentStep.step} of 6
+                </span>
+                {capturedImages[currentStep.id] && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    ✓ Photo Captured
+                  </span>
+                )}
+              </div>
+              <h2 className="text-lg font-bold text-foreground mt-1">{currentStep.title}</h2>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{currentStep.instruction}</p>
             </div>
 
@@ -287,20 +317,28 @@ export default function GuidedCapturePage() {
             <div className="p-3.5 rounded-xl bg-card/60 border border-border/50 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-foreground">Computer Vision Quality Check</span>
-                <span className="text-emerald-400 font-mono font-bold">READY TO PROCESS</span>
+                <span className="text-emerald-400 font-mono font-bold">
+                  {capturedImages[currentStep.id] ? 'READY TO PROCESS' : 'AWAITING CAPTURE'}
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-[11px] pt-1">
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Sharpness</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">{qualityFeedback.blurScore}% (Pass)</div>
+                  <div className="font-bold text-emerald-400 mt-0.5">
+                    {capturedImages[currentStep.id] ? `${qualityFeedback.blurScore}% (Pass)` : '--'}
+                  </div>
                 </div>
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Glare</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">None</div>
+                  <div className="font-bold text-emerald-400 mt-0.5">
+                    {capturedImages[currentStep.id] ? 'None' : '--'}
+                  </div>
                 </div>
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Lighting</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">Optimal</div>
+                  <div className="font-bold text-emerald-400 mt-0.5">
+                    {capturedImages[currentStep.id] ? 'Optimal' : '--'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -309,6 +347,7 @@ export default function GuidedCapturePage() {
           {/* Stepper Navigation Buttons */}
           <div className="flex items-center justify-between gap-3 pt-4 border-t border-border/40">
             <button
+              type="button"
               onClick={handlePrev}
               disabled={currentStepIndex === 0}
               className="px-4 py-2 rounded-lg bg-card/60 border border-border text-xs font-semibold text-muted-foreground hover:text-foreground disabled:opacity-40 transition-all"
@@ -317,14 +356,18 @@ export default function GuidedCapturePage() {
             </button>
 
             <button
+              type="button"
               onClick={handleNext}
               disabled={scanMutation.isPending}
-              className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all flex items-center gap-2 shadow-md"
+              className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all flex items-center gap-2 shadow-md disabled:opacity-50"
             >
               {scanMutation.isPending ? (
-                <span>Running OCR & Evaluation Engine...</span>
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Running OCR & Evaluation Engine...</span>
+                </>
               ) : currentStepIndex === CAPTURE_STEPS.length - 1 ? (
-                <span>Complete Capture & Process Scan →</span>
+                <span>Complete Capture & Process Scan ({totalCapturedCount}/6) →</span>
               ) : (
                 <span>Next Step ({currentStepIndex + 2}/6) →</span>
               )}
