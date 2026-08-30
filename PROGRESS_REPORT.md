@@ -1,90 +1,154 @@
-# PROGRESS REPORT — Legal Metrology Compliance Platform
+# Legal Metrology Compliance Platform — Consolidated Progress Report
 
-## Database Confirmation
-- **Database Engine**: PostgreSQL 16 (running via Docker Compose `legalmetro_db` on port 5432, with Redis on 6379).
-- **Confirmation**: All unit tests, seed operations, and live verifications executed strictly against PostgreSQL. Zero fallback to SQLite was triggered.
-- **Settings & Config Integrity**: `settings.py` and database configurations were left untouched.
-
----
-
-## Phase 4.1: Citizen App — Completion Report
-- **Skip-Rescan Verification**: Scans on previously checked products return stored evaluation snapshots instantly without re-invoking the OCR pipeline.
-- **Photo Prompting**: First-time barcode queries without packaging photos return structured prompts for image capture.
-- **Complaint Filing & Risk Scoring**: Automated statutory risk scoring based on keyword detection, category multipliers, and prior violation histories. State routing automatically extracts state jurisdictions (e.g. Delhi, Uttar Pradesh).
-- **Snapshot Read-Only**: `GET /api/products/{id}/compliance-snapshot/` provides fast consumer lookups without mutating compliance histories or opening cases.
+**Version:** 1.0 (Final Submission)  
+**Database:** PostgreSQL 16 (`legalmetro_db` on port 5432, Redis on 6379)  
+**Backend:** Django 5.1 / Django REST Framework (Python 3.13)  
+**Frontend:** React 19 / TypeScript / Vite / Tailwind CSS v3  
 
 ---
 
-## Phase 4.2: Field Officer Console — Completion Report
-- **Double-Counting Prevention**: Case Creation (`POST /api/cases/`) strictly **READS** the classification recorded in `ProductComplianceHistory` at scan time. It **does NOT call `classify_and_record()` again**, ensuring total integrity of first-time vs repeat offense counts.
-- **Multiple Violations Handling**: Supports single and multiple violations per `ComplianceCheck`, creating distinct statutory cases (`Case` model with single `violation` FK) linked to their respective compliance history entries without duplicating records.
-- **Role-Based Statutory Branching**:
-  - **First-Time Offense** (`classification="first_time"`): Automatically spawns a **Section 29 Improvement Notice** with a 30-day statutory rectification deadline (`status="notice_sent"`).
-  - **Repeat Offense** (`classification="repeat"`): Automatically spawns a **Section 39 Penalty Case** escalated to the State Controller (`status="escalated"`).
-- **Inspection Queue**: Prioritizes automated risk-engine targets (`InspectionTarget`) and open citizen grievances (`Complaint`).
+## 1. Executive Summary & Scope
+
+This project delivers a full-stack, AI-powered compliance and enforcement platform for the **Legal Metrology (Packaged Commodities) Rules, 2011 (as amended 2026)**. 
+
+### 1.1 Explicit Scope Note: The 3 Built Dashboards
+Per strategic product decisions, this implementation focuses deeply on the **3 primary user-facing roles** that form the core enforcement lifecycle:
+1. **Citizen Mobile / Web Application (Phase 4.1)**: Consumer product verification, instant compliance snapshots, and grievance filing with automated risk scoring.
+2. **Field Officer Enforcement Console (Phase 4.2)**: Guided multi-angle statutory packaging capture, automated OCR extraction, finding review/override, violation history tracking, and dynamic legal notice generation.
+3. **Rule Engine Admin Console (Phase 4.3)**: Gazette legal amendment ingestion, AI-assisted rule diffing, in-place revision, read-only sandbox simulation, versioned live publishing, dynamic inspection risk weighting, and nationwide compliance analytics.
+
+The remaining 4 dashboards from the original multi-portal specification (**State Controller**, **National Admin public transparency portal**, **Business Portal**, and **E-commerce Integration Portal**) were **deliberately placed out of scope** by design to maximize depth, compliance accuracy, and architectural robustness within the core 3-dashboard statutory workflow.
 
 ---
 
-## Phase 4.3: Rule Engine Admin Console — Completion Report
-- **Notification Ingestion (Step A)**: `RuleNotification` model and `GET /api/rules/incoming-notifications/` tracking incoming gazette amendment notices.
-- **Deterministic AI Draft Generation (Step B)**: `POST /api/rules/draft/` generates structured old vs. new legal clause diffs and JSON condition schemas (`font_size_check`, `required_field`, `format_check`, `conditional_required_field`).
-- **Admin Review & In-Place Revise (Steps C, D, E)**: `POST /api/rules/{id}/revise/` updates drafts in-place with audit comment logging, strictly preventing duplicate rows.
-- **Approval & Date Setting (Step F)**: `POST /api/rules/{id}/approve/` binds planned statutory effective dates.
-- **Read-Only Sandbox Simulation (Steps H6–H7)**: `POST /api/rules/{id}/simulate/` evaluates draft conditions against historical scan extractions without mutating `Rule`, `RuleVersion`, or `ProductComplianceHistory`.
-- **Live Versioned Publishing (Step G)**: `POST /api/rules/{id}/publish/` creates in-force versioned `Rule` records and archives/supersedes prior rule versions.
-- **Admin Enforcement Analytics (Step H)**: `GET /api/rules/admin-dashboard/` aggregates violations by category, state region, and officer performance.
-- **Inspection Priority Adjuster (Step I)**: `GET/POST /api/rules/inspection-weights/` tunes dynamic weights feeding field inspection queues.
-- **Permission Boundaries**: `IsNationalAdmin` gates all write endpoints with HTTP 403 Forbidden for citizens and field officers.
+## 2. Final System Architecture
+
+```
+                                  ┌────────────────────────┐
+                                  │   Rule Engine Admin    │
+                                  │   (Legal Policy & AI)  │
+                                  └───────────┬────────────┘
+                                              │
+                    Publishes In-Force Rules  │  Simulates Historical Data
+                    & Dynamic Risk Weights    │  (Read-Only Sandbox)
+                                              ▼
+ ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐
+ │   Citizen Application   │◄────►│  PostgreSQL Compliance  │◄────►│  Field Officer Console  │
+ │  - Barcode Lookup       │      │  - Product Master       │      │  - Risk-Sorted Queue    │
+ │  - Stored Snapshot      │      │  - Temporal Rules Engine│      │  - 6-Angle Capture Scan │
+ │  - Photo Onboarding     │      │  - Compliance Checks    │      │  - Finding Override     │
+ │  - Risk Grievance Filing│      │  - Section 29/39 Cases  │      │  - Violation Timelines  │
+ └───────────┬─────────────┘      │  - Full Audit Trails    │      │  - Legal Case Issuance  │
+             │                    └─────────────────────────┘      └────────────▲────────────┘
+             │                                                                  │
+             └──────────────── Citizen Complaint Routing ──────────────────────┘
+```
 
 ---
 
-## Phase 5: Cross-Flow Integration Wiring — Completion Report
+## 3. Dashboard Breakdown & Implementation Details
 
-### 1. Scope & Skipped Items Explanation
-In accordance with our 3-dashboard scope (Citizen App, Field Officer Console, Rule Engine Admin Console), the following cross-flow links from `06_Dashboard_Specs_All7.md` were intentionally omitted because their corresponding portals (Business Portal, State Controller, E-commerce, National Admin) are out of scope:
-- *Officer's Improvement Notice -> Business Portal*: Skipped (no Business Portal exists).
-- *Business's corrective action -> Officer/Controller*: Skipped (no Business Portal or Controller exists).
-- *Controller's inspection-target assignment -> Officer's Queue*: Handled via automated `InspectionTarget` priority seeding and direct Citizen `Complaint` aggregation.
-- *E-commerce flagged listing -> Officer's Queue*: Skipped (no E-commerce Integration portal exists).
-- *National Admin's Public Transparency Reports -> Citizen*: Skipped (no National Admin portal exists).
+### 3.1 Citizen Application (Phase 4.1)
+- **Fast Barcode Scan & Search (`POST /api/scans/`)**:
+  - Previously scanned items return stored `ComplianceSnapshot` records instantly (**0ms OCR overhead**, zero redundant database writes).
+  - First-time products without existing scans prompt the citizen for an image capture.
+- **Read-Only Snapshot View (`GET /api/products/{id}/compliance-snapshot/`)**:
+  - Visual verdict badges (`COMPLIANT`, `NON_COMPLIANT`, `NEEDS_REVIEW`), mandatory declaration status, MRP font sizing, and packer information.
+- **Statutory Grievance Filing (`POST /api/complaints/`)**:
+  - Automated risk scoring based on keyword severity analysis (e.g. overcharging, smudged declarations) and brand repeat offense weighting.
+  - Real-time jurisdiction routing (e.g. `Delhi`, `Uttar Pradesh`, `Maharashtra`).
+- **Personal Complaint Tracker (`GET /api/complaints/mine/`)**:
+  - Gated strictly to citizen users; returns live investigation status (`open`, `under_investigation`, `resolved`).
 
-### 2. Check 1 Resolution: Rule Admin Published Rule -> Officer & Citizen Scan Evaluation
-- **Bug Discovery & Diagnosis**: Querying the database revealed that Rule 14 (`PCR-NETQTY-FONTSIZE`, `min_height_mm: 2.0`) was initially not repealed when Rule 21 (`PCR2026-FONT-AMEND-FOOD`, `min_height_mm: 2.5`) was published because the initial substring search in draft generation erroneously matched Rule 15 (`PCR-MRP-FONTSIZE`). This created overlapping active rules for `net_quantity` font size check.
-- **Fix Implemented**:
-  1. Updated `generator.py` to match existing in-force rules based on exact condition `type`, `field`, and `category`.
-  2. Updated `RuleDraftPublishView` in `views.py` to automatically detect any active in-force rule checking the same condition `type` and `field` and supersede it (`status="repealed"`, `effective_to=effective_date`, `superseded_by=live_rule`).
-  3. Cleaned database state in PostgreSQL so that Rule 14 is properly repealed (`effective_to=2026-04-01`, `superseded_by=21`) and Rule 15 (`PCR-MRP-FONTSIZE`) is in-force.
-- **End-to-End Temporal Evaluation Verification**:
-  - Evaluation on a package with `font_size_mm = 2.2` evaluated with `scan_date = 2026-03-15` (pre-amendment): **0 violations** (evaluated against Rule 14 where threshold was 2.0 mm).
-  - Exact same package evaluated with `scan_date = 2026-04-15` (post-amendment): **1 violation** flagged under newly published Rule 21 `PCR2026-FONT-AMEND-FOOD` (`"Font height for 'net_quantity' is 2.2mm, below minimum required 2.5mm"`).
-  - Zero double-counted violations or overlapping active rules.
+### 3.2 Field Officer Console (Phase 4.2)
+- **Priority-Ranked Inspection Queue (`GET /api/inspections/queue/`)**:
+  - Dynamically combines automated risk-engine targets with routed citizen complaints (`source="complaint"`), ranked by computed risk score.
+- **Guided Capture Multi-Angle Scan (`POST /api/scans/`)**:
+  - Step-by-step camera wizard capturing up to 6 distinct package faces (Front, Back, MRP Panel, Net Qty Panel, Manufacturer Panel, Top/Bottom).
+- **Processing Result & OCR Verification (`GET /api/scans/{id}/processing-result/`)**:
+  - Displays bounding boxes, confidence metrics, extracted text values, placement zones, and rule-by-rule evaluations.
+- **Finding Confirmation & Manual Override (`POST /api/compliance-checks/{id}/confirm|override/`)**:
+  - Officer audit action allowing confirmation or overriding of automated verdicts with mandatory statutory justification notes.
+- **Product Violation History Timeline (`GET /api/products/{id}/violation-history/`)**:
+  - Chronological audit timeline distinguishing **First-Time** vs. **Repeat** offenses.
+- **Statutory Enforcement Case Creation (`POST /api/cases/`)**:
+  - **First-Time Offense** (`classification="first_time"`): Automatically spawns a **Section 29 Improvement Notice** with a 30-day statutory rectification window (`status="notice_sent"`).
+  - **Repeat Offense** (`classification="repeat"`): Automatically spawns a **Section 39 Penalty Case** escalated to legal enforcement (`status="escalated"`).
+  - **Double-Counting Prevention**: Reads the `ProductComplianceHistory` classification determined at scan time without re-invoking `classify_and_record()`.
 
-### 3. Check 2 Resolution: Citizen Complaint -> Officer Inspection Queue
-- **Cross-Flow Integration**:
-  - Citizen files a high-severity complaint via `POST /api/complaints/` (risk score calculated as `80.0`, routed to `Delhi`, status `open`).
-  - Field Officer queries `GET /api/inspections/queue/`.
-  - The queue dynamically aggregates the open complaint with `source="complaint"`, `priority_score=80.0`, and full product/complaint details, ranking it above lower-priority targets.
-- **Test Coverage**: Dedicated integration test `test_cross_flow_citizen_complaint_appears_in_officer_queue` in `backend/tests/test_cross_flow_integration.py`.
-
-### 4. Bonus Check: Rule Admin Dashboard Convergence
-- `GET /api/rules/admin-dashboard/` dynamically reflects real `Case` records (2 cases: 1 open notice, 1 penalty case), real regional complaints (Delhi, Uttar Pradesh), real category violation counts (`general: 2`, `import: 1`), and real officer performance metrics (`officer_demo`: 2 cases opened, 3 scans conducted).
+### 3.3 Rule Engine Admin Console (Phase 4.3 & 5)
+- **Gazette Notification Ingestion (`GET /api/rules/incoming-notifications/`)**:
+  - Ingests official government notifications with category tagging and status monitoring.
+- **Deterministic AI Rule Draft Generator (`POST /api/rules/draft/`)**:
+  - Analyzes amendment texts to produce structured old-clause vs. new-clause legal diffs and formal JSON condition schemas (`font_size_check`, `required_field`, `format_check`, `conditional_required_field`).
+- **Side-by-Side Review & In-Place Revision (`POST /api/rules/{id}/revise/`)**:
+  - Allows manual tuning of clause text, font thresholds, and effective dates in-place with audit history without creating duplicate draft records.
+- **Read-Only Sandbox Simulation (`POST /api/rules/{id}/simulate/`)**:
+  - Simulates proposed rule changes against historical scan data to project compliance rate changes and category impact with **strictly zero writes** to live `Rule` or `ProductComplianceHistory` tables.
+- **Temporal Live Publishing (`POST /api/rules/{id}/publish/`)**:
+  - Activates versioned `Rule` records with `effective_from` dates.
+  - Automatically identifies and supersedes older active rules checking the same condition field and category (`status="repealed"`, `effective_to=effective_date`, `superseded_by=new_rule`).
+- **Enforcement Analytics & Priority Tuning (`GET /api/rules/admin-dashboard/`, `GET/POST /api/rules/inspection-weights/`)**:
+  - Aggregates live violation distributions, regional state performance, and officer leaderboards while allowing dynamic adjustment of risk multipliers.
 
 ---
 
-## Overall Test Suite Status (38 / 38 Tests Passing)
+## 4. Explicit Stub Inventory
 
-Executed `python manage.py test --verbosity=2` against PostgreSQL:
+To ensure transparent production readiness assessment, the following subsystems are currently implemented as architectural stubs:
+
+1. **OCR Processing Service (`ocr_stub.py`)**:
+   - **Current State**: Uses a deterministic mock OCR processor returning structured fields, bounding boxes, placement zones, and millimeter font sizes based on realistic test vectors.
+   - **Production Requirement**: Replace with a deployed Computer Vision / Document OCR model (e.g. Google Cloud Vision API, TrOCR, or PaddleOCR) running on port 8001.
+2. **Inspection Target Origination**:
+   - **Current State**: Because the State Controller portal is out of scope, inspection targets in the Officer Queue originate dynamically from seeded risk-engine target rows and live citizen complaint submissions.
+   - **Production Requirement**: In a 7-dashboard deployment, a State Controller would manually dispatch or reassign targets to specific field officers.
+3. **E-Commerce Live Scraper**:
+   - **Current State**: Evaluates e-commerce rules (`channel="ecommerce"`) through the core rules engine logic.
+   - **Production Requirement**: Ingest live listing feeds from Amazon/Flipkart APIs.
+
+---
+
+## 5. Audit Logging & Security Hardening
+
+Every state-changing action across all 3 dashboards is strictly recorded in the `audit_logs` table with user attribution, action verb, target model, target ID, and metadata:
+- `create_scan` (Citizen & Officer)
+- `create_compliance_check` (OCR Pipeline)
+- `create_complaint` (Citizen)
+- `confirm_compliance_check` / `override_compliance_check` (Officer)
+- `create_case` (Officer)
+- `create_rule_draft` / `revise_rule_draft` / `approve_rule_draft` / `simulate_rule_draft` / `publish_rule` (Rule Admin)
+- `update_inspection_weights` (Rule Admin)
+
+---
+
+## 6. Verification & Test Suite Summary
+
+### 6.1 Automated Backend Test Suite
+Executed `python manage.py test --verbosity=2` against PostgreSQL (`test_legalmetro`):
 ```text
-Creating test database for alias 'default' ('test_legalmetro')...
-Found 38 test(s).
-...
-----------------------------------------------------------------------
-Ran 38 tests in 35.426s
-
-OK (0 failures, 0 errors)
+Ran 38 tests in 40.886s — 38 / 38 PASSED (0 failures, 0 errors)
 - Citizen App (Phase 4.1): 9/9 passing
 - Field Officer Console (Phase 4.2): 9/9 passing
 - Rule Engine Core (Phase 3): 6/6 passing
 - Rule Engine Admin Console (Phase 4.3): 11/11 passing
 - Cross-Flow Integration (Phase 5): 3/3 passing
 ```
+
+### 6.2 Frontend Production Build
+Executed `npm run build` (`tsc -b && vite build`):
+```text
+✓ 165 modules transformed.
+dist/index.html                   0.92 kB │ gzip:   0.50 kB
+dist/assets/index-DL1byEcP.css   40.43 kB │ gzip:   7.87 kB
+dist/assets/index-B_3FCNlR.js   556.79 kB │ gzip: 153.86 kB
+✓ built in 10.37s with 0 errors
+```
+
+---
+
+## 7. Production Roadmap (Next Steps for Full Deployment)
+
+1. **OCR Engine Integration**: Deploy containerized OCR microservice utilizing fine-tuned transformer models for Indian regional packaging scripts and curved surface typography.
+2. **Digital Signatures & Payment Gateway**: Integrate e-Sign (Aadhaar / DSC) for Section 29/39 legal notices and Bharatkosh payment gateway for compounding fine settlements.
+3. **Phase 7 Multi-Portal Expansion**: Build remaining 4 portals (State Controller, National Admin, Business Portal, E-commerce Marketplace Ingestion) leveraging the established data models and permission architecture.

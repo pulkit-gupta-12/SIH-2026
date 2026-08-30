@@ -10,6 +10,7 @@ from .serializers import ScanDetailSerializer, ScanCreateSerializer
 from apps.common.permissions import IsCitizenOrFieldOfficer, IsCitizen
 from apps.product_master.views import build_compliance_snapshot_payload
 from apps.product_master.serializers import ComplianceSnapshotSerializer
+from apps.notifications.models import AuditLog
 from .services import (
     resolve_product_from_barcode,
     get_existing_compliance_result,
@@ -89,6 +90,18 @@ class ScanViewSet(viewsets.ModelViewSet):
             status="pending",
         )
 
+        AuditLog.objects.create(
+            user=request.user,
+            action="create_scan",
+            target_type="Scan",
+            target_id=str(scan.id),
+            metadata={
+                "role_context": "citizen",
+                "gtin_barcode": getattr(product, "gtin_barcode", barcode),
+                "product_id": getattr(product, "id", None),
+            },
+        )
+
         # Run OCR stub + evaluation pipeline; persist history (case=None)
         check = process_scan_pipeline(
             scan,
@@ -96,6 +109,19 @@ class ScanViewSet(viewsets.ModelViewSet):
             category=data.get("category", "general"),
             is_citizen_scan=True,
         )
+
+        if check:
+            AuditLog.objects.create(
+                user=request.user,
+                action="create_compliance_check",
+                target_type="ComplianceCheck",
+                target_id=str(check.id),
+                metadata={
+                    "verdict": check.verdict,
+                    "scan_id": scan.id,
+                    "violations_count": check.violations.count(),
+                },
+            )
 
         # Return compliance snapshot
         payload = build_compliance_snapshot_payload(scan.product or product, check)
@@ -122,12 +148,39 @@ class ScanViewSet(viewsets.ModelViewSet):
             status="pending",
         )
 
-        process_scan_pipeline(
+        AuditLog.objects.create(
+            user=request.user,
+            action="create_scan",
+            target_type="Scan",
+            target_id=str(scan.id),
+            metadata={
+                "role_context": "officer",
+                "capture_method": capture_method,
+                "location": location,
+                "gtin_barcode": getattr(product, "gtin_barcode", barcode),
+                "product_id": getattr(product, "id", None),
+            },
+        )
+
+        check = process_scan_pipeline(
             scan,
             image_urls=image_urls,
             category=category,
             is_citizen_scan=False,
         )
+
+        if check:
+            AuditLog.objects.create(
+                user=request.user,
+                action="create_compliance_check",
+                target_type="ComplianceCheck",
+                target_id=str(check.id),
+                metadata={
+                    "verdict": check.verdict,
+                    "scan_id": scan.id,
+                    "violations_count": check.violations.count(),
+                },
+            )
 
         detail_serializer = ScanDetailSerializer(scan)
         return Response(detail_serializer.data, status=status.HTTP_201_CREATED)

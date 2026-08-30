@@ -364,9 +364,16 @@ class RuleDraftPublishView(APIView):
                     published_date=date.today(),
                 )
 
-            # 2. Create the live versioned Rule
+            # 2. Create the live versioned Rule (with automatic version suffix if code already exists)
+            final_code = draft.rule_id_code
+            if Rule.objects.filter(rule_id_code=final_code).exists():
+                v_num = 2
+                while Rule.objects.filter(rule_id_code=f"{final_code}-V{v_num}").exists():
+                    v_num += 1
+                final_code = f"{final_code}-V{v_num}"
+
             live_rule = Rule.objects.create(
-                rule_id_code=draft.rule_id_code,
+                rule_id_code=final_code,
                 section_ref=draft.section_ref,
                 category=draft.category,
                 condition=draft.proposed_condition,
