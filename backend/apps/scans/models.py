@@ -84,7 +84,7 @@ class ScanImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images",
     )
-    image_url = models.CharField(max_length=500)
+    image_url = models.TextField()
     angle_type = models.CharField(max_length=50, choices=ANGLE_TYPE_CHOICES)
     quality_check_passed = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

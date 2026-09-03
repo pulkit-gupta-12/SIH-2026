@@ -4,8 +4,46 @@ Root URL Configuration for Legal Metrology Compliance Platform.
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def api_root_view(request):
+    """
+    Root API health check and endpoint directory.
+    """
+    return Response({
+        "status": "online",
+        "service": "National Legal Metrology Compliance Platform API",
+        "version": "1.0.0",
+        "frontend_app": "http://localhost:5173",
+        "admin_portal": "/admin/",
+        "endpoints": {
+            "auth": "/api/auth/",
+            "products": "/api/products/",
+            "scans": "/api/scans/",
+            "rules": "/api/rules/",
+            "compliance_checks": "/api/compliance-checks/",
+            "cases": "/api/cases/",
+            "complaints": "/api/complaints/",
+            "inspections": "/api/inspections/",
+            "reports": "/api/reports/",
+            "ecommerce": "/api/ecommerce/",
+            "notifications": "/api/notifications/",
+            "dashboards": "/api/dashboards/",
+        },
+    })
+
 
 urlpatterns = [
+    # Root & API index
+    path("", api_root_view, name="api-root"),
+    path("api/", api_root_view, name="api-index"),
+
+    # Django Admin
     path("admin/", admin.site.urls),
 
     # === API v1 ===
