@@ -62,7 +62,7 @@ class Scan(models.Model):
 
     def __str__(self):
         prod_str = f" for {self.product}" if self.product else " (unresolved product)"
-        return f"Scan #{self.id} by {self.performed_by.username}{prod_str} [{self.status}]"
+        return f"Scan #{self.pk} by {self.performed_by.username}{prod_str} [{self.status}]"
 
 
 class ScanImage(models.Model):
@@ -94,7 +94,7 @@ class ScanImage(models.Model):
         ordering = ["created_at"]
 
     def __str__(self):
-        return f"ScanImage #{self.id} (Scan #{self.scan_id}, {self.angle_type})"
+        return f"ScanImage #{self.pk} (Scan #{self.scan.pk}, {self.angle_type})"
 
 
 class ExtractedField(models.Model):
@@ -118,4 +118,4 @@ class ExtractedField(models.Model):
         db_table = "extracted_fields"
 
     def __str__(self):
-        return f"ExtractedField ({self.field_type}={self.extracted_value[:30]}) [Scan #{self.scan_id}]"
+        return f"ExtractedField ({self.field_type}={self.extracted_value[:30]}) [Scan #{self.scan.pk}]"

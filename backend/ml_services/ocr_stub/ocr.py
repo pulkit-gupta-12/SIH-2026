@@ -11,6 +11,7 @@ import base64
 import logging
 import math
 import asyncio
+import importlib
 from typing import List, Optional, Tuple, Dict, Any, Union
 from contextlib import asynccontextmanager
 
@@ -22,7 +23,19 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
-from paddleocr import PaddleOCR
+# Ensure torch is imported before paddle on Windows to avoid DLL loading issues
+try:
+    import torch
+except Exception:
+    pass
+
+try:
+    from paddleocr import PaddleOCR
+except Exception as exc:
+    PaddleOCR = None
+    PADDLE_IMPORT_ERROR = exc
+else:
+    PADDLE_IMPORT_ERROR = None
 
 # Optional pyzbar for fallback barcode detection
 try:
@@ -34,7 +47,7 @@ except Exception:
 
 # Optional GLiNER zero-shot entity extraction
 try:
-    from gliner import GLiNER
+    GLiNER = getattr(importlib.import_module("gliner"), "GLiNER")
     GLINER_AVAILABLE = True
 except Exception:
     GLiNER = None
@@ -122,15 +135,23 @@ ENABLE_GLINER = os.getenv("ENABLE_GLINER", "false").lower() in ("true", "1", "ye
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initialising PaddleOCR on device: %s, lang: %s", DEVICE, PADDLE_LANG)
+    if PaddleOCR is None:
+        raise RuntimeError(
+            "PaddleOCR cannot start because its runtime is unavailable. "
+            "Install a supported PaddlePaddle build for this Python environment. "
+            f"Original error: {PADDLE_IMPORT_ERROR}"
+        )
+
     try:
-        # PaddleOCR 3.x with CPU run_mode='paddle' and skipping heavy doc unwarping ensures fast reliable CPU inference
+        # Keep model construction compatible with PaddleOCR 3.x and CPU execution on Windows.
         app.state.ocr_model = PaddleOCR(
             lang=PADDLE_LANG,
             use_doc_orientation_classify=False,
             use_doc_unwarping=False,
             use_textline_orientation=False,
             text_recognition_batch_size=8,
-            engine_config={"run_mode": "paddle"}
+            device=DEVICE,
+            enable_mkldnn=False,
         )
         logger.info("PaddleOCR loaded successfully into memory.")
     except Exception as e:
@@ -174,7 +195,7 @@ app.add_middleware(
 # IMAGE DECODING & VALIDATION HELPERS
 # ==========================================
 def decode_image_bytes(data: bytes, filename: str = "upload") -> np.ndarray:
-    """Validate and decode image raw bytes to OpenCV BGR image."""
+    """Validate and decode image raw bytes to OpenCV BGR image, auto-downscaling for fast inference."""
     if not data or len(data) == 0:
         raise ValueError(f"Empty image file: '{filename}'")
     if len(data) > MAX_IMAGE_SIZE_BYTES:
@@ -184,6 +205,16 @@ def decode_image_bytes(data: bytes, filename: str = "upload") -> np.ndarray:
     image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     if image is None or image.size == 0:
         raise ValueError(f"Could not decode image '{filename}'. Supported formats: JPEG, PNG, WEBP.")
+
+    # High-resolution smartphone camera optimization:
+    # Downscale image if larger than 1600px on any side to prevent slow OCR on CPU.
+    MAX_DIM = 1600
+    h, w = image.shape[:2]
+    if max(h, w) > MAX_DIM:
+        scale = MAX_DIM / float(max(h, w))
+        new_w, new_h = max(1, int(w * scale)), max(1, int(h * scale))
+        image = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
     return image
 
 
@@ -217,7 +248,7 @@ def calibrate_mm_per_pixel(image: np.ndarray) -> Tuple[Optional[float], Optional
     try:
         # 1. Try OpenCV BarcodeDetector
         detector = cv2.barcode.BarcodeDetector()
-        res = detector.detectAndDecode(image)
+        res: Any = detector.detectAndDecode(image)
         retval = False
         decoded_info = []
         decoded_type = []
@@ -231,6 +262,8 @@ def calibrate_mm_per_pixel(image: np.ndarray) -> Tuple[Optional[float], Optional
         if retval and decoded_info and len(decoded_info) > 0 and decoded_info[0]:
             barcode_str = str(decoded_info[0]).strip()
             barcode_type = str(decoded_type[0]) if decoded_type else "UNKNOWN"
+            if points is None or len(points) == 0:
+                raise ValueError("Barcode detected without geometry points")
             pts = points[0]
             x_coords = [p[0] for p in pts]
             y_coords = [p[1] for p in pts]
@@ -305,10 +338,24 @@ def extract_words_paddle(ocr_model: Any, image: np.ndarray) -> Tuple[List[Dict[s
         if hasattr(ocr_model, "predict"):
             pred_iter = ocr_model.predict(image)
             for item in pred_iter:
-                if isinstance(item, dict):
-                    texts = item.get("rec_texts") or []
-                    scores = item.get("rec_scores") or []
-                    boxes = item.get("rec_boxes") if item.get("rec_boxes") is not None else item.get("rec_polys")
+                # PaddleOCR 3.x returns a Result object, while some versions
+                # return a plain dictionary.  Normalize both forms here.
+                result = item if isinstance(item, dict) else None
+                if result is None:
+                    try:
+                        serialized = getattr(item, "json", None)
+                        serialized = serialized() if callable(serialized) else serialized
+                        result = serialized if isinstance(serialized, dict) else None
+                    except Exception:
+                        try:
+                            result = dict(item)
+                        except Exception:
+                            result = None
+
+                if result is not None:
+                    texts = result.get("rec_texts") or []
+                    scores = result.get("rec_scores") or []
+                    boxes = result.get("rec_boxes") if result.get("rec_boxes") is not None else result.get("rec_polys")
                     for idx, text in enumerate(texts):
                         text_str = str(text).strip()
                         if not text_str:
@@ -707,7 +754,7 @@ def extract_legal_metrology_fields(
 def process_single_image(
     image: np.ndarray,
     scan_id: str,
-    ocr_model: PaddleOCR,
+    ocr_model: Any,
     gliner_model: Any = None
 ) -> Dict[str, Any]:
     """Process one image: barcode calibration → OCR → legal metrology extraction."""
@@ -889,18 +936,18 @@ async def process_scan_endpoint(
     if ocr_model is None:
         raise HTTPException(status_code=503, detail="PaddleOCR engine is still initializing.")
 
-    # Process all image angles
-    tasks = [
-        run_in_threadpool(
+    # Process all image angles cleanly without CPU thread thrashing
+    results = []
+    gliner_m = getattr(request.app.state, "gliner_model", None)
+    for img in cv_images:
+        res = await run_in_threadpool(
             process_single_image,
             img,
             final_scan_id,
             ocr_model,
-            getattr(request.app.state, "gliner_model", None)
+            gliner_m
         )
-        for img in cv_images
-    ]
-    results = await asyncio.gather(*tasks)
+        results.append(res)
 
     merged = merge_multi_image_results(results)
     merged["timings_ms"]["total_ms"] = round((time.time() - t_start) * 1000, 2)
@@ -951,7 +998,7 @@ async def extract_endpoint(request: OCRRequest, req: Request):
         run_in_threadpool(
             process_single_image,
             img,
-            request.scan_id,
+            request.scan_id or f"scan_{int(time.time() * 1000)}",
             ocr_model,
             getattr(req.app.state, "gliner_model", None)
         )

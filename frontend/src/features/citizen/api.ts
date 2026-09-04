@@ -59,12 +59,22 @@ export async function scanOrLookupProduct(params: {
   imageUrl?: string;
   category?: string;
 }): Promise<ComplianceSnapshot> {
-  const payload: Record<string, unknown> = {};
-  if (params.barcode) payload.barcode = params.barcode;
-  if (params.imageUrl) payload.image_urls = [params.imageUrl];
-  if (params.category) payload.category = params.category;
+  if (!params.imageUrl) {
+    const payload: Record<string, unknown> = {};
+    if (params.barcode) payload.barcode = params.barcode;
+    if (params.category) payload.category = params.category;
+    const { data } = await apiClient.post<ComplianceSnapshot>("/scans/", payload);
+    return data;
+  }
 
-  const { data } = await apiClient.post<ComplianceSnapshot>("/scans/", payload);
+  const formData = new FormData();
+  if (params.barcode) formData.append('barcode', params.barcode);
+  if (params.category) formData.append('category', params.category);
+  const response = await fetch(params.imageUrl);
+  const blob = await response.blob();
+  formData.append('images', blob, `citizen-scan.${blob.type.split('/')[1] || 'jpg'}`);
+
+  const { data } = await apiClient.post<ComplianceSnapshot>("/scans/", formData);
   return data;
 }
 

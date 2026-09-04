@@ -31,10 +31,13 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (weightsConfig) {
-      setRiskEngineWeight(weightsConfig.risk_engine_weight);
-      setComplaintWeight(weightsConfig.complaint_weight);
-      setEcommerceWeight(weightsConfig.ecommerce_weight);
-      setRepeatMultiplier(weightsConfig.repeat_offense_multiplier);
+      const timer = setTimeout(() => {
+        setRiskEngineWeight(weightsConfig.risk_engine_weight);
+        setComplaintWeight(weightsConfig.complaint_weight);
+        setEcommerceWeight(weightsConfig.ecommerce_weight);
+        setRepeatMultiplier(weightsConfig.repeat_offense_multiplier);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [weightsConfig]);
 

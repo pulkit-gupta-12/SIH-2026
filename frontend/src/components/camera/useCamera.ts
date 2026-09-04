@@ -27,15 +27,12 @@ export function useCamera(options: UseCameraOptions = {}) {
   const [facingMode, setFacingMode] = useState<FacingMode>(defaultFacingMode);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [hasMultipleCameras, setHasMultipleCameras] = useState<boolean>(false);
-  const [isSecureContext, setIsSecureContext] = useState<boolean>(true);
-
-  // Check secure context and device enumeration on mount
-  useEffect(() => {
+  const [isSecureContext] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const secure = window.isSecureContext ?? (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-      setIsSecureContext(secure);
+      return window.isSecureContext ?? (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     }
-  }, []);
+    return true;
+  });
 
   // Stop active media stream tracks
   const stopCamera = useCallback(() => {
@@ -249,10 +246,14 @@ export function useCamera(options: UseCameraOptions = {}) {
 
   // Auto-start on mount if requested
   useEffect(() => {
+    let timer: any;
     if (autoStart) {
-      startCamera(defaultFacingMode);
+      timer = setTimeout(() => {
+        startCamera(defaultFacingMode);
+      }, 0);
     }
     return () => {
+      if (timer) clearTimeout(timer);
       // Cleanup all camera tracks when component unmounts
       stopCamera();
     };

@@ -9,6 +9,7 @@ Tests all 6 screens/endpoints:
 6. Case Creation (POST /api/cases/ for Improvement Notice vs Penalty Case)
 """
 from datetime import date, timedelta
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -173,8 +174,27 @@ class FieldOfficerConsoleTests(TestCase):
         self.assertEqual(data[0]["source"], "complaint")
         self.assertEqual(data[1]["priority_score"], 85.0)
 
-    def test_02_guided_capture_scan_creation(self):
+    @patch("apps.scans.services.requests.post")
+    def test_02_guided_capture_scan_creation(self, mock_ocr_post):
         """Screen 2: POST /api/scans/ accepts multi-image guided capture from officer."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "scan_id": "test_scan",
+            "extracted_fields": [
+                {
+                    "field_type": "mrp",
+                    "value": "₹150.00",
+                    "confidence": 0.96,
+                    "font_size_mm": 2.5,
+                    "placement_zone": "declaration_panel"
+                }
+            ],
+            "barcode": "8901111222233",
+            "warnings": []
+        }
+        mock_ocr_post.return_value = mock_response
+
         self.client.force_authenticate(user=self.officer_user)
 
         payload = {

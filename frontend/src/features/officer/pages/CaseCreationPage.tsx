@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -31,7 +31,7 @@ export default function CaseCreationPage() {
 
   const [productId, setProductId] = useState<string>(prefilledProduct || '');
   const [violationId, setViolationId] = useState<string>(prefilledViolation || '');
-  const [complaintId, setComplaintId] = useState<string>(prefilledComplaint || '');
+  const [complaintId] = useState<string>(prefilledComplaint || '');
   const [rectificationDays, setRectificationDays] = useState<number>(30);
   const [notes, setNotes] = useState<string>('');
   const [createdCase, setCreatedCase] = useState<EnforcementCaseResult | null>(null);
@@ -66,11 +66,6 @@ export default function CaseCreationPage() {
     ? recentCasesData
     : (recentCasesData as { results?: EnforcementCaseResult[] })?.results ?? [];
 
-  useEffect(() => {
-    if (prefilledProduct) setProductId(prefilledProduct);
-    if (prefilledViolation) setViolationId(prefilledViolation);
-    if (prefilledComplaint) setComplaintId(prefilledComplaint);
-  }, [prefilledProduct, prefilledViolation, prefilledComplaint]);
 
   // Selected violation detail from timeline if available
   const historyList = Array.isArray(timeline?.history) ? timeline.history : [];

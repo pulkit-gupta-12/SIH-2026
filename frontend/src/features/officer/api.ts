@@ -142,11 +142,20 @@ export async function submitOfficerGuidedScan(payload: {
   image_urls: string[];
   location?: string;
 }): Promise<ScanProcessingResult> {
-  const { data } = await apiClient.post<ScanProcessingResult>('/scans/', {
-    ...payload,
-    role_context: 'officer',
-    capture_method: 'guided_capture',
-  });
+  const formData = new FormData();
+  formData.append('barcode', payload.barcode);
+  formData.append('category', payload.category);
+  formData.append('location', payload.location || '');
+  formData.append('role_context', 'officer');
+  formData.append('capture_method', 'guided_capture');
+
+  for (const [index, imageUrl] of payload.image_urls.entries()) {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    formData.append('images', blob, `capture-${index + 1}.${blob.type.split('/')[1] || 'jpg'}`);
+  }
+
+  const { data } = await apiClient.post<ScanProcessingResult>('/scans/', formData);
   return data;
 }
 

@@ -3,6 +3,7 @@ Automated unit tests for Phase 4.1: Citizen App.
 Tests all 5 endpoints, skip-rescan vs first-scan behavior, permission boundaries, and history recording.
 """
 from datetime import date
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -142,8 +143,27 @@ class CitizenAppTests(TestCase):
         data = response.json()
         self.assertTrue(data.get("needs_photo"))
 
-    def test_03_first_scan_with_photo_runs_pipeline_and_no_case_created(self):
+    @patch("apps.scans.services.requests.post")
+    def test_03_first_scan_with_photo_runs_pipeline_and_no_case_created(self, mock_ocr_post):
         """Screen 1: First scan with photo runs OCR pipeline and records history without creating Case."""
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "scan_id": "test_scan",
+            "extracted_fields": [
+                {
+                    "field_type": "mrp",
+                    "value": "₹150.00",
+                    "confidence": 0.95,
+                    "font_size_mm": 2.5,
+                    "placement_zone": "declaration_panel"
+                }
+            ],
+            "barcode": "8909876543210",
+            "warnings": []
+        }
+        mock_ocr_post.return_value = mock_response
+
         self.client.force_authenticate(user=self.citizen_user)
         initial_case_count = Case.objects.count()
 

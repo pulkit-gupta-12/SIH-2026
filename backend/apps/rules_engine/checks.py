@@ -40,7 +40,14 @@ def check_required_field(condition, extracted_fields, product, channel=None):
 
     field_name = condition.get("field")
     found = find_field(extracted_fields, field_name)
-    if not found or not found.get("value") if isinstance(found, dict) else (not found or not getattr(found, "extracted_value", None)):
+    val = None
+    if found:
+        if isinstance(found, dict):
+            val = found.get("value") if found.get("value") is not None else found.get("extracted_value")
+        else:
+            val = getattr(found, "extracted_value", None) or getattr(found, "value", None)
+
+    if not val:
         return violation(
             violation_type="missing_declaration",
             field=field_name,
@@ -60,7 +67,10 @@ def check_format(condition, extracted_fields, product, channel=None):
     if not found:
         return None  # Missing field handled by required_field check
 
-    val = found.get("value") if isinstance(found, dict) else getattr(found, "extracted_value", "")
+    if isinstance(found, dict):
+        val = found.get("value") if found.get("value") is not None else found.get("extracted_value", "")
+    else:
+        val = getattr(found, "extracted_value", getattr(found, "value", ""))
     val_str = str(val or "").strip()
 
     fmt_type = condition.get("format")

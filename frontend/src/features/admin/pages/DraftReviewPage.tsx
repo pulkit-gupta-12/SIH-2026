@@ -31,11 +31,14 @@ export default function DraftReviewPage() {
 
   useEffect(() => {
     if (draft) {
-      setNewClauseText(draft.new_clause_text || '');
-      setOldClauseText(draft.old_clause_text || '');
-      setConditionJsonStr(JSON.stringify(draft.proposed_condition || {}, null, 2));
-      setCategory(draft.category || 'general');
-      setEffectiveDate(draft.effective_date || new Date().toISOString().split('T')[0]);
+      const timer = setTimeout(() => {
+        setNewClauseText(draft.new_clause_text || '');
+        setOldClauseText(draft.old_clause_text || '');
+        setConditionJsonStr(JSON.stringify(draft.proposed_condition || {}, null, 2));
+        setCategory(draft.category || 'general');
+        setEffectiveDate(draft.effective_date || new Date().toISOString().split('T')[0]);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [draft]);
 

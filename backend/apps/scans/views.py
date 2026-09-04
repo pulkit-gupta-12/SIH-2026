@@ -40,14 +40,31 @@ class ScanViewSet(viewsets.ModelViewSet):
             return ScanCreateSerializer
         return ScanDetailSerializer
 
+    @staticmethod
+    def _get_images(request, data):
+        """Collect image URLs and uploaded images from JSON or multipart data."""
+        image_urls = data.get("image_urls") or []
+        if isinstance(image_urls, str):
+            image_urls = [image_urls]
+
+        image_files = list(data.get("images") or [])
+        for image in request.FILES.getlist("images"):
+            if image not in image_files:
+                image_files.append(image)
+        image = request.FILES.get("image")
+        if image is not None and image not in image_files:
+            image_files.append(image)
+        return image_urls, image_files
+
     def create(self, request, *args, **kwargs):
         serializer = ScanCreateSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
+        role_assignments = getattr(request.user, "role_assignments", None)
         is_citizen = (
-            request.user.role_assignments.filter(role__name="citizen").exists()
-            if request.user.is_authenticated
+            role_assignments.filter(role__name="citizen").exists()
+            if request.user.is_authenticated and role_assignments is not None
             else False
         )
 
@@ -71,19 +88,14 @@ class ScanViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # First-time scan: require an image
-        image_urls = data.get("image_urls", [])
-        image_files = list(data.get("images") or [])
-        if request.FILES:
-            image_files.extend(request.FILES.getlist("images"))
-            if "image" in request.FILES and request.FILES["image"] not in image_files:
-                image_files.append(request.FILES["image"])
+        image_urls, image_files = self._get_images(request, data)
 
         if not image_urls and not image_files:
             return Response(
                 {
                     "detail": "This product has not been scanned before — please provide a photo.",
                     "needs_photo": True,
-                    "product_id": product.id if product else None,
+                    "product_id": getattr(product, "id", None) if product else None,
                     "barcode": barcode,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
@@ -102,7 +114,7 @@ class ScanViewSet(viewsets.ModelViewSet):
             user=request.user,
             action="create_scan",
             target_type="Scan",
-            target_id=str(scan.id),
+            target_id=str(getattr(scan, "id", "")),
             metadata={
                 "role_context": "citizen",
                 "gtin_barcode": getattr(product, "gtin_barcode", barcode),
@@ -124,7 +136,7 @@ class ScanViewSet(viewsets.ModelViewSet):
                 {
                     "error": "OCR_SERVICE_ERROR",
                     "detail": str(e),
-                    "scan_id": scan.id,
+                    "scan_id": getattr(scan, "id", None),
                 },
                 status=status.HTTP_502_BAD_GATEWAY,
             )
@@ -137,7 +149,7 @@ class ScanViewSet(viewsets.ModelViewSet):
                 target_id=str(check.id),
                 metadata={
                     "verdict": check.verdict,
-                    "scan_id": scan.id,
+                    "scan_id": getattr(scan, "id", None),
                     "violations_count": check.violations.count(),
                 },
             )
@@ -153,12 +165,7 @@ class ScanViewSet(viewsets.ModelViewSet):
         if barcode and not product:
             product = resolve_product_from_barcode(barcode, category=data.get("category", "general"))
 
-        image_urls = data.get("image_urls", [])
-        image_files = list(data.get("images") or [])
-        if request.FILES:
-            image_files.extend(request.FILES.getlist("images"))
-            if "image" in request.FILES and request.FILES["image"] not in image_files:
-                image_files.append(request.FILES["image"])
+        image_urls, image_files = self._get_images(request, data)
 
         category = data.get("category", "general")
         capture_method = data.get("capture_method", "guided_capture")
@@ -177,7 +184,7 @@ class ScanViewSet(viewsets.ModelViewSet):
             user=request.user,
             action="create_scan",
             target_type="Scan",
-            target_id=str(scan.id),
+            target_id=str(getattr(scan, "id", "")),
             metadata={
                 "role_context": "officer",
                 "capture_method": capture_method,
@@ -200,7 +207,7 @@ class ScanViewSet(viewsets.ModelViewSet):
                 {
                     "error": "OCR_SERVICE_ERROR",
                     "detail": str(e),
-                    "scan_id": scan.id,
+                    "scan_id": getattr(scan, "id", None),
                 },
                 status=status.HTTP_502_BAD_GATEWAY,
             )
@@ -213,12 +220,12 @@ class ScanViewSet(viewsets.ModelViewSet):
                 target_id=str(check.id),
                 metadata={
                     "verdict": check.verdict,
-                    "scan_id": scan.id,
+                    "scan_id": getattr(scan, "id", None),
                     "violations_count": check.violations.count(),
                 },
             )
 
-        detail_serializer = ScanDetailSerializer(scan)
+        detail_serializer = ScanDetailSerializer(scan, context={"request": request})
         return Response(detail_serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -226,5 +233,5 @@ class ScanViewSet(viewsets.ModelViewSet):
     def processing_result(self, request, pk=None):
         """GET /api/scans/{id}/processing-result/"""
         scan = self.get_object()
-        serializer = ScanDetailSerializer(scan)
+        serializer = ScanDetailSerializer(scan, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
