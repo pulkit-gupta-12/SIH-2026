@@ -1,13 +1,8 @@
-# Legal Metrology OCR Microservice & Web Interface
-# Dependencies:
-# fastapi>=0.100.0
-# uvicorn[standard]>=0.23.0
-# pydantic>=2.0.0
-# opencv-python>=4.8.0
-# numpy>=1.24.0
-# python-doctr[torch]>=0.7.0
-# pyzbar>=0.1.9
-# gliner>=0.1.7
+# Legal Metrology OCR Microservice – PaddleOCR Backend
+# =====================================================
+# Production-ready OCR microservice for packaged commodity compliance
+# Port: 8001
+# =====================================================
 
 import os
 import re
@@ -15,62 +10,81 @@ import time
 import base64
 import logging
 import math
-from typing import List, Optional, Tuple, Dict, Any
+import asyncio
+from typing import List, Optional, Tuple, Dict, Any, Union
 from contextlib import asynccontextmanager
 
 import cv2
 import numpy as np
-from fastapi import FastAPI, HTTPException, Request, UploadFile, File
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, field_validator
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
-from doctr.models import ocr_predictor
-from pyzbar import pyzbar
-from gliner import GLiNER
+from paddleocr import PaddleOCR
+
+# Optional pyzbar for fallback barcode detection
+try:
+    from pyzbar import pyzbar
+    PYZBAR_AVAILABLE = True
+except Exception:
+    pyzbar = None
+    PYZBAR_AVAILABLE = False
+
+# Optional GLiNER zero-shot entity extraction
+try:
+    from gliner import GLiNER
+    GLINER_AVAILABLE = True
+except Exception:
+    GLiNER = None
+    GLINER_AVAILABLE = False
 
 # ==========================================
-# CONFIGURATION & CONSTANTS
+# CONFIGURATION (via environment variables)
 # ==========================================
 STANDARD_MODULE_WIDTH_MM = float(os.getenv("STANDARD_MODULE_WIDTH_MM", "0.33"))
-DEVICE = os.getenv("DEVICE", "cpu")  # "cpu" or "cuda"
+DEVICE = os.getenv("DEVICE", "cpu")                 # "cpu" or "gpu"
 GLINER_MODEL_NAME = os.getenv("GLINER_MODEL_NAME", "urchade/gliner_base")
+PADDLE_LANG = os.getenv("PADDLE_LANG", "en")        # e.g., "en", "hi", "en,hi"
+OCR_CONFIDENCE_THRESHOLD = float(os.getenv("OCR_CONFIDENCE_THRESHOLD", "0.4"))
+MAX_IMAGES_PER_REQUEST = int(os.getenv("MAX_IMAGES_PER_REQUEST", "10"))
+MAX_IMAGE_SIZE_BYTES = int(os.getenv("MAX_IMAGE_SIZE_BYTES", str(20 * 1024 * 1024)))  # 20MB
+PORT = int(os.getenv("PORT", "8001"))
 
 LEGAL_METROLOGY_FIELDS = [
-    "mrp", "net_quantity", "mfg_date", "expiry_date", "best_before",
-    "address", "fssai_license", "unit_sale_price", "consumer_care",
-    "country_of_origin", "batch_number", "commodity_name"
+    "mrp", "net_quantity", "mfg_date", "expiry_date", "best_before_date",
+    "manufacturer_name", "manufacturer_address", "consumer_care_details",
+    "unit_sale_price", "fssai_license_no", "country_of_origin",
+    "batch_number", "commodity_name"
 ]
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
 )
 logger = logging.getLogger("legal_metrology_ocr")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-SAMPLES_DIR = os.path.join(BASE_DIR, "samples")
-
-os.makedirs(STATIC_DIR, exist_ok=True)
-os.makedirs(TEMPLATES_DIR, exist_ok=True)
-os.makedirs(SAMPLES_DIR, exist_ok=True)
-
 
 # ==========================================
-# PYDANTIC CONTRACTS
+# PYDANTIC MODELS
 # ==========================================
-class ExtractedField(BaseModel):
+class ExtractedFieldItem(BaseModel):
     field_type: str
-    extracted_value: str
-    confidence_score: float
+    value: str
+    confidence: float
+    extracted_value: Optional[str] = None
+    confidence_score: Optional[float] = None
     font_size_mm: Optional[float] = None
-    placement_zone: str = "unknown"
+    placement_zone: Optional[str] = "unknown"
     bbox_px: Optional[List[int]] = None  # [x_min, y_min, x_max, y_max]
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.extracted_value is None:
+            self.extracted_value = self.value
+        if self.confidence_score is None:
+            self.confidence_score = self.confidence
+
 
 class DetectedWord(BaseModel):
     text: str
@@ -78,67 +92,75 @@ class DetectedWord(BaseModel):
     bbox_px: List[int]
     font_size_mm: Optional[float] = None
 
-class OCRRequest(BaseModel):
-    scan_id: str = Field(default_factory=lambda: f"scan_{int(time.time()*1000)}")
-    image_base64: str
 
-    @field_validator("image_base64")
-    @classmethod
-    def validate_image_base64(cls, v: str) -> str:
-        # Strip Data URL header prefix if present (e.g. "data:image/jpeg;base64,")
-        if "," in v:
-            v = v.split(",", 1)[1]
-        v = v.strip()
-        # Ensure correct base64 padding
-        padded = v + "=" * ((4 - len(v) % 4) % 4)
-        try:
-            base64.b64decode(padded)
-        except Exception as e:
-            raise ValueError(f"Provided string is not valid base64: {e}")
-        return padded
-
-class OCRResponse(BaseModel):
-    scan_id: str
-    image_dimensions: Optional[Dict[str, int]] = None
-    fields: List[ExtractedField]
-    scale_factor_mm_per_px: Optional[float] = None
-    barcode_detected: bool = False
-    barcode_info: Optional[Dict[str, Any]] = None
+class ProcessResponse(BaseModel):
+    scan_id: Optional[str] = None
+    extracted_fields: List[ExtractedFieldItem]
+    barcode: Optional[str] = None
+    quality_flags: List[str] = []
     raw_text: Optional[str] = None
     all_words: Optional[List[DetectedWord]] = []
+    image_dimensions: Optional[Dict[str, int]] = None
+    scale_factor_mm_per_px: Optional[float] = None
+    barcode_info: Optional[Dict[str, Any]] = None
     warnings: List[str] = []
     timings_ms: Optional[Dict[str, float]] = None
 
+
+class OCRRequest(BaseModel):
+    scan_id: Optional[str] = Field(default_factory=lambda: f"scan_{int(time.time()*1000)}")
+    image_base64: Optional[Union[List[str], str]] = None
+    image_urls: Optional[List[str]] = None
+    category: Optional[str] = "general"
+
+
+ENABLE_GLINER = os.getenv("ENABLE_GLINER", "false").lower() in ("true", "1", "yes")
 
 # ==========================================
 # FASTAPI LIFESPAN
 # ==========================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing ML models on device: %s...", DEVICE)
+    logger.info("Initialising PaddleOCR on device: %s, lang: %s", DEVICE, PADDLE_LANG)
     try:
-        # Load docTR OCR predictor
-        app.state.doctr_model = ocr_predictor(pretrained=True).to(DEVICE)
-        logger.info("docTR initialized successfully.")
-        
-        # Load GLiNER entity extraction model
-        app.state.gliner_model = GLiNER.from_pretrained(GLINER_MODEL_NAME).to(DEVICE)
-        logger.info("GLiNER initialized successfully.")
+        # PaddleOCR 3.x with CPU run_mode='paddle' and skipping heavy doc unwarping ensures fast reliable CPU inference
+        app.state.ocr_model = PaddleOCR(
+            lang=PADDLE_LANG,
+            use_doc_orientation_classify=False,
+            use_doc_unwarping=False,
+            use_textline_orientation=False,
+            text_recognition_batch_size=8,
+            engine_config={"run_mode": "paddle"}
+        )
+        logger.info("PaddleOCR loaded successfully into memory.")
     except Exception as e:
-        logger.critical(f"Failed to load ML models: {e}")
-        raise RuntimeError(f"Model loading failed: {e}") from e
-        
+        logger.critical("Failed to initialize PaddleOCR: %s", e)
+        raise RuntimeError(f"PaddleOCR startup failure: {e}") from e
+
+    # Optional zero-shot GLiNER (disabled by default for fast offline startup)
+    if ENABLE_GLINER and GLINER_AVAILABLE and GLiNER is not None:
+        try:
+            logger.info("Loading GLiNER model: %s", GLINER_MODEL_NAME)
+            app.state.gliner_model = GLiNER.from_pretrained(GLINER_MODEL_NAME).to(DEVICE)
+            logger.info("GLiNER loaded successfully.")
+        except Exception as e:
+            logger.warning("GLiNER model loading skipped or failed: %s (will use regex extractors)", e)
+            app.state.gliner_model = None
+    else:
+        app.state.gliner_model = None
+
     yield
-    logger.info("Shutting down service.")
+    logger.info("Shutting down Legal Metrology OCR service.")
+
 
 
 app = FastAPI(
-    title="Legal Metrology Vision OCR Microservice",
-    description="End-to-End Packaged Commodity Vision Verification Pipeline: Webcam -> Image -> docTR OCR -> pyzbar Calibration -> GLiNER NER -> Output",
+    title="Legal Metrology Vision OCR Service (PaddleOCR)",
+    description="Real image OCR + Legal Metrology packaged commodity field extraction + barcode physical calibration",
+    version="2.0.0",
     lifespan=lifespan
 )
 
-# Enable CORS for browser integration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -147,480 +169,816 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
 
 # ==========================================
-# PIPELINE FUNCTIONS
+# IMAGE DECODING & VALIDATION HELPERS
 # ==========================================
-def preprocess_image(b64_string: str) -> np.ndarray:
-    """Decodes base64 string (with or without data URL header) to a valid OpenCV BGR image."""
+def decode_image_bytes(data: bytes, filename: str = "upload") -> np.ndarray:
+    """Validate and decode image raw bytes to OpenCV BGR image."""
+    if not data or len(data) == 0:
+        raise ValueError(f"Empty image file: '{filename}'")
+    if len(data) > MAX_IMAGE_SIZE_BYTES:
+        raise ValueError(f"Image '{filename}' exceeds maximum allowed size ({len(data)} > {MAX_IMAGE_SIZE_BYTES} bytes)")
+
+    np_arr = np.frombuffer(data, np.uint8)
+    image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    if image is None or image.size == 0:
+        raise ValueError(f"Could not decode image '{filename}'. Supported formats: JPEG, PNG, WEBP.")
+    return image
+
+
+def decode_base64_image(b64_string: str) -> np.ndarray:
+    """Decode base64 string or data URL to OpenCV BGR image."""
     if "," in b64_string:
         b64_string = b64_string.split(",", 1)[1]
     b64_string = b64_string.strip()
     padded = b64_string + "=" * ((4 - len(b64_string) % 4) % 4)
-    
-    img_bytes = base64.b64decode(padded)
-    np_arr = np.frombuffer(img_bytes, np.uint8)
-    image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-    
-    if image is None or image.size == 0:
-        raise ValueError("Decoded byte array could not be interpreted as an image.")
-    return image
+
+    try:
+        img_bytes = base64.b64decode(padded)
+    except Exception as e:
+        raise ValueError(f"Invalid base64 encoding: {e}")
+    return decode_image_bytes(img_bytes, "base64_data")
 
 
-def calibrate_mm_per_pixel(image: np.ndarray) -> Tuple[Optional[float], Optional[Dict[str, Any]], List[str]]:
+# ==========================================
+# BARCODE & SCALE CALIBRATION
+# ==========================================
+def calibrate_mm_per_pixel(image: np.ndarray) -> Tuple[Optional[float], Optional[Dict[str, Any]], Optional[str], List[str]]:
     """
-    Calculates physical scale (mm per pixel) using a detected barcode.
-    Returns (mm_per_pixel, barcode_info, warnings).
+    Detect barcode and compute pixel-to-mm scale using standard module width.
+    Returns (mm_per_pixel, barcode_info, barcode_str, warnings).
     """
     warnings = []
+    barcode_info = None
+    barcode_str = None
+    mm_per_pixel = None
+
     try:
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        decoded = pyzbar.decode(gray)
-        
-        # Fallback: if no barcode found on raw grayscale, try CLAHE contrast enhancement
-        if not decoded:
-            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-            enhanced = clahe.apply(gray)
-            decoded = pyzbar.decode(enhanced)
-        
-        if not decoded:
-            return None, None, ["No barcode detected for physical scale calibration."]
-            
-        barcode = decoded[0]
-        x, y, w, h = barcode.rect
-        barcode_type = str(barcode.type)
-        barcode_data = barcode.data.decode("utf-8", errors="ignore")
-        
-        barcode_info = {
-            "type": barcode_type,
-            "data": barcode_data,
-            "rect": [int(x), int(y), int(w), int(h)],
-            "module_px": None
-        }
-        
-        margin = 5
-        x_min, y_min = max(0, x - margin), max(0, y - margin)
-        x_max, y_max = min(gray.shape[1], x + w + margin), min(gray.shape[0], y + h + margin)
-        crop = gray[y_min:y_max, x_min:x_max]
-        
-        if crop.size == 0 or crop.shape[0] < 10 or crop.shape[1] < 10:
-            return None, barcode_info, ["Degenerate or small barcode crop."]
+        # 1. Try OpenCV BarcodeDetector
+        detector = cv2.barcode.BarcodeDetector()
+        res = detector.detectAndDecode(image)
+        retval = False
+        decoded_info = []
+        decoded_type = []
+        points = None
+        if len(res) == 4:
+            retval, decoded_info, decoded_type, points = res
+        elif len(res) == 3:
+            decoded_info, points, decoded_type = res
+            retval = bool(points is not None and decoded_info and len(decoded_info) > 0 and decoded_info[0])
 
-        # Inverted Otsu Thresholding (bars become white / 255)
-        _, crop_thresh = cv2.threshold(crop, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-        h_crop, w_crop = crop_thresh.shape
-        
-        y_center = h_crop // 2
-        strip = crop_thresh[max(0, y_center - 2):min(h_crop, y_center + 3), :]
-        
-        # Robust scanline using median across strip
-        scanline = np.median(strip, axis=0)
-        
-        # Keep center 40% (discard outer margins)
-        start_idx = int(w_crop * 0.3)
-        end_idx = int(w_crop * 0.7)
-        if start_idx >= end_idx:
-            center_scanline = scanline
-        else:
-            center_scanline = scanline[start_idx:end_idx]
-        
-        # Find runs of black/white bars
-        runs = []
-        current_run = 0
-        for val in center_scanline:
-            if val >= 128:  # thresholded binary bar
-                current_run += 1
-            elif current_run > 0:
-                runs.append(current_run)
-                current_run = 0
-        if current_run > 0:
-            runs.append(current_run)
-            
-        # Filter anti-aliasing / subpixel noise
-        valid_runs = [r for r in runs if r >= 2]
-        
-        if not valid_runs:
-            # Fallback: estimate from total width divided by standard module count (~95 for EAN-13, ~100 for Code128)
-            est_modules = 95 if "EAN" in barcode_type or "UPC" in barcode_type else 110
-            estimated_module_px = max(1.0, w / est_modules)
-            mm_per_pixel = STANDARD_MODULE_WIDTH_MM / estimated_module_px
-            barcode_info["module_px"] = round(float(estimated_module_px), 2)
-            return round(float(mm_per_pixel), 6), barcode_info, ["Scale estimated from total barcode geometry."]
-            
-        module_width_px = min(valid_runs)
-        barcode_info["module_px"] = round(float(module_width_px), 2)
-        mm_per_pixel = STANDARD_MODULE_WIDTH_MM / module_width_px
-        
-        return round(float(mm_per_pixel), 6), barcode_info, []
-        
+        if retval and decoded_info and len(decoded_info) > 0 and decoded_info[0]:
+            barcode_str = str(decoded_info[0]).strip()
+            barcode_type = str(decoded_type[0]) if decoded_type else "UNKNOWN"
+            pts = points[0]
+            x_coords = [p[0] for p in pts]
+            y_coords = [p[1] for p in pts]
+            x_min, x_max = int(min(x_coords)), int(max(x_coords))
+            y_min, y_max = int(min(y_coords)), int(max(y_coords))
+            w = max(1, x_max - x_min)
+            h = max(1, y_max - y_min)
+
+            barcode_info = {
+                "type": barcode_type,
+                "data": barcode_str,
+                "rect": [x_min, y_min, w, h],
+                "module_px": None
+            }
+
+            est_modules = 95 if ("EAN" in barcode_type or "UPC" in barcode_type or len(barcode_str) in (8, 12, 13)) else 110
+            module_px = max(1.0, w / est_modules)
+            mm_per_pixel = round(float(STANDARD_MODULE_WIDTH_MM / module_px), 6)
+            barcode_info["module_px"] = round(float(module_px), 2)
+            return mm_per_pixel, barcode_info, barcode_str, warnings
+
+        # 2. Try pyzbar fallback if available
+        if PYZBAR_AVAILABLE and pyzbar is not None:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            decoded = pyzbar.decode(gray)
+            if not decoded:
+                clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+                enhanced = clahe.apply(gray)
+                decoded = pyzbar.decode(enhanced)
+
+            if decoded:
+                b = decoded[0]
+                barcode_str = b.data.decode("utf-8", errors="ignore").strip()
+                barcode_type = str(b.type)
+                x, y, w, h = b.rect
+                barcode_info = {
+                    "type": barcode_type,
+                    "data": barcode_str,
+                    "rect": [int(x), int(y), int(w), int(h)],
+                    "module_px": None
+                }
+                est_modules = 95 if ("EAN" in barcode_type or "UPC" in barcode_type or len(barcode_str) in (8, 12, 13)) else 110
+                module_px = max(1.0, w / est_modules)
+                mm_per_pixel = round(float(STANDARD_MODULE_WIDTH_MM / module_px), 6)
+                barcode_info["module_px"] = round(float(module_px), 2)
+                return mm_per_pixel, barcode_info, barcode_str, warnings
+
     except Exception as e:
-        logger.error(f"Barcode calibration exception: {e}")
-        return None, None, [f"Barcode calibration error: {e}"]
+        logger.warning("Barcode detection error: %s", e)
+        warnings.append(f"Barcode detection error: {e}")
+
+    warnings.append("No barcode detected for physical scale calibration; font sizes in mm will be unavailable.")
+    return None, None, None, warnings
 
 
-def extract_words_doctr(predictor, image: np.ndarray) -> Tuple[List[Dict[str, Any]], str]:
-    """Runs docTR on the image and returns words with bounding boxes and reconstructed full text."""
+# ==========================================
+# PADDLEOCR TEXT EXTRACTION
+# ==========================================
+def extract_words_paddle(ocr_model: Any, image: np.ndarray) -> Tuple[List[Dict[str, Any]], str]:
+    """
+    Run PaddleOCR and return word/line tokens:
+        [{"text": str, "confidence": float, "bbox_px": [xmin, ymin, xmax, ymax]}, ...]
+    and full consolidated text.
+    Handles both PaddleOCR 3.x (predict API) and 2.x (ocr API).
+    """
     height, width = image.shape[:2]
-    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
-    result = predictor([rgb_image])
-    
     words_data = []
-    lines_text = []
-    
-    for page in result.pages:
-        for block in page.blocks:
-            for line in block.lines:
-                line_words = []
-                for word in line.words:
-                    if not word.value.strip():
+    all_texts = []
+
+    try:
+        # PaddleOCR 3.x predict pipeline
+        if hasattr(ocr_model, "predict"):
+            pred_iter = ocr_model.predict(image)
+            for item in pred_iter:
+                if isinstance(item, dict):
+                    texts = item.get("rec_texts") or []
+                    scores = item.get("rec_scores") or []
+                    boxes = item.get("rec_boxes") if item.get("rec_boxes") is not None else item.get("rec_polys")
+                    for idx, text in enumerate(texts):
+                        text_str = str(text).strip()
+                        if not text_str:
+                            continue
+                        score = float(scores[idx]) if idx < len(scores) else 0.90
+                        if score < OCR_CONFIDENCE_THRESHOLD:
+                            continue
+
+                        bbox_px = [0, 0, width, height]
+                        if boxes is not None and idx < len(boxes):
+                            box = boxes[idx]
+                            if hasattr(box, "tolist"):
+                                box = box.tolist()
+                            if len(box) == 4 and isinstance(box[0], (int, float)):
+                                bbox_px = [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
+                            elif len(box) >= 4:
+                                xs = [p[0] for p in box]
+                                ys = [p[1] for p in box]
+                                bbox_px = [int(min(xs)), int(min(ys)), int(max(xs)), int(max(ys))]
+
+                        words_data.append({
+                            "text": text_str,
+                            "confidence": round(score, 4),
+                            "bbox_px": bbox_px
+                        })
+                        all_texts.append(text_str)
+
+        # PaddleOCR 2.x ocr pipeline fallback
+        elif hasattr(ocr_model, "ocr"):
+            result = ocr_model.ocr(image, cls=True)
+            if result and result[0]:
+                for line in result[0]:
+                    if not line or len(line) < 2:
                         continue
-                    (x_min_rel, y_min_rel), (x_max_rel, y_max_rel) = word.geometry
-                    bbox_px = [
-                        int(round(x_min_rel * width)),
-                        int(round(y_min_rel * height)),
-                        int(round(x_max_rel * width)),
-                        int(round(y_max_rel * height))
-                    ]
+                    bbox, text_conf = line[0], line[1]
+                    if not text_conf or len(text_conf) < 2:
+                        continue
+                    text, conf = text_conf[0], text_conf[1]
+                    text_str = str(text).strip()
+                    conf_val = float(conf)
+                    if not text_str or conf_val < OCR_CONFIDENCE_THRESHOLD:
+                        continue
+                    xs = [p[0] for p in bbox]
+                    ys = [p[1] for p in bbox]
+                    bbox_px = [max(0, int(min(xs))), max(0, int(min(ys))), min(width, int(max(xs))), min(height, int(max(ys)))]
                     words_data.append({
-                        "text": word.value,
-                        "confidence": float(word.confidence),
+                        "text": text_str,
+                        "confidence": round(conf_val, 4),
                         "bbox_px": bbox_px
                     })
-                    line_words.append(word.value)
-                if line_words:
-                    lines_text.append(" ".join(line_words))
-                    
-    full_text = "\n".join(lines_text) if lines_text else ""
+                    all_texts.append(text_str)
+
+    except Exception as e:
+        logger.error("PaddleOCR execution error: %s", e)
+
+    full_text = " \n ".join(all_texts)
     return words_data, full_text
 
 
-def compute_font_size_mm(bbox_px: List[int], mm_per_pixel: Optional[float]) -> Optional[float]:
-    """Computes real-world font height in millimeters using bounding box height."""
-    if mm_per_pixel is None:
+
+def compute_font_size_mm(bbox_px: Optional[List[int]], mm_per_pixel: Optional[float]) -> Optional[float]:
+    if mm_per_pixel is None or bbox_px is None or len(bbox_px) < 4:
         return None
     _, y_min, _, y_max = bbox_px
     height_px = max(1, y_max - y_min)
     return round(height_px * mm_per_pixel, 2)
 
 
-def supplement_heuristic_fields(
-    gliner_input_text: str, 
-    words_data: List[Dict[str, Any]], 
-    existing_fields: List[ExtractedField],
-    mm_per_pixel: Optional[float]
-) -> List[ExtractedField]:
-    """
-    Supplements zero-shot GLiNER extractions with regex-based Legal Metrology pattern detectors.
-    Uses character offsets for bounding box accuracy.
-    """
-    supplemented = list(existing_fields)
-    existing_types = {f.field_type for f in existing_fields}
-    existing_values = {f.extracted_value.lower() for f in existing_fields}
-
-    def get_bbox_for_span(start_c: int, end_c: int):
-        matched = [w for w in words_data if w.get("start_char", 0) < end_c and w.get("end_char", 0) > start_c]
-        if not matched:
-            return None, None
-        bbox = [
-            min(w["bbox_px"][0] for w in matched),
-            min(w["bbox_px"][1] for w in matched),
-            max(w["bbox_px"][2] for w in matched),
-            max(w["bbox_px"][3] for w in matched)
-        ]
-        fs = compute_font_size_mm(bbox, mm_per_pixel)
-        return bbox, fs
-
-    # 1. FSSAI License Pattern (14 digits)
-    if "fssai_license" not in existing_types or not any(re.search(r'\d{14}', f.extracted_value) for f in existing_fields if f.field_type == "fssai_license"):
-        fssai_match = re.search(r'(?:fssai|lic(?:\.|\s+)?no(?:\.|\s+)?)\s*[:\-]?\s*([0-9]{14})', gliner_input_text, re.IGNORECASE)
-        if not fssai_match:
-            fssai_match = re.search(r'\b(1[0-9]{13})\b', gliner_input_text)
-            
-        if fssai_match:
-            val = fssai_match.group(0)
-            if val.lower() not in existing_values:
-                bbox, fs = get_bbox_for_span(fssai_match.start(), fssai_match.end())
-                supplemented.append(ExtractedField(
-                    field_type="fssai_license",
-                    extracted_value=val,
-                    confidence_score=0.98,
-                    font_size_mm=fs,
-                    bbox_px=bbox
-                ))
-
-    # 2. MRP Pattern (Rs. / ₹ / INR)
-    if "mrp" not in existing_types:
-        mrp_match = re.search(r'(?:MRP|M\.R\.P\.?)\s*[:\-]?\s*(?:Rs\.?|INR|₹)?\s*([0-9]+(?:\.[0-9]{1,2})?)', gliner_input_text, re.IGNORECASE)
-        if mrp_match:
-            val = mrp_match.group(0)
-            if val.lower() not in existing_values:
-                bbox, fs = get_bbox_for_span(mrp_match.start(), mrp_match.end())
-                supplemented.append(ExtractedField(
-                    field_type="mrp",
-                    extracted_value=val,
-                    confidence_score=0.92,
-                    font_size_mm=fs,
-                    bbox_px=bbox
-                ))
-
-    # 3. Consumer Care Helpline / Phone / Email
-    if "consumer_care" not in existing_types:
-        care_match = re.search(r'(?:1800[\s\-]?\d{3,4}[\s\-]?\d{3,4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)', gliner_input_text)
-        if care_match:
-            val = care_match.group(0)
-            bbox, fs = get_bbox_for_span(care_match.start(), care_match.end())
-            supplemented.append(ExtractedField(
-                field_type="consumer_care",
-                extracted_value=val,
-                confidence_score=0.90,
-                font_size_mm=fs,
-                bbox_px=bbox
-            ))
-
-    return supplemented
-
-
-def classify_fields_gliner(
-    gliner_model, 
-    words_data: List[Dict[str, Any]], 
+# ==========================================
+# DETERMINISTIC LEGAL METROLOGY FIELD EXTRACTION
+# ==========================================
+def extract_legal_metrology_fields(
+    words_data: List[Dict[str, Any]],
     full_text: str,
-    mm_per_pixel: Optional[float]
-) -> List[ExtractedField]:
-    """Uses GLiNER over OCR text to classify Legal Metrology entities and links them back to physical coordinates."""
-    if not words_data:
+    mm_per_pixel: Optional[float] = None
+) -> List[ExtractedFieldItem]:
+    """
+    Deterministic rule-based and regular-expression extraction for Legal Metrology mandatory declarations:
+    - mrp
+    - net_quantity
+    - mfg_date
+    - expiry_date
+    - best_before_date
+    - unit_sale_price
+    - fssai_license_no
+    - consumer_care_details
+    - country_of_origin
+    - batch_number
+    - manufacturer_name
+    - manufacturer_address
+    - commodity_name
+    """
+    if not full_text or not words_data:
         return []
 
-    # 1. Join tokens and compute exact character offsets
-    text_parts = []
-    char_idx = 0
+    fields_dict: Dict[str, ExtractedFieldItem] = {}
+
+    # Build indexed text with character positions
+    char_pos = 0
+    token_spans = []
     for w in words_data:
-        text_parts.append(w["text"])
-        w["start_char"] = char_idx
-        w["end_char"] = char_idx + len(w["text"])
-        char_idx += len(w["text"]) + 1  # space
-        
-    gliner_input_text = " ".join(text_parts)
-    
-    # 2. GLiNER zero-shot entity prediction
-    entities = gliner_model.predict_entities(gliner_input_text, LEGAL_METROLOGY_FIELDS)
-    
-    # 3. Map entities back to word coordinates
-    extracted_fields = []
-    for ent in entities:
-        ent_start, ent_end = ent["start"], ent["end"]
-        
-        intersecting_words = [
-            w for w in words_data 
-            if w["start_char"] < ent_end and w["end_char"] > ent_start
+        t = w["text"]
+        start_c = char_pos
+        end_c = start_c + len(t)
+        token_spans.append((start_c, end_c, w))
+        char_pos = end_c + 1  # single space separator
+    joined_text = " ".join(w["text"] for w in words_data)
+
+    def find_bbox_and_confidence(start_c: int, end_c: int, default_conf: float = 0.90) -> Tuple[Optional[List[int]], float]:
+        overlapping = [
+            w for sc, ec, w in token_spans
+            if sc < end_c and ec > start_c
         ]
-        
-        if not intersecting_words:
-            continue
-            
-        total_ocr_conf = sum(w["confidence"] for w in intersecting_words)
-        avg_ocr_conf = total_ocr_conf / len(intersecting_words)
-        combined_conf = math.sqrt(max(0.0, avg_ocr_conf * ent["score"]))
-        
-        # Encompassing bounding box in pixels [x_min, y_min, x_max, y_max]
-        x_min = min(w["bbox_px"][0] for w in intersecting_words)
-        y_min = min(w["bbox_px"][1] for w in intersecting_words)
-        x_max = max(w["bbox_px"][2] for w in intersecting_words)
-        y_max = max(w["bbox_px"][3] for w in intersecting_words)
-        entity_bbox = [x_min, y_min, x_max, y_max]
-        
-        font_size_mm = compute_font_size_mm(entity_bbox, mm_per_pixel)
-        
-        extracted_fields.append(ExtractedField(
-            field_type=ent["label"],
-            extracted_value=ent["text"],
-            confidence_score=round(float(combined_conf), 4),
-            font_size_mm=font_size_mm,
-            placement_zone="unknown",
-            bbox_px=entity_bbox
-        ))
-        
-    # 4. Supplement with regex heuristics for missing mandatory declarations
-    final_fields = supplement_heuristic_fields(gliner_input_text, words_data, extracted_fields, mm_per_pixel)
-    return final_fields
+        if not overlapping:
+            return None, default_conf
+        x_min = min(w["bbox_px"][0] for w in overlapping)
+        y_min = min(w["bbox_px"][1] for w in overlapping)
+        x_max = max(w["bbox_px"][2] for w in overlapping)
+        y_max = max(w["bbox_px"][3] for w in overlapping)
+        conf = sum(w["confidence"] for w in overlapping) / len(overlapping)
+        return [x_min, y_min, x_max, y_max], round(conf, 4)
 
-
-def process_image_pipeline(
-    image: np.ndarray, 
-    scan_id: str, 
-    doctr_model, 
-    gliner_model
-) -> OCRResponse:
-    """Complete end-to-end Legal Metrology Vision Pipeline."""
-    t_start = time.time()
-    logger.info(f"[{scan_id}] Starting OCR pipeline on image shape {image.shape}.")
-    warnings = []
-    
-    height, width = image.shape[:2]
-    
-    # 1. Barcode Calibration
-    t_cal0 = time.time()
-    mm_per_pixel, barcode_info, cal_warnings = calibrate_mm_per_pixel(image)
-    t_cal = round((time.time() - t_cal0) * 1000, 2)
-    if cal_warnings:
-        warnings.extend(cal_warnings)
-    
-    # 2. OCR (docTR)
-    t_ocr0 = time.time()
-    words_data, full_text = extract_words_doctr(doctr_model, image)
-    t_ocr = round((time.time() - t_ocr0) * 1000, 2)
-    
-    if not words_data:
-        warnings.append("No text detected in image.")
-        return OCRResponse(
-            scan_id=scan_id,
-            image_dimensions={"width": width, "height": height},
-            fields=[],
-            scale_factor_mm_per_px=mm_per_pixel,
-            barcode_detected=barcode_info is not None,
-            barcode_info=barcode_info,
-            raw_text="",
-            all_words=[],
-            warnings=warnings,
-            timings_ms={"calibration": t_cal, "ocr": t_ocr, "ner": 0, "total": round((time.time() - t_start) * 1000, 2)}
-        )
-        
-    # 3. Entity Classification (GLiNER + Metrology Heuristics)
-    t_ner0 = time.time()
-    fields = classify_fields_gliner(gliner_model, words_data, full_text, mm_per_pixel)
-    t_ner = round((time.time() - t_ner0) * 1000, 2)
-    
-    # Prepare all_words output
-    detected_words = [
-        DetectedWord(
-            text=w["text"],
-            confidence=round(w["confidence"], 4),
-            bbox_px=w["bbox_px"],
-            font_size_mm=compute_font_size_mm(w["bbox_px"], mm_per_pixel)
-        )
-        for w in words_data
+    # 1. MRP (Maximum Retail Price)
+    # Variations: MRP, M.R.P., Rs, Rs., INR, ₹, Incl. of all taxes
+    mrp_regexes = [
+        r'(?:M\.?\s*R\.?\s*P\.?|MAX(?:IMUM|\.)?\s*RETAIL\s*PRICE)\s*(?:IS|\:|\-)?\s*(?:Rs\.?|INR|₹)?\s*([0-9]+(?:\.[0-9]{1,2})?)\b(?:\s*\(?(?:incl|inclusive)\.?\s*(?:of)?\s*all\s*taxes\)?)?',
+        r'(?:(?:Rs\.?|INR|₹)\s*([0-9]+(?:\.[0-9]{1,2})?))\s*\(?(?:incl|inclusive)\.?\s*(?:of)?\s*all\s*taxes\)?',
+        r'\b(?:Rs\.?|INR|₹)\s*([0-9]+(?:\.[0-9]{1,2})?)\b'
     ]
-    
-    t_total = round((time.time() - t_start) * 1000, 2)
-    logger.info(f"[{scan_id}] Pipeline completed in {t_total}ms. Extracted {len(fields)} fields.")
-    
-    return OCRResponse(
-        scan_id=scan_id,
-        image_dimensions={"width": width, "height": height},
-        fields=fields,
-        scale_factor_mm_per_px=mm_per_pixel,
-        barcode_detected=barcode_info is not None,
-        barcode_info=barcode_info,
-        raw_text=full_text,
-        all_words=detected_words,
-        warnings=warnings,
-        timings_ms={
-            "calibration_ms": t_cal,
-            "ocr_ms": t_ocr,
-            "ner_ms": t_ner,
-            "total_ms": t_total
-        }
+    for pattern in mrp_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            raw_matched = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.92)
+            fields_dict["mrp"] = ExtractedFieldItem(
+                field_type="mrp",
+                value=raw_matched,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 2. Net Quantity
+    # Variations: Net Qty, Net Wt, Net Contents, Netto, g, kg, ml, l, mg, pcs
+    net_qty_regexes = [
+        r'(?:NET\s*(?:QTY|QUANTITY|WT|WEIGHT|CONTENTS?|VOLUME)|NETTO)\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?\s*(?:kg|g|gm|gms|mg|l|ltr|liter|litres?|ml|piece|pc|pcs|units?|n|number))\b',
+        r'\b([0-9]+(?:\.[0-9]+)?\s*(?:kg|g|gm|gms|mg|l|ltr|liter|litres?|ml))\b(?:\s*(?:net\s*wt|when\s*packed))?'
+    ]
+    for pattern in net_qty_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.91)
+            fields_dict["net_quantity"] = ExtractedFieldItem(
+                field_type="net_quantity",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="principal_display_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 3. Unit Sale Price (USP)
+    # Variations: Unit Sale Price, USP, Rs. X / g or ml
+    usp_regexes = [
+        r'(?:UNIT\s*SALE\s*PRICE|USP)\s*[:\-]?\s*(?:Rs\.?|INR|₹)?\s*([0-9]+(?:\.[0-9]{1,2})?\s*(?:\/|per)\s*(?:kg|g|gm|ml|l|ltr|piece|pc|unit|m|cm))\b',
+        r'(?:Rs\.?|INR|₹)\s*([0-9]+(?:\.[0-9]{1,2})?\s*(?:\/|per)\s*(?:kg|g|gm|ml|l|ltr|pc|unit))\b'
+    ]
+    for pattern in usp_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.89)
+            fields_dict["unit_sale_price"] = ExtractedFieldItem(
+                field_type="unit_sale_price",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 4. Manufacturing Date (MFD / MFG / PKD)
+    mfg_regexes = [
+        r'(?:MFD|MFG|MANUFACTURED|PKD|PACKED|DATE\s*OF\s*(?:MFG|MFD|PACKING))\s*[:\-.]?\s*([0-3]?[0-9][\/\.\-][0-1]?[0-9][\/\.\-][12][0-9]{3}|[0-1]?[0-9][\/\.\-][12][0-9]{3}|[0-3]?[0-9][\/\.\-][0-1]?[0-9][\/\.\-][2][0-9]|[0-1]?[0-9][\/\.\-][2][0-9]|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[a-z]*[\s\.\,\-]*[12][0-9]{3})\b',
+        r'\b(?:MFD|MFG|PKD)\s*[:\-.]?\s*([0-1]?[0-9][\/\.\-][12][0-9]{3})\b'
+    ]
+    for pattern in mfg_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.90)
+            fields_dict["mfg_date"] = ExtractedFieldItem(
+                field_type="mfg_date",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 5. Expiry Date (EXP / Expiry / Use By)
+    exp_regexes = [
+        r'(?:EXP|EXPIRY|EXP\.\s*DATE|USE\s*BY|DATE\s*OF\s*EXPIRY)\s*[:\-.]?\s*([0-3]?[0-9][\/\.\-][0-1]?[0-9][\/\.\-][12][0-9]{3}|[0-1]?[0-9][\/\.\-][12][0-9]{3}|[0-3]?[0-9][\/\.\-][0-1]?[0-9][\/\.\-][2][0-9]|[0-1]?[0-9][\/\.\-][2][0-9]|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[a-z]*[\s\.\,\-]*[12][0-9]{3})\b'
+    ]
+    for pattern in exp_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.90)
+            fields_dict["expiry_date"] = ExtractedFieldItem(
+                field_type="expiry_date",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 6. Best Before Date
+    best_before_regexes = [
+        r'(?:BEST\s*BEFORE|BEST\s*BY)\s*[:\-.]?\s*([0-9]+\s*(?:MONTHS?|DAYS?|WEEKS?|YEARS?)\s*(?:FROM\s*(?:MFG|MFD|PACKING|MANUFACTURE|DATE))?|[0-3]?[0-9][\/\.\-][0-1]?[0-9][\/\.\-][12][0-9]{3}|[0-1]?[0-9][\/\.\-][12][0-9]{3}|(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)[a-z]*[\s\.\,\-]*[12][0-9]{3})\b'
+    ]
+    for pattern in best_before_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.88)
+            fields_dict["best_before_date"] = ExtractedFieldItem(
+                field_type="best_before_date",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 7. FSSAI License Number (14 digits)
+    fssai_regexes = [
+        r'(?:FSSAI|LIC(?:\.|\s+)?NO(?:\.|\s+)?)\s*[:\-]?\s*([0-9]{14})\b',
+        r'\b(1[0-9]{13})\b'
+    ]
+    for pattern in fssai_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.96)
+            fields_dict["fssai_license_no"] = ExtractedFieldItem(
+                field_type="fssai_license_no",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 8. Batch / Lot Number
+    batch_regexes = [
+        r'(?:BATCH\s*(?:NO|NUMBER|\.)?|LOT\s*(?:NO|NUMBER|\.)?|B\.?\s*NO\.?)\s*[:\-]?\s*([A-Za-z0-9\-\/]{3,20})\b'
+    ]
+    for pattern in batch_regexes:
+        m = re.search(pattern, joined_text, re.IGNORECASE)
+        if m:
+            val = m.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(m.start(), m.end(), default_conf=0.88)
+            fields_dict["batch_number"] = ExtractedFieldItem(
+                field_type="batch_number",
+                value=val,
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+            break
+
+    # 9. Consumer Care Details (Phone, email, or careline)
+    care_match = re.search(
+        r'(?:CONSUMER\s*CARE|CUSTOMER\s*CARE|FOR\s*FEEDBACK|HELPLINE|CARELINE|CONTACT\s*US)\s*[:\-]?\s*([^\n\r]{5,90})',
+        joined_text,
+        re.IGNORECASE
     )
+    if care_match:
+        val = care_match.group(0).strip()
+        bbox, conf = find_bbox_and_confidence(care_match.start(), care_match.end(), default_conf=0.89)
+        fields_dict["consumer_care_details"] = ExtractedFieldItem(
+            field_type="consumer_care_details",
+            value=val,
+            confidence=conf,
+            font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+            placement_zone="declaration_panel",
+            bbox_px=bbox
+        )
+    else:
+        # Fallback to phone / email detection
+        contact_match = re.search(
+            r'(?:1800[\s\-]?\d{3,4}[\s\-]?\d{3,4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)',
+            joined_text
+        )
+        if contact_match:
+            val = contact_match.group(0).strip()
+            bbox, conf = find_bbox_and_confidence(contact_match.start(), contact_match.end(), default_conf=0.87)
+            fields_dict["consumer_care_details"] = ExtractedFieldItem(
+                field_type="consumer_care_details",
+                value=f"Customer Care: {val}",
+                confidence=conf,
+                font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+                placement_zone="declaration_panel",
+                bbox_px=bbox
+            )
+
+    # 10. Country of Origin
+    origin_match = re.search(
+        r'(?:COUNTRY\s*OF\s*ORIGIN|MADE\s*IN|PRODUCED\s*IN|PRODUCT\s*OF)\s*[:\-]?\s*([A-Za-z\s]{3,30})\b',
+        joined_text,
+        re.IGNORECASE
+    )
+    if origin_match:
+        val = origin_match.group(0).strip()
+        bbox, conf = find_bbox_and_confidence(origin_match.start(), origin_match.end(), default_conf=0.91)
+        fields_dict["country_of_origin"] = ExtractedFieldItem(
+            field_type="country_of_origin",
+            value=val,
+            confidence=conf,
+            font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+            placement_zone="declaration_panel",
+            bbox_px=bbox
+        )
+
+    # 11. Manufacturer Name & Address
+    mfg_name_match = re.search(
+        r'(?:MFD(?:\.|\s+)?BY|MFG(?:\.|\s+)?BY|MANUFACTURED\s*BY|PACKED\s*BY|MARKETED\s*BY|PRODUCED\s*BY)\s*[:\-]?\s*([A-Za-z0-9\s\,\.\&\(\)\-]{4,60}?)(?:,|\n|Plot|Survey|Gate|Industrial|Phase|Sector|Village|Taluka|Dist|Road|Street|Near|Pin|Pincode|\d{6}|$)',
+        joined_text,
+        re.IGNORECASE
+    )
+    if mfg_name_match:
+        val = mfg_name_match.group(0).strip()
+        bbox, conf = find_bbox_and_confidence(mfg_name_match.start(), mfg_name_match.end(), default_conf=0.88)
+        fields_dict["manufacturer_name"] = ExtractedFieldItem(
+            field_type="manufacturer_name",
+            value=val,
+            confidence=conf,
+            font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+            placement_zone="declaration_panel",
+            bbox_px=bbox
+        )
+
+    address_match = re.search(
+        r'(?:Plot|Survey|Gate|Industrial\s*Area|Phase|Sector|Village|Taluka|Dist|Road|Street|Near)\s*[A-Za-z0-9\s\,\.\-\/]{6,100}?(?:\b[1-9][0-9]{5}\b|[A-Za-z]{2,}\b|\d{6})',
+        joined_text,
+        re.IGNORECASE
+    )
+    if address_match:
+        val = address_match.group(0).strip()
+        bbox, conf = find_bbox_and_confidence(address_match.start(), address_match.end(), default_conf=0.86)
+        fields_dict["manufacturer_address"] = ExtractedFieldItem(
+            field_type="manufacturer_address",
+            value=val,
+            confidence=conf,
+            font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+            placement_zone="declaration_panel",
+            bbox_px=bbox
+        )
+
+    # 12. Commodity / Generic Product Name
+    commodity_match = re.search(
+        r'(?:COMMODITY|GENERIC\s*NAME|PRODUCT\s*NAME|NAME\s*OF\s*THE\s*COMMODITY)\s*[:\-]?\s*([A-Za-z0-9\s\,\.\-]{3,45})\b',
+        joined_text,
+        re.IGNORECASE
+    )
+    if commodity_match:
+        val = commodity_match.group(0).strip()
+        bbox, conf = find_bbox_and_confidence(commodity_match.start(), commodity_match.end(), default_conf=0.90)
+        fields_dict["commodity_name"] = ExtractedFieldItem(
+            field_type="commodity_name",
+            value=val,
+            confidence=conf,
+            font_size_mm=compute_font_size_mm(bbox, mm_per_pixel),
+            placement_zone="principal_display_panel",
+            bbox_px=bbox
+        )
+
+    return list(fields_dict.values())
 
 
 # ==========================================
-# API & FRONTEND ROUTES
+# SINGLE IMAGE PROCESSING PIPELINE
 # ==========================================
-@app.get("/", response_class=HTMLResponse)
-async def serve_demo_ui():
-    """Serves the interactive Webcam OCR Metrology demo frontend."""
-    index_path = os.path.join(TEMPLATES_DIR, "index.html")
-    if os.path.exists(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
-    return HTMLResponse(content="<h1>Legal Metrology Vision OCR Service Ready</h1><p>Visit /health or POST /extract</p>")
+def process_single_image(
+    image: np.ndarray,
+    scan_id: str,
+    ocr_model: PaddleOCR,
+    gliner_model: Any = None
+) -> Dict[str, Any]:
+    """Process one image: barcode calibration → OCR → legal metrology extraction."""
+    t_start = time.time()
+    height, width = image.shape[:2]
 
+    # Barcode & Scale Calibration
+    mm_per_pixel, barcode_info, barcode_str, cal_warnings = calibrate_mm_per_pixel(image)
 
-@app.get("/health")
-async def health_check(request: Request):
-    """Health check endpoint returning model statuses and hardware info."""
-    doctr_loaded = hasattr(request.app.state, "doctr_model")
-    gliner_loaded = hasattr(request.app.state, "gliner_model")
-    
-    status = "healthy" if (doctr_loaded and gliner_loaded) else "initializing"
+    # Text Detection & Recognition via PaddleOCR
+    words_data, full_text = extract_words_paddle(ocr_model, image)
+    ocr_elapsed_ms = round((time.time() - t_start) * 1000, 2)
+
+    extracted_fields = []
+    detected_words = []
+
+    if words_data:
+        extracted_fields = extract_legal_metrology_fields(words_data, full_text, mm_per_pixel)
+        detected_words = [
+            DetectedWord(
+                text=w["text"],
+                confidence=w["confidence"],
+                bbox_px=w["bbox_px"],
+                font_size_mm=compute_font_size_mm(w["bbox_px"], mm_per_pixel)
+            )
+            for w in words_data
+        ]
+
+    total_elapsed_ms = round((time.time() - t_start) * 1000, 2)
+
     return {
-        "status": status,
-        "device": DEVICE,
-        "models": {
-            "doctr_loaded": doctr_loaded,
-            "gliner_loaded": gliner_loaded,
-            "gliner_model_name": GLINER_MODEL_NAME
+        "image_dimensions": {"width": width, "height": height},
+        "fields": extracted_fields,
+        "all_words": detected_words,
+        "raw_text": full_text,
+        "scale_factor_mm_per_px": mm_per_pixel,
+        "barcode": barcode_str,
+        "barcode_detected": barcode_info is not None,
+        "barcode_info": barcode_info,
+        "warnings": cal_warnings,
+        "timings_ms": {
+            "ocr_ms": ocr_elapsed_ms,
+            "total_ms": total_elapsed_ms
         }
     }
 
 
-@app.post("/extract", response_model=OCRResponse)
-async def extract_info(request: OCRRequest, req: Request):
-    """
-    Main extraction endpoint.
-    Takes a base64 encoded image (with or without data URI header), performs OCR, 
-    spatial scale calibration via barcode, and extracts structured legal metrology fields.
-    """
-    try:
-        image = preprocess_image(request.image_base64)
-    except ValueError as e:
-        logger.error(f"[{request.scan_id}] Image decode failed: {e}")
-        raise HTTPException(status_code=422, detail=str(e))
-        
-    response = await run_in_threadpool(
-        process_image_pipeline,
-        image,
-        request.scan_id,
-        req.app.state.doctr_model,
-        req.app.state.gliner_model
-    )
-    return response
+def merge_multi_image_results(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Merge OCR results from multiple image angles."""
+    merged_fields: Dict[str, ExtractedFieldItem] = {}
+    scale_factor = None
+    barcode_val = None
+    barcode_info = None
+    all_warnings = []
+    all_raw_texts = []
+    all_words = []
+    image_dims = None
 
+    for res in results:
+        if image_dims is None and res.get("image_dimensions"):
+            image_dims = res["image_dimensions"]
 
-@app.post("/extract-file", response_model=OCRResponse)
-async def extract_info_file(req: Request, file: UploadFile = File(...)):
-    """Endpoint for direct multipart file upload."""
-    contents = await file.read()
-    np_arr = np.frombuffer(contents, np.uint8)
-    image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-    
-    if image is None or image.size == 0:
-        raise HTTPException(status_code=422, detail="Uploaded file is not a valid image.")
-        
-    scan_id = f"file_{int(time.time()*1000)}"
-    response = await run_in_threadpool(
-        process_image_pipeline,
-        image,
-        scan_id,
-        req.app.state.doctr_model,
-        req.app.state.gliner_model
-    )
-    return response
+        if scale_factor is None and res.get("scale_factor_mm_per_px") is not None:
+            scale_factor = res["scale_factor_mm_per_px"]
 
+        if barcode_val is None and res.get("barcode"):
+            barcode_val = res["barcode"]
+            barcode_info = res.get("barcode_info")
 
-@app.get("/samples/{filename}")
-async def get_sample_image(filename: str):
-    """Serves bundled test sample images."""
-    file_path = os.path.join(SAMPLES_DIR, filename)
-    if os.path.exists(file_path):
-        return FileResponse(file_path)
-    raise HTTPException(status_code=404, detail="Sample image not found.")
+        all_warnings.extend(res.get("warnings", []))
+        if res.get("raw_text"):
+            all_raw_texts.append(res["raw_text"])
+        all_words.extend(res.get("all_words", []))
 
+        for field in res.get("fields", []):
+            ft = field.field_type
+            if ft not in merged_fields or field.confidence > merged_fields[ft].confidence:
+                merged_fields[ft] = field
 
-@app.get("/api/samples")
-async def list_sample_images():
-    """Lists available sample test images."""
-    if not os.path.exists(SAMPLES_DIR):
-        return []
-    return [f for f in os.listdir(SAMPLES_DIR) if f.endswith(('.png', '.jpg', '.jpeg'))]
+    if scale_factor is not None:
+        for f in merged_fields.values():
+            if f.font_size_mm is None and f.bbox_px:
+                f.font_size_mm = compute_font_size_mm(f.bbox_px, scale_factor)
+
+    unique_warnings = list(dict.fromkeys(all_warnings))
+
+    return {
+        "image_dimensions": image_dims,
+        "fields": list(merged_fields.values()),
+        "scale_factor_mm_per_px": scale_factor,
+        "barcode": barcode_val,
+        "barcode_info": barcode_info,
+        "raw_text": "\n\n".join(all_raw_texts) if all_raw_texts else None,
+        "all_words": all_words,
+        "warnings": unique_warnings,
+        "timings_ms": {
+            "ocr_ms": round(sum(r.get("timings_ms", {}).get("ocr_ms", 0) for r in results), 2),
+            "total_ms": round(sum(r.get("timings_ms", {}).get("total_ms", 0) for r in results), 2)
+        }
+    }
 
 
 # ==========================================
-# RUNTIME ENTRY POINT
+# FASTAPI ENDPOINTS
+# ==========================================
+@app.get("/health")
+async def health_check(request: Request):
+    """Health check endpoint displaying PaddleOCR model status and device info."""
+    ocr_loaded = hasattr(request.app.state, "ocr_model") and request.app.state.ocr_model is not None
+    return {
+        "status": "ok" if ocr_loaded else "initializing",
+        "service": "paddleocr",
+        "device": DEVICE,
+        "models": {
+            "paddleocr_loaded": ocr_loaded,
+            "pyzbar_available": PYZBAR_AVAILABLE,
+            "gliner_available": GLINER_AVAILABLE and getattr(request.app.state, "gliner_model", None) is not None
+        }
+    }
+
+
+@app.post("/process", response_model=ProcessResponse)
+async def process_scan_endpoint(
+    request: Request,
+    scan_id: Optional[str] = Form(None),
+    category: Optional[str] = Form("general"),
+    images: List[UploadFile] = File(default=[])
+):
+    """
+    Primary endpoint called by Django backend.
+    Accepts multipart/form-data with one or more image files.
+    Also handles JSON fallback if application/json content-type is posted.
+    """
+    t_start = time.time()
+    cv_images: List[np.ndarray] = []
+    final_scan_id = scan_id or f"scan_{int(time.time()*1000)}"
+
+    content_type = request.headers.get("content-type", "")
+
+    # 1. Handle JSON request fallback
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            json_req = OCRRequest(**body)
+            final_scan_id = json_req.scan_id or final_scan_id
+            b64_list = json_req.image_base64
+            if isinstance(b64_list, str):
+                b64_list = [b64_list]
+            if b64_list:
+                for b64 in b64_list:
+                    cv_images.append(decode_base64_image(b64))
+        except Exception as e:
+            logger.error("JSON payload decode error: %s", e)
+            raise HTTPException(status_code=422, detail=f"Invalid JSON request: {e}")
+
+    # 2. Handle Multipart/form-data upload
+    else:
+        if not images:
+            raise HTTPException(status_code=422, detail="No image files provided in multipart request.")
+        if len(images) > MAX_IMAGES_PER_REQUEST:
+            raise HTTPException(status_code=422, detail=f"Maximum {MAX_IMAGES_PER_REQUEST} images allowed.")
+
+        for idx, file in enumerate(images):
+            try:
+                data = await file.read()
+                cv_img = decode_image_bytes(data, filename=file.filename or f"image_{idx}")
+                cv_images.append(cv_img)
+            except ValueError as e:
+                logger.error("Image file error: %s", e)
+                raise HTTPException(status_code=422, detail=str(e))
+            except Exception as e:
+                logger.error("Unexpected upload error: %s", e)
+                raise HTTPException(status_code=500, detail=f"Image upload processing error: {e}")
+
+    if not cv_images:
+        raise HTTPException(status_code=422, detail="No valid images available to process.")
+
+    ocr_model = getattr(request.app.state, "ocr_model", None)
+    if ocr_model is None:
+        raise HTTPException(status_code=503, detail="PaddleOCR engine is still initializing.")
+
+    # Process all image angles
+    tasks = [
+        run_in_threadpool(
+            process_single_image,
+            img,
+            final_scan_id,
+            ocr_model,
+            getattr(request.app.state, "gliner_model", None)
+        )
+        for img in cv_images
+    ]
+    results = await asyncio.gather(*tasks)
+
+    merged = merge_multi_image_results(results)
+    merged["timings_ms"]["total_ms"] = round((time.time() - t_start) * 1000, 2)
+
+    # Empty text warning
+    if not merged["fields"] and not merged.get("raw_text"):
+        merged["warnings"].append("No text detected in uploaded image(s).")
+
+    return ProcessResponse(
+        scan_id=final_scan_id,
+        extracted_fields=merged["fields"],
+        barcode=merged["barcode"],
+        quality_flags=[],
+        raw_text=merged["raw_text"],
+        all_words=merged["all_words"],
+        image_dimensions=merged["image_dimensions"],
+        scale_factor_mm_per_px=merged["scale_factor_mm_per_px"],
+        barcode_info=merged["barcode_info"],
+        warnings=merged["warnings"],
+        timings_ms=merged["timings_ms"]
+    )
+
+
+@app.post("/extract", response_model=ProcessResponse)
+async def extract_endpoint(request: OCRRequest, req: Request):
+    """Backwards-compatible base64 JSON endpoint."""
+    t_start = time.time()
+    cv_images: List[np.ndarray] = []
+
+    b64_list = request.image_base64
+    if isinstance(b64_list, str):
+        b64_list = [b64_list]
+
+    if not b64_list:
+        raise HTTPException(status_code=422, detail="At least one base64 image required.")
+
+    for b64 in b64_list:
+        try:
+            cv_images.append(decode_base64_image(b64))
+        except ValueError as e:
+            raise HTTPException(status_code=422, detail=str(e))
+
+    ocr_model = getattr(req.app.state, "ocr_model", None)
+    if ocr_model is None:
+        raise HTTPException(status_code=503, detail="PaddleOCR engine is not initialized.")
+
+    tasks = [
+        run_in_threadpool(
+            process_single_image,
+            img,
+            request.scan_id,
+            ocr_model,
+            getattr(req.app.state, "gliner_model", None)
+        )
+        for img in cv_images
+    ]
+    results = await asyncio.gather(*tasks)
+    merged = merge_multi_image_results(results)
+    merged["timings_ms"]["total_ms"] = round((time.time() - t_start) * 1000, 2)
+
+    return ProcessResponse(
+        scan_id=request.scan_id,
+        extracted_fields=merged["fields"],
+        barcode=merged["barcode"],
+        quality_flags=[],
+        raw_text=merged["raw_text"],
+        all_words=merged["all_words"],
+        image_dimensions=merged["image_dimensions"],
+        scale_factor_mm_per_px=merged["scale_factor_mm_per_px"],
+        barcode_info=merged["barcode_info"],
+        warnings=merged["warnings"],
+        timings_ms=merged["timings_ms"]
+    )
+
+
+# ==========================================
+# ENTRY POINT
 # ==========================================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)

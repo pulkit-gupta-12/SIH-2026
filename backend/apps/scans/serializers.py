@@ -63,13 +63,14 @@ class ScanDetailSerializer(serializers.ModelSerializer):
 class ScanCreateSerializer(serializers.ModelSerializer):
     barcode = serializers.CharField(required=False, write_only=True, allow_blank=True)
     image_urls = serializers.ListField(child=serializers.CharField(), required=False, write_only=True, default=list)
+    images = serializers.ListField(child=serializers.FileField(), required=False, write_only=True, default=list)
     category = serializers.CharField(required=False, write_only=True, default="general")
 
     class Meta:
         model = Scan
         fields = [
             "id", "product", "role_context", "location",
-            "capture_method", "barcode", "image_urls", "category",
+            "capture_method", "barcode", "image_urls", "images", "category",
         ]
         extra_kwargs = {
             "role_context": {"required": False, "default": "citizen"},
@@ -82,16 +83,25 @@ class ScanCreateSerializer(serializers.ModelSerializer):
         if request and request.user and request.user.is_authenticated:
             is_citizen = request.user.role_assignments.filter(role__name="citizen").exists()
 
+        image_urls = attrs.get("image_urls") or []
+        uploaded_files = list(attrs.get("images") or [])
+        if request and request.FILES:
+            uploaded_files.extend(request.FILES.getlist("images"))
+            if "image" in request.FILES and request.FILES["image"] not in uploaded_files:
+                uploaded_files.append(request.FILES["image"])
+
+        has_images = bool(image_urls or uploaded_files)
+
         if is_citizen:
             barcode = attrs.get("barcode")
-            image_urls = attrs.get("image_urls") or []
             product = attrs.get("product")
-            if not barcode and not image_urls and not product:
+            if not barcode and not has_images and not product:
                 raise serializers.ValidationError(
                     "Provide a barcode to look up, or an image to scan a new product."
                 )
-            if len(image_urls) > 1:
+            if (len(image_urls) + len(uploaded_files)) > 1:
                 raise serializers.ValidationError(
                     "Citizen scans support a single image only."
                 )
         return attrs
+

@@ -15,7 +15,9 @@ from .services import (
     resolve_product_from_barcode,
     get_existing_compliance_result,
     process_scan_pipeline,
+    OCRServiceError,
 )
+
 
 
 class ScanViewSet(viewsets.ModelViewSet):
@@ -70,7 +72,13 @@ class ScanViewSet(viewsets.ModelViewSet):
 
         # First-time scan: require an image
         image_urls = data.get("image_urls", [])
-        if not image_urls:
+        image_files = list(data.get("images") or [])
+        if request.FILES:
+            image_files.extend(request.FILES.getlist("images"))
+            if "image" in request.FILES and request.FILES["image"] not in image_files:
+                image_files.append(request.FILES["image"])
+
+        if not image_urls and not image_files:
             return Response(
                 {
                     "detail": "This product has not been scanned before — please provide a photo.",
@@ -102,13 +110,24 @@ class ScanViewSet(viewsets.ModelViewSet):
             },
         )
 
-        # Run OCR stub + evaluation pipeline; persist history (case=None)
-        check = process_scan_pipeline(
-            scan,
-            image_urls=image_urls,
-            category=data.get("category", "general"),
-            is_citizen_scan=True,
-        )
+        # Run OCR pipeline + evaluation pipeline; persist history (case=None)
+        try:
+            check = process_scan_pipeline(
+                scan,
+                image_urls=image_urls,
+                image_files=image_files,
+                category=data.get("category", "general"),
+                is_citizen_scan=True,
+            )
+        except OCRServiceError as e:
+            return Response(
+                {
+                    "error": "OCR_SERVICE_ERROR",
+                    "detail": str(e),
+                    "scan_id": scan.id,
+                },
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
         if check:
             AuditLog.objects.create(
@@ -135,6 +154,12 @@ class ScanViewSet(viewsets.ModelViewSet):
             product = resolve_product_from_barcode(barcode, category=data.get("category", "general"))
 
         image_urls = data.get("image_urls", [])
+        image_files = list(data.get("images") or [])
+        if request.FILES:
+            image_files.extend(request.FILES.getlist("images"))
+            if "image" in request.FILES and request.FILES["image"] not in image_files:
+                image_files.append(request.FILES["image"])
+
         category = data.get("category", "general")
         capture_method = data.get("capture_method", "guided_capture")
         location = data.get("location")
@@ -162,12 +187,23 @@ class ScanViewSet(viewsets.ModelViewSet):
             },
         )
 
-        check = process_scan_pipeline(
-            scan,
-            image_urls=image_urls,
-            category=category,
-            is_citizen_scan=False,
-        )
+        try:
+            check = process_scan_pipeline(
+                scan,
+                image_urls=image_urls,
+                image_files=image_files,
+                category=category,
+                is_citizen_scan=False,
+            )
+        except OCRServiceError as e:
+            return Response(
+                {
+                    "error": "OCR_SERVICE_ERROR",
+                    "detail": str(e),
+                    "scan_id": scan.id,
+                },
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
         if check:
             AuditLog.objects.create(
@@ -184,6 +220,7 @@ class ScanViewSet(viewsets.ModelViewSet):
 
         detail_serializer = ScanDetailSerializer(scan)
         return Response(detail_serializer.data, status=status.HTTP_201_CREATED)
+
 
     @action(detail=True, methods=["get"], url_path="processing-result")
     def processing_result(self, request, pk=None):
