@@ -15,10 +15,6 @@ import type { UserRole } from '../../store/authStore';
 const DEMO_USERS: Record<UserRole, { username: string; password: string }> = {
   citizen: { username: 'citizen_demo', password: 'demo1234' },
   field_officer: { username: 'officer_demo', password: 'demo1234' },
-
-  national_admin: { username: 'admin_demo', password: 'demo1234' },
-  business: { username: 'business_demo', password: 'demo1234' },
-
   rule_admin: { username: 'ruleadmin_demo', password: 'demo1234' },
 };
 
@@ -58,7 +54,6 @@ export default function LoginPage() {
   const [regPhone, setRegPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regState, setRegState] = useState('Delhi');
-  const [regOrg, setRegOrg] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -120,7 +115,6 @@ export default function LoginPage() {
       phone: regPhone.trim() || undefined,
       role: regRole,
       state: regRole === 'field_officer' ? regState : undefined,
-      organization: regRole === 'business' ? regOrg.trim() : undefined,
     };
 
     try {
@@ -410,20 +404,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {(regRole === 'business') && (
-              <div className="mb-6">
-                <label className="block text-xs font-semibold mb-2 text-[var(--color-text-secondary)]">
-                  3. Organization details
-                </label>
-                <input
-                  type="text"
-                  placeholder="Company / Marketplace / Enterprise Name (e.g. PureFoods India Pvt Ltd)"
-                  value={regOrg}
-                  onChange={(e) => setRegOrg(e.target.value)}
-                  className={inputClassesSmall}
-                />
-              </div>
-            )}
+
 
             {error && (
               <p className="text-xs mb-4 text-red-600">

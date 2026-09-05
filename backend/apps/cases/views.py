@@ -46,59 +46,14 @@ class CaseViewSet(viewsets.ModelViewSet):
         complaint_id = data.get("complaint")
         rectification_days = data.get("rectification_days", 30)
 
-        # READ ONLY from existing ProductComplianceHistory record written at scan time
-        history_entry = None
-        if violation:
-            history_entry = ProductComplianceHistory.objects.filter(
-                product=product, violation=violation
-            ).first()
-        if not history_entry:
-            history_entry = ProductComplianceHistory.objects.filter(product=product).first()
-
-        is_first_time = history_entry.is_first_time if history_entry else True
-
-        if is_first_time:
-            # 1st Offense -> Section 29 Improvement Notice (30-day rectification window)
-            case = Case.objects.create(
-                product=product,
-                violation=violation,
-                complaint_id=complaint_id,
-                classification="first_time",
-                status="notice_sent",
-                opened_by=user,
-            )
-            deadline = date.today() + timedelta(days=rectification_days)
-            ImprovementNotice.objects.create(
-                case=case,
-                issued_by=user,
-                rectification_deadline=deadline,
-                outcome="pending",
-            )
-        else:
-            # Repeat Offense -> Section 39 Penalty Case
-            case = Case.objects.create(
-                product=product,
-                violation=violation,
-                complaint_id=complaint_id,
-                classification="repeat",
-                status="escalated",
-                opened_by=user,
-            )
-            PenaltyCase.objects.create(
-                case=case,
-                escalated_by=user,
-                payment_status="pending",
-                appeal_status="none",
-            )
-
-        # Link case back to the compliance history entry without creating any duplicate entry
-        if history_entry and not history_entry.case:
-            history_entry.case = case
-            history_entry.save(update_fields=["case"])
-
-        # If opened from a citizen complaint, update complaint status to 'under_investigation'
-        if complaint_id:
-            Complaint.objects.filter(id=complaint_id).update(status="under_investigation")
+        from .services import auto_create_enforcement_case
+        case = auto_create_enforcement_case(
+            product=product,
+            violation=violation,
+            opened_by=user,
+            complaint_id=complaint_id,
+            rectification_days=rectification_days,
+        )
 
         AuditLog.objects.create(
             user=user,

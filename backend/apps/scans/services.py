@@ -384,14 +384,31 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
         check.violations.all().delete()
 
     # Create Violations in DB & classify first-time vs repeat
+    first_viol = None
     for v in violations_detected:
         viol = Violation.objects.create(
             compliance_check=check,
             rule=v["rule"],
             description=v["message"],
         )
+        if not first_viol:
+            first_viol = viol
         if product:
-            classify_and_record(product, viol, case=None if is_citizen_scan else None)
+            classify_and_record(product, viol, case=None)
+
+    # Automatically create case and report if it's an officer scan and there's a violation
+    if not is_citizen_scan and verdict == "non_compliant" and product and first_viol:
+        from apps.cases.services import auto_create_enforcement_case
+        case = auto_create_enforcement_case(
+            product=product,
+            violation=first_viol,
+            opened_by=scan.performed_by,
+        )
+        try:
+            from apps.reports.services import generate_and_save_report
+            generate_and_save_report(case=case, officer=scan.performed_by)
+        except Exception as e:
+            logger.error("Auto report generation failed for new case %s: %s", case.id, e)
 
     scan.status = "processed"
     scan.save(update_fields=["status", "canonical_data"])

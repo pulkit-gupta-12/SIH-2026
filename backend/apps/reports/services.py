@@ -2,6 +2,7 @@
 Legal Metrology Inspection PDF Report Generation Service.
 Uses ReportLab Platypus to construct statutory inspection reports pulling real ORM data.
 """
+# Legal Metrology Inspection PDF Report Generation Service (ReportLab 5.x).
 import os
 import io
 import logging

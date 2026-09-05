@@ -1,4 +1,4 @@
 """
 Semantic evaluation package for Legal Metrology Rule Engine.
-Provides local LLM provider abstraction (Ollama) and semantic validators.
+Provides LLM provider abstraction and semantic validators.
 """

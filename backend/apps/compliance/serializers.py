@@ -45,6 +45,7 @@ class ComplianceCheckDetailSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField(source="scan.product.id", read_only=True)
     product_name = serializers.CharField(source="scan.product.product_name", read_only=True)
     brand_name = serializers.CharField(source="scan.product.brand_name", read_only=True)
+    case_id = serializers.SerializerMethodField()
 
     class Meta:
         model = ComplianceCheck
@@ -61,8 +62,18 @@ class ComplianceCheckDetailSerializer(serializers.ModelSerializer):
             "reviewed_by_officer_username",
             "violations",
             "report_data",
+            "case_id",
             "created_at",
         ]
+
+    def get_case_id(self, obj):
+        # Find if any of the violations have a case linked in history
+        first_viol = obj.violations.first()
+        if first_viol:
+            history = ProductComplianceHistory.objects.filter(violation=first_viol).first()
+            if history and history.case_id:
+                return history.case_id
+        return None
 
 
 class ProductViolationHistorySerializer(serializers.ModelSerializer):

@@ -27,16 +27,13 @@ import CaseCreationPage from '../features/officer/pages/CaseCreationPage';
 // State Controller Pages
 
 
-// National Admin & Rule Admin Pages (Phase 4.3)
+// Rule Engine Admin Pages (Phase 4.3)
 import AdminDashboardPage from '../features/admin/pages/AdminDashboardPage';
 import NotificationMonitorPage from '../features/admin/pages/NotificationMonitorPage';
 import DraftReviewPage from '../features/admin/pages/DraftReviewPage';
 import SimulationPage from '../features/admin/pages/SimulationPage';
 import PublishRulePage from '../features/admin/pages/PublishRulePage';
 import RuleRepositoryPage from '../features/admin/pages/RuleRepositoryPage';
-
-// Other Role Portals
-import BusinessDashboardPage from '../features/business-portal/pages/DashboardPage';
 
 
 export const router = createBrowserRouter([
@@ -82,14 +79,11 @@ export const router = createBrowserRouter([
         ],
       },
 
-      // === State Controller ===
-
-      // === National Admin & Rule Admin (Phase 4.3) ===
+      // === Rule Admin (Phase 4.3) ===
       {
-        element: <RequireRole allowedRoles={['national_admin', 'rule_admin']} />,
+        element: <RequireRole allowedRoles={['rule_admin']} />,
         children: [
           { path: '/admin', element: <AdminDashboardPage /> },
-          { path: '/national', element: <AdminDashboardPage /> },
           { path: '/rule-admin', element: <AdminDashboardPage /> },
           { path: '/admin/rules', element: <RuleRepositoryPage /> },
           { path: '/admin/rules/notifications', element: <NotificationMonitorPage /> },
@@ -98,16 +92,6 @@ export const router = createBrowserRouter([
           { path: '/admin/rules/:id/publish', element: <PublishRulePage /> },
         ],
       },
-
-      // === Business Portal ===
-      {
-        element: <RequireRole allowedRoles={['business']} />,
-        children: [
-          { path: '/business', element: <BusinessDashboardPage /> },
-        ],
-      },
-
-      // === E-commerce Integration ===
     ],
   },
 

@@ -24,17 +24,6 @@ const BOTTOM_NAV_ITEMS: Record<UserRole, BottomNavItem[]> = {
     { label: 'Cases', path: '/officer/cases', icon: '📁' },
   ],
 
-  national_admin: [
-    { label: 'Console', path: '/admin', icon: '🇮🇳' },
-    { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },
-    { label: 'Rules', path: '/admin/rules', icon: '📜' },
-  ],
-  business: [
-    { label: 'Home', path: '/business', icon: '🏠' },
-    { label: 'Pre-Check', path: '/business/pre-check', icon: '✅' },
-    { label: 'Notices', path: '/business/notices', icon: '📨' },
-  ],
-
   rule_admin: [
     { label: 'Console', path: '/admin', icon: '⚖️' },
     { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },

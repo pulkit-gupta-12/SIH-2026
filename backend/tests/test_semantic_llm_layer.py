@@ -1,5 +1,5 @@
 """
-Unit tests for the Local LLM Semantic-Validation Layer (Ollama).
+Unit tests for the LLM Semantic-Validation Layer.
 
 Tests cover:
 1. Provider abstraction and connection failure fallback to REVIEW.
@@ -19,7 +19,7 @@ import requests
 from django.test import TestCase, override_settings
 
 from apps.rules_engine.engine import LegalMetrologyRuleEngine
-from apps.rules_engine.semantic.providers import OllamaProvider, get_llm_provider
+from apps.rules_engine.semantic.providers import OpenRouterProvider, get_llm_provider
 from apps.rules_engine.semantic.evaluator import (
     SemanticEvaluator,
     verify_evidence_presence,
@@ -29,34 +29,29 @@ from apps.scans.canonical import build_canonical_package_data
 
 
 class SemanticLLMProviderTests(TestCase):
-    """Tests for the OllamaProvider abstraction and resilience."""
+    """Tests for the OpenRouterProvider abstraction and resilience."""
 
     def test_01_provider_initialization_defaults(self):
-        """OllamaProvider initializes with settings defaults."""
-        provider = OllamaProvider()
+        """OpenRouterProvider initializes with settings defaults."""
+        provider = OpenRouterProvider()
         self.assertTrue(provider.base_url.startswith("http"))
-        self.assertIn(provider.model, ["llama3", "llama3.2"])
+        self.assertIn("minimax", provider.model.lower())
         self.assertGreater(provider.timeout, 0.0)
 
-    @patch("apps.rules_engine.semantic.providers.requests.get")
-    def test_02_is_available_check(self, mock_get):
-        """is_available() checks Ollama health endpoint."""
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_get.return_value = mock_resp
-
-        provider = OllamaProvider()
+    def test_02_is_available_check(self):
+        """is_available() checks if API key is configured."""
+        provider = OpenRouterProvider(api_key="test_key")
         self.assertTrue(provider.is_available())
 
-        mock_get.side_effect = requests.exceptions.ConnectionError("Offline")
-        self.assertFalse(provider.is_available())
+        provider_no_key = OpenRouterProvider(api_key="")
+        self.assertFalse(provider_no_key.is_available())
 
     @patch("apps.rules_engine.semantic.providers.requests.post")
     def test_03_connection_error_returns_review(self, mock_post):
-        """When Ollama service is unreachable, provider gracefully returns REVIEW."""
-        mock_post.side_effect = requests.exceptions.ConnectionError("Connection refused: 11434")
+        """When OpenRouter service is unreachable, provider gracefully returns REVIEW."""
+        mock_post.side_effect = requests.exceptions.ConnectionError("Connection refused")
 
-        provider = OllamaProvider()
+        provider = OpenRouterProvider(api_key="test_key")
         res = provider.evaluate_semantic_rule(
             rule_id="PCR-SEM-01",
             section_ref="Rule 6(1)",
@@ -68,14 +63,14 @@ class SemanticLLMProviderTests(TestCase):
         self.assertEqual(res["status"], "REVIEW")
         self.assertEqual(res["confidence"], 0.0)
         self.assertTrue(res["requires_human_review"])
-        self.assertIn("unavailable", res["reason"].lower())
+        self.assertIn("unreachable", res["reason"].lower())
 
     @patch("apps.rules_engine.semantic.providers.requests.post")
     def test_04_timeout_returns_review(self, mock_post):
-        """When Ollama times out, provider returns REVIEW with timeout reason."""
+        """When OpenRouter times out, provider returns REVIEW with timeout reason."""
         mock_post.side_effect = requests.exceptions.Timeout("Read timeout after 10s")
 
-        provider = OllamaProvider(timeout=5.0)
+        provider = OpenRouterProvider(api_key="test_key", timeout=5.0)
         res = provider.evaluate_semantic_rule(
             rule_id="PCR-SEM-02",
             section_ref="Rule 6(1)",
@@ -94,11 +89,11 @@ class SemanticLLMProviderTests(TestCase):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
         mock_resp.json.return_value = {
-            "message": {"content": "Not a JSON: I think this is compliant."}
+            "choices": [{"message": {"content": "Not a JSON: I think this is compliant."}}]
         }
         mock_post.return_value = mock_resp
 
-        provider = OllamaProvider()
+        provider = OpenRouterProvider(api_key="test_key")
         res = provider.evaluate_semantic_rule(
             rule_id="PCR-SEM-03",
             section_ref="Rule 6(1)",

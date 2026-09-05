@@ -38,28 +38,6 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     homePath: '/officer',
     description: 'Inspect products, capture labels, create cases',
   },
-  national_admin: {
-    id: 'national_admin',
-    label: 'National Admin / DoCA',
-    shortLabel: 'National',
-    color: 'var(--color-national)',
-    colorLight: 'var(--color-national-light)',
-    colorDark: 'var(--color-national-dark)',
-    icon: '🇮🇳',
-    homePath: '/admin',
-    description: 'Cross-state analytics, policy simulation, rule publishing',
-  },
-  business: {
-    id: 'business',
-    label: 'Business Portal',
-    shortLabel: 'Business',
-    color: 'var(--color-business)',
-    colorLight: 'var(--color-business-light)',
-    colorDark: 'var(--color-business-dark)',
-    icon: '🏢',
-    homePath: '/business',
-    description: 'Pre-market checks, compliance records, notices',
-  },
   rule_admin: {
     id: 'rule_admin',
     label: 'Rule Engine Admin',
@@ -80,7 +58,5 @@ export const getRoleConfig = (role: UserRole): RoleConfig => {
 export const ALL_ROLES: UserRole[] = [
   'citizen',
   'field_officer',
-  'national_admin',
-  'business',
   'rule_admin',
 ];
