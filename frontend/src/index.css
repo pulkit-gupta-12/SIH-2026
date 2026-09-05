@@ -147,3 +147,45 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ===================================================================
+   Search Fields & Dropdowns Styling — Black Background & White Text
+   Applied across Citizen, Officer, and Rule Admin Dashboards
+   =================================================================== */
+select,
+select option,
+select optgroup,
+input[type="search"],
+.search-field,
+.search-input,
+.dropdown-select,
+input[placeholder*="Search" i],
+input[placeholder*="search" i],
+input[placeholder*="GTIN" i],
+input[placeholder*="barcode" i],
+input[placeholder*="Lookup" i] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+select option {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+input::placeholder,
+.search-input::placeholder,
+.search-field::placeholder {
+  color: #94a3b8 !important;
+}
+
+select:focus,
+input[type="search"]:focus,
+.search-field:focus,
+.search-input:focus,
+.dropdown-select:focus {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+

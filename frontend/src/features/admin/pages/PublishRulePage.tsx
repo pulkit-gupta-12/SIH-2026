@@ -168,7 +168,8 @@ export default function PublishRulePage() {
                   type="date"
                   value={effectiveDate}
                   onChange={(e) => setEffectiveDate(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white"
+                  className="w-full px-3 py-2.5 rounded-lg bg-black border border-slate-700 text-xs text-white"
+                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
                 />
                 <p className="text-[11px] text-slate-400">
                   Inspections conducted on or after this date will evaluate against this rule condition.

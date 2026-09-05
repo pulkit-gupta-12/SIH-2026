@@ -166,10 +166,11 @@ export default function FileComplaintPage() {
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
                 placeholder="Search product name or brand to attach..."
-                className="w-full rounded-xl bg-slate-900/80 border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full rounded-xl bg-black border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 search-input"
+                style={{ backgroundColor: '#000000', color: '#ffffff' }}
               />
               {searchResults && searchResults.length > 0 && (
-                <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 divide-y divide-slate-800">
+                <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-700 bg-black divide-y divide-slate-800" style={{ backgroundColor: '#000000' }}>
                   {searchResults.map((p) => (
                     <div
                       key={p.id}
@@ -177,11 +178,12 @@ export default function FileComplaintPage() {
                         setSelectedProductId(p.id);
                         setProductSearch(p.product_name);
                       }}
-                      className="p-2.5 hover:bg-slate-800 cursor-pointer flex justify-between items-center text-xs"
+                      className="p-2.5 hover:bg-slate-900 cursor-pointer flex justify-between items-center text-xs bg-black text-white"
+                      style={{ backgroundColor: '#000000', color: '#ffffff' }}
                     >
                       <div>
                         <span className="font-semibold text-white block">{p.product_name}</span>
-                        <span className="text-slate-400">{p.brand_name}</span>
+                        <span className="text-slate-300">{p.brand_name}</span>
                       </div>
                       <span className="font-mono text-emerald-400">{p.gtin_barcode}</span>
                     </div>

@@ -88,21 +88,23 @@ export default function InspectionQueuePage() {
             placeholder="Search by brand, product name, or GTIN barcode..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg bg-card/60 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 search-input"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs text-muted-foreground whitespace-nowrap">Filter Source:</label>
+          <label className="text-xs text-slate-300 whitespace-nowrap">Filter Source:</label>
           <select
             value={filterSource}
             onChange={(e) => setFilterSource(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg bg-card/60 border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full px-3 py-2 rounded-lg bg-black border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 dropdown-select"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           >
-            <option value="all">All Sources ({queueList.length})</option>
-            <option value="complaint">Citizen Complaints</option>
-            <option value="risk_engine">Risk Engine Prioritization</option>
-            <option value="ecommerce_flag">E-commerce Flagged</option>
+            <option value="all" className="bg-black text-white">All Sources ({queueList.length})</option>
+            <option value="complaint" className="bg-black text-white">Citizen Complaints</option>
+            <option value="risk_engine" className="bg-black text-white">Risk Engine Prioritization</option>
+            <option value="ecommerce_flag" className="bg-black text-white">E-commerce Flagged</option>
           </select>
         </div>
       </div>

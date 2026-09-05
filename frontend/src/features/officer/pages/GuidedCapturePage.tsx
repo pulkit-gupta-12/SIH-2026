@@ -192,7 +192,8 @@ export default function GuidedCapturePage() {
             type="text"
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-background/60 border border-border text-foreground font-mono text-sm"
+            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white font-mono text-sm search-input"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           />
         </div>
         <div>
@@ -200,13 +201,14 @@ export default function GuidedCapturePage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-background/60 border border-border text-foreground text-sm"
+            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white text-sm dropdown-select"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           >
-            <option value="food">Food & Edibles</option>
-            <option value="medical_device">Medical Devices</option>
-            <option value="electronics">Electronics & IT</option>
-            <option value="import">Imported Commodities</option>
-            <option value="general">General Packaged Goods</option>
+            <option value="food" className="bg-black text-white">Food & Edibles</option>
+            <option value="medical_device" className="bg-black text-white">Medical Devices</option>
+            <option value="electronics" className="bg-black text-white">Electronics & IT</option>
+            <option value="import" className="bg-black text-white">Imported Commodities</option>
+            <option value="general" className="bg-black text-white">General Packaged Goods</option>
           </select>
         </div>
         <div>
@@ -215,7 +217,8 @@ export default function GuidedCapturePage() {
             type="text"
             value={locationStr}
             onChange={(e) => setLocationStr(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-background/60 border border-border text-foreground text-sm"
+            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white text-sm search-input"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           />
         </div>
       </div>

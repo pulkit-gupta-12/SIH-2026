@@ -64,8 +64,10 @@ urlpatterns = [
     path("api/dashboards/", include("apps.dashboards.urls")),
 ]
 
-# Debug toolbar (dev only)
+# Debug toolbar & Media serving (dev only)
 if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     try:
         import debug_toolbar
         urlpatterns = [
@@ -73,3 +75,4 @@ if settings.DEBUG:
         ] + urlpatterns
     except ImportError:
         pass
+

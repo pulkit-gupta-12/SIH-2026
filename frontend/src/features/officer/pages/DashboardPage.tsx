@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -9,6 +10,8 @@ import {
 
 export default function OfficerDashboardPage() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterSource, setFilterSource] = useState('all');
 
   const { data: queueData = [], isLoading: isLoadingQueue } = useQuery<InspectionQueueItem[]>({
     queryKey: ['inspection-queue'],
@@ -165,6 +168,37 @@ export default function OfficerDashboardPage() {
         </div>
       </div>
 
+      {/* Quick Search & Filter Controls */}
+      <div className="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">🔍</span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search targets or cases by brand, product name, or GTIN..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500 transition-all font-mono search-input"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            />
+          </div>
+
+          <div className="w-full sm:w-auto">
+            <select
+              value={filterSource}
+              onChange={(e) => setFilterSource(e.target.value)}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-black border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 transition-all dropdown-select"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            >
+              <option value="all" className="bg-black text-white">All Sources ({queue.length})</option>
+              <option value="complaint" className="bg-black text-white">Citizen Complaints</option>
+              <option value="risk_engine" className="bg-black text-white">Risk Engine Prioritization</option>
+              <option value="ecommerce_flag" className="bg-black text-white">E-Commerce Flagged</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Live Priority Queue & Recent Cases Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Priority Targets */}
@@ -188,7 +222,18 @@ export default function OfficerDashboardPage() {
             <p className="text-xs text-slate-400 text-center py-4">No inspection targets in queue.</p>
           ) : (
             <div className="space-y-3">
-              {queue.slice(0, 4).map((item) => (
+              {queue
+                .filter((item) => {
+                  const matchesSearch =
+                    !searchTerm ||
+                    (item.product_detail?.product_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (item.product_detail?.brand_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (item.product_detail?.gtin_barcode || '').toLowerCase().includes(searchTerm.toLowerCase());
+                  const matchesSource = filterSource === 'all' || item.source === filterSource;
+                  return matchesSearch && matchesSource;
+                })
+                .slice(0, 4)
+                .map((item) => (
                 <div
                   key={item.id}
                   onClick={() => navigate(`/officer/capture?productId=${item.product}&targetId=${item.id}`)}
@@ -236,7 +281,18 @@ export default function OfficerDashboardPage() {
             <p className="text-xs text-slate-400 text-center py-4">No active enforcement cases found.</p>
           ) : (
             <div className="space-y-3">
-              {cases.slice(0, 4).map((c) => (
+              {cases
+                .filter((c) => {
+                  return (
+                    !searchTerm ||
+                    (c.brand_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (c.product_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (c.gtin_barcode || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    `Case #${c.id}`.toLowerCase().includes(searchTerm.toLowerCase())
+                  );
+                })
+                .slice(0, 4)
+                .map((c) => (
                 <div
                   key={c.id}
                   onClick={() => navigate(`/officer/product/${c.product}/history`)}

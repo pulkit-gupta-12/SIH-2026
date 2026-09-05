@@ -219,11 +219,12 @@ export default function ReviewFindingsPage() {
                 <select
                   value={overrideVerdict}
                   onChange={(e) => setOverrideVerdict(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 rounded bg-background/80 border border-border text-foreground text-xs"
+                  className="mt-1 w-full px-3 py-2 rounded bg-black border border-slate-700 text-white text-xs dropdown-select"
+                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
                 >
-                  <option value="compliant">Compliant (Exemption / Secondary Label Verified)</option>
-                  <option value="non_compliant">Non-Compliant (Confirmed Violation)</option>
-                  <option value="needs_review">Needs State Controller Review</option>
+                  <option value="compliant" className="bg-black text-white">Compliant (Exemption / Secondary Label Verified)</option>
+                  <option value="non_compliant" className="bg-black text-white">Non-Compliant (Confirmed Violation)</option>
+                  <option value="needs_review" className="bg-black text-white">Needs State Controller Review</option>
                 </select>
               </div>
 
@@ -234,7 +235,8 @@ export default function ReviewFindingsPage() {
                   placeholder="e.g., Exemption under Rule 26 verified during visual inspection..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 rounded bg-background/80 border border-border text-foreground text-xs"
+                  className="mt-1 w-full px-3 py-2 rounded bg-black border border-slate-700 text-white placeholder-slate-400 text-xs search-input"
+                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
                 />
               </div>
             </div>

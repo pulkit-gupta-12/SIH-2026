@@ -139,13 +139,14 @@ export default function ScanSearchPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-1.5 text-white text-xs focus:outline-none focus:border-emerald-500"
+            className="rounded-xl bg-black border border-slate-700 px-3 py-1.5 text-white text-xs focus:outline-none focus:border-emerald-500 dropdown-select"
+            style={{ backgroundColor: '#000000', color: '#ffffff' }}
           >
-            <option value="general">General Commodities</option>
-            <option value="food">Food & Beverages</option>
-            <option value="electronics">Electronics</option>
-            <option value="medical_device">Medical Devices</option>
-            <option value="import">Imported Goods</option>
+            <option value="general" className="bg-black text-white">General Commodities</option>
+            <option value="food" className="bg-black text-white">Food & Beverages</option>
+            <option value="electronics" className="bg-black text-white">Electronics</option>
+            <option value="medical_device" className="bg-black text-white">Medical Devices</option>
+            <option value="import" className="bg-black text-white">Imported Goods</option>
           </select>
         </div>
 
@@ -186,7 +187,8 @@ export default function ScanSearchPage() {
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
                 placeholder="e.g. 8901030865412 (optional)"
-                className="w-full rounded-xl bg-slate-900/80 border border-slate-700/80 px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono text-xs"
+                className="w-full rounded-xl bg-black border border-slate-700 px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 font-mono text-xs search-input"
+                style={{ backgroundColor: '#000000', color: '#ffffff' }}
               />
             </div>
 
@@ -224,7 +226,8 @@ export default function ScanSearchPage() {
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
                   placeholder="e.g. 8901234567890"
-                  className="w-full rounded-xl bg-slate-900/80 border border-slate-700/80 px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono text-base"
+                  className="w-full rounded-xl bg-black border border-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono text-base search-input"
+                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
                   required
                 />
                 <button
