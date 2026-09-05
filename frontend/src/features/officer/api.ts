@@ -120,6 +120,7 @@ export interface ComplianceCheckResult {
   reviewed_by_officer_username?: string;
   violations: ViolationItem[];
   report_data?: ComplianceReport;
+  case_id?: number;
   created_at: string;
 }
 
@@ -247,6 +248,61 @@ export interface EnforcementCaseResult {
   created_at: string;
 }
 
+export interface InspectionHistoryItem {
+  id: number;
+  compliance_check_id: number;
+  scan_id: number;
+  product: {
+    id: number | null;
+    product_name: string;
+    brand_name: string;
+    gtin_barcode: string;
+    category: string;
+    manufacturer_name?: string;
+  };
+  verdict: 'compliant' | 'non_compliant' | 'needs_review';
+  overall_confidence: number;
+  inspection_date: string;
+  officer: {
+    id: number | null;
+    username: string;
+    name: string;
+  };
+  location: string;
+  capture_method: string;
+  violations_count: number;
+  violations: Array<{
+    id: number;
+    rule_id_code: string;
+    section_ref: string;
+    description: string;
+  }>;
+  report?: {
+    id: number;
+    file_url: string;
+    format: string;
+    signed: boolean;
+    generated_at: string;
+  } | null;
+  case_id?: number | null;
+}
+
+export interface FetchInspectionHistoryParams {
+  search?: string;
+  verdict?: string;
+  date_from?: string;
+  date_to?: string;
+  officer?: string;
+  page?: number;
+}
+
+export interface InspectionHistoryResponse {
+  count: number;
+  next?: string | null;
+  previous?: string | null;
+  results: InspectionHistoryItem[];
+}
+
 export async function fetchInspectionQueue(): Promise<InspectionQueueItem[]> {
   const { data } = await apiClient.get<InspectionQueueItem[] | { results: InspectionQueueItem[] }>('/inspections/queue/');
   if (Array.isArray(data)) return data;
@@ -254,6 +310,29 @@ export async function fetchInspectionQueue(): Promise<InspectionQueueItem[]> {
     return (data as { results: InspectionQueueItem[] }).results;
   }
   return [];
+}
+
+export async function fetchInspectionHistory(
+  params: FetchInspectionHistoryParams = {}
+): Promise<InspectionHistoryResponse> {
+  const query = new URLSearchParams();
+  if (params.search) query.append('search', params.search);
+  if (params.verdict && params.verdict !== 'all') query.append('verdict', params.verdict);
+  if (params.date_from) query.append('date_from', params.date_from);
+  if (params.date_to) query.append('date_to', params.date_to);
+  if (params.officer) query.append('officer', params.officer);
+  if (params.page) query.append('page', String(params.page));
+
+  const url = `/inspections/history/${query.toString() ? `?${query.toString()}` : ''}`;
+  const { data } = await apiClient.get<InspectionHistoryResponse | InspectionHistoryItem[]>(url);
+
+  if (Array.isArray(data)) {
+    return {
+      count: data.length,
+      results: data,
+    };
+  }
+  return data;
 }
 
 export async function submitOfficerGuidedScan(payload: {

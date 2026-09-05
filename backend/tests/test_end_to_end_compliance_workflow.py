@@ -376,7 +376,7 @@ class EndToEndComplianceWorkflowTests(TestCase):
     def test_case_09_llm_unavailable_falls_back_gracefully(self):
         """CASE 9: LLM service failure/offline falls back to human REVIEW without crashing."""
         mock_provider = MagicMock(spec=BaseLLMProvider)
-        mock_provider.evaluate_semantic_rule.side_effect = ConnectionError("Ollama daemon unavailable at localhost:11434")
+        mock_provider.evaluate_semantic_rule.side_effect = ConnectionError("OpenRouter daemon unavailable")
 
         evaluator = SemanticEvaluator(provider=mock_provider)
         semantic_rule = {

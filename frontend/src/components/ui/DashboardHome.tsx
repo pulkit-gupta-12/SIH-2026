@@ -31,18 +31,7 @@ const ROLE_STATS: Record<UserRole, StatCard[]> = {
     { label: 'Compliance Rate', value: '—', icon: '📊' },
   ],
 
-  national_admin: [
-    { label: 'States Monitored', value: '36', icon: '🇮🇳' },
-    { label: 'Total Inspections', value: '—', icon: '🔍' },
-    { label: 'Active Violations', value: '—', icon: '🔴' },
-    { label: 'Compliance Trend', value: '—', icon: '📈' },
-  ],
-  business: [
-    { label: 'Products Registered', value: '—', icon: '📦' },
-    { label: 'Compliance Score', value: '—', icon: '✅' },
-    { label: 'Active Notices', value: '0', icon: '📨' },
-    { label: 'Last Pre-Check', value: '—', icon: '🕐' },
-  ],
+
 
   rule_admin: [
     { label: 'Active Rules', value: '—', icon: '📚' },

@@ -178,7 +178,7 @@ class UnifiedComplianceReportTests(TestCase):
         # Mock LLM provider raise ConnectionError
         with patch("apps.rules_engine.semantic.evaluator.get_llm_provider") as mock_get_p:
             mock_provider = MagicMock()
-            mock_provider.evaluate_semantic_rule.side_effect = ConnectionError("Ollama connection failed")
+            mock_provider.evaluate_semantic_rule.side_effect = ConnectionError("OpenRouter connection failed")
             mock_get_p.return_value = mock_provider
 
             engine = LegalMetrologyRuleEngine.from_json_file()

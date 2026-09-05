@@ -26,18 +26,6 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Cases', path: '/officer/cases', icon: '📁' },
   ],
 
-  national_admin: [
-    { label: 'Admin Console', path: '/admin', icon: '🇮🇳' },
-    { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
-    { label: 'Rule Repository', path: '/admin/rules', icon: '📜' },
-  ],
-  business: [
-    { label: 'Dashboard', path: '/business', icon: '🏠' },
-    { label: 'Pre-Check', path: '/business/pre-check', icon: '✅' },
-    { label: 'Compliance', path: '/business/compliance', icon: '📋' },
-    { label: 'Notices', path: '/business/notices', icon: '📨' },
-  ],
-
   rule_admin: [
     { label: 'Admin Console', path: '/admin', icon: '⚖️' },
     { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
@@ -76,7 +64,7 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === '/admin' || item.path === '/citizen' || item.path === '/officer' || item.path === '/business'}
+            end={item.path === '/admin' || item.path === '/citizen' || item.path === '/officer'}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 no-underline ${
                 isActive

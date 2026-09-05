@@ -92,22 +92,32 @@ export default function ReviewFindingsPage() {
           >
             Check History
           </button>
-          <button
-            onClick={() =>
-              navigate('/officer/case/new', {
-                state: {
-                  productId: check.product_id,
-                  productName: check.product_name,
-                  brandName: check.brand_name,
-                  violations: check.violations,
-                },
-              })
-            }
-            className="px-4 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md"
-          >
-            <span>Proceed to Case Creation</span>
-            <span>→</span>
-          </button>
+          {check.case_id ? (
+            <button
+              onClick={() => navigate(`/officer/case/${check.case_id}`)}
+              className="px-4 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md"
+            >
+              <span>View Generated Case</span>
+              <span>→</span>
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                navigate('/officer/case/new', {
+                  state: {
+                    productId: check.product_id,
+                    productName: check.product_name,
+                    brandName: check.brand_name,
+                    violations: check.violations,
+                  },
+                })
+              }
+              className="px-4 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md"
+            >
+              <span>Proceed to Case Creation</span>
+              <span>→</span>
+            </button>
+          )}
         </div>
       </div>
 
