@@ -8,6 +8,7 @@ Source of Truth: backend/apps/rules_engine/2011_rule.json & active Rule database
 import os
 import json
 import logging
+import concurrent.futures
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Union
 
@@ -266,6 +267,7 @@ class LegalMetrologyRuleEngine:
             engine_2011 = LegalMetrologyRuleEngine.from_json_file(semantic_evaluator=self.semantic_evaluator)
             rules_to_eval = engine_2011.rules
 
+        semantic_rules_to_eval = []
         for rule in rules_to_eval:
             rule_id = rule.get("rule_id_code", "UNKNOWN_RULE")
 
@@ -287,17 +289,10 @@ class LegalMetrologyRuleEngine:
                 })
                 continue
 
-            # 2. Semantic Evaluation Check
+            # 2. Semantic Evaluation Check - Queue for parallel execution
             # Only rules explicitly marked as semantic/LLM-required are routed to SemanticEvaluator
             if is_semantic_rule(rule):
-                res = self.semantic_evaluator.evaluate_rule(
-                    rule=rule,
-                    canonical_package_data=canonical_package_data,
-                    raw_ocr_text=raw_ocr,
-                    context=eval_context,
-                )
-                res["section_ref"] = rule.get("section_ref", "")
-                results.append(res)
+                semantic_rules_to_eval.append(rule)
                 continue
 
             cond = rule.get("condition")
@@ -338,6 +333,26 @@ class LegalMetrologyRuleEngine:
 
             res["section_ref"] = rule.get("section_ref", "")
             results.append(res)
+
+        # 3.5 Evaluate semantic rules concurrently
+        if semantic_rules_to_eval:
+            def evaluate_single(rule):
+                res = self.semantic_evaluator.evaluate_rule(
+                    rule=rule,
+                    canonical_package_data=canonical_package_data,
+                    raw_ocr_text=raw_ocr,
+                    context=eval_context,
+                )
+                res["section_ref"] = rule.get("section_ref", "")
+                return res
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=min(10, len(semantic_rules_to_eval))) as executor:
+                futures = [executor.submit(evaluate_single, r) for r in semantic_rules_to_eval]
+                for future in concurrent.futures.as_completed(futures):
+                    try:
+                        results.append(future.result())
+                    except Exception as e:
+                        logger.error("Semantic evaluation failed: %s", e)
 
         # 4. Built-in statutory cross-field consistency checks
         # Expiry vs Mfg Date check (if both declared)

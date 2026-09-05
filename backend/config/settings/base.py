@@ -90,15 +90,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 # ---------------------------------------------------------------------------
 # Database — PostgreSQL
 # ---------------------------------------------------------------------------
+import dj_database_url
+from decouple import config
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "legalmetro"),
-        "USER": os.environ.get("DB_USER", "legalmetro"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "legalmetro_dev"),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-    }
+    "default": dj_database_url.parse(
+        config("DATABASE_URL", default="postgres://legalmetro:legalmetro_dev@localhost:5432/legalmetro"),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # ---------------------------------------------------------------------------

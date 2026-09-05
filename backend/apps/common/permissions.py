@@ -72,12 +72,12 @@ class IsCitizenOrFieldOfficer(BasePermission):
 
 
 class IsOfficerOrController(BasePermission):
-    """Allow access to field officers, state controllers, and national admins (e.g. cases and inspections)."""
-    message = "Field Officer or Controller role required."
+    """Allow access to field officers, state controllers, national admins, and rule admins (e.g. cases and inspections)."""
+    message = "Field Officer, Controller, or Admin role required."
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
         return request.user.role_assignments.filter(
-            role__name__in=["field_officer", "state_controller", "national_admin"]
+            role__name__in=["field_officer", "state_controller", "national_admin", "rule_admin"]
         ).exists()
