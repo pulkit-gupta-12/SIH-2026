@@ -65,7 +65,8 @@ export default function RuleRepositoryPage() {
               placeholder="Search by rule code, section reference, or keyword..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 outline-none"
+              className="w-full px-4 py-2 rounded-xl bg-black border border-slate-700 text-xs text-white placeholder-slate-400 outline-none search-input"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
             />
           </div>
 
@@ -74,15 +75,16 @@ export default function RuleRepositoryPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full md:w-auto px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 outline-none"
+              className="w-full md:w-auto px-3 py-2 rounded-xl bg-black border border-slate-700 text-xs text-white outline-none dropdown-select"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
             >
-              <option value="all">All Categories</option>
-              <option value="general">General</option>
-              <option value="food">Food & Beverages</option>
-              <option value="electronics">Electronics</option>
-              <option value="medical_device">Medical Devices</option>
-              <option value="import">Imported Goods</option>
-              <option value="ecommerce">E-Commerce</option>
+              <option value="all" className="bg-black text-white">All Categories</option>
+              <option value="general" className="bg-black text-white">General</option>
+              <option value="food" className="bg-black text-white">Food & Beverages</option>
+              <option value="electronics" className="bg-black text-white">Electronics</option>
+              <option value="medical_device" className="bg-black text-white">Medical Devices</option>
+              <option value="import" className="bg-black text-white">Imported Goods</option>
+              <option value="ecommerce" className="bg-black text-white">E-Commerce</option>
             </select>
           </div>
 

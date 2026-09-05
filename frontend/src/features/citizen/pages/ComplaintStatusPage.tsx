@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMyComplaints, type Complaint } from "../api";
@@ -5,6 +6,8 @@ import StatusPill from "../../../components/ui/StatusPill";
 
 export default function ComplaintStatusPage() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const {
     data: complaints = [],
@@ -15,6 +18,17 @@ export default function ComplaintStatusPage() {
     queryKey: ["my-complaints"],
     queryFn: getMyComplaints,
     staleTime: 15_000,
+  });
+
+  const filteredComplaints = complaints.filter((c: Complaint) => {
+    const matchesSearch =
+      !searchTerm ||
+      (c.product_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.brand_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (c.description || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `CMP-${String(c.id).padStart(5, "0")}`.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || c.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   return (
@@ -36,6 +50,36 @@ export default function ComplaintStatusPage() {
           <span>+ File New Complaint</span>
         </button>
       </div>
+
+      {/* Search & Status Filter */}
+      {complaints.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="sm:col-span-2 relative">
+            <input
+              type="text"
+              placeholder="Search complaints by product, brand, or CMP ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl bg-black border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-emerald-500 search-input"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            />
+          </div>
+          <div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl bg-black border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500 dropdown-select"
+              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            >
+              <option value="all" className="bg-black text-white">All Statuses ({complaints.length})</option>
+              <option value="open" className="bg-black text-white">Open</option>
+              <option value="under_investigation" className="bg-black text-white">Under Investigation</option>
+              <option value="resolved" className="bg-black text-white">Resolved</option>
+              <option value="dismissed" className="bg-black text-white">Dismissed</option>
+            </select>
+          </div>
+        </div>
+      )}
 
       {/* Loading state */}
       {isLoading && (
@@ -77,10 +121,23 @@ export default function ComplaintStatusPage() {
         </div>
       )}
 
+      {/* Filtered Empty State */}
+      {!isLoading && complaints.length > 0 && filteredComplaints.length === 0 && (
+        <div className="glass-card p-8 text-center rounded-2xl space-y-2 border border-slate-800">
+          <p className="text-sm text-slate-300">No complaints matching your search filter.</p>
+          <button
+            onClick={() => { setSearchTerm(''); setStatusFilter('all'); }}
+            className="text-xs text-emerald-400 underline font-medium"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
       {/* Complaints List */}
-      {!isLoading && complaints.length > 0 && (
+      {!isLoading && filteredComplaints.length > 0 && (
         <div className="space-y-4">
-          {complaints.map((c: Complaint) => (
+          {filteredComplaints.map((c: Complaint) => (
             <div
               key={c.id}
               className="glass-card p-5 rounded-2xl border border-slate-800/80 hover:border-emerald-500/30 transition-all space-y-3"

@@ -208,11 +208,12 @@ export default function CaseCreationPage() {
                   setViolationId('');
                 }}
                 required
-                className="w-full px-4 py-2.5 rounded-lg bg-card/80 border border-border text-foreground text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none dropdown-select"
+                style={{ backgroundColor: '#000000', color: '#ffffff' }}
               >
-                <option value="">Select target product...</option>
+                <option value="" className="bg-black text-white">Select target product...</option>
                 {products.map((p) => (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id} className="bg-black text-white">
                     {p.brand_name} - {p.product_name} ({p.gtin_barcode})
                   </option>
                 ))}
@@ -228,11 +229,12 @@ export default function CaseCreationPage() {
                 <select
                   value={violationId}
                   onChange={(e) => setViolationId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-card/80 border border-border text-foreground text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none dropdown-select"
+                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
                 >
-                  <option value="">Apply to product general non-compliance</option>
+                  <option value="" className="bg-black text-white">Apply to product general non-compliance</option>
                   {historyList.map((h) => (
-                    <option key={h.violation_id} value={h.violation_id}>
+                    <option key={h.violation_id} value={h.violation_id} className="bg-black text-white">
                       [{h.rule_id_code}] {h.section_ref}: {h.description.slice(0, 60)}... ({h.is_first_time ? '1st Offense' : 'Repeat'})
                     </option>
                   ))}
@@ -273,7 +275,8 @@ export default function CaseCreationPage() {
                     max={90}
                     value={rectificationDays}
                     onChange={(e) => setRectificationDays(Number(e.target.value))}
-                    className="w-32 px-4 py-2 rounded-lg bg-card/80 border border-border text-foreground text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                    className="w-32 px-4 py-2 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                    style={{ backgroundColor: '#000000', color: '#ffffff' }}
                   />
                   <span className="text-xs text-muted-foreground">Standard statutory window: 30 days</span>
                 </div>
@@ -290,7 +293,8 @@ export default function CaseCreationPage() {
                 placeholder="Enter field inspection observations, retail premises name, batch details, or non-compliance remarks..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg bg-card/80 border border-border text-foreground text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none placeholder:text-muted-foreground"
+                className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none placeholder:text-slate-400"
+                style={{ backgroundColor: '#000000', color: '#ffffff' }}
               />
             </div>
 
