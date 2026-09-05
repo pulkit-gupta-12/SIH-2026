@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCamera, type CapturedFrame, type FacingMode } from './useCamera';
 
 interface CameraCaptureViewProps {
@@ -11,8 +11,15 @@ interface CameraCaptureViewProps {
   reticleType?: 'general' | 'pdp' | 'declarations' | 'mrp' | 'barcode' | 'seal';
   autoStart?: boolean;
   defaultFacingMode?: FacingMode;
+  onBarcodeDetected?: (barcode: string) => void;
   className?: string;
 }
+
+type BarcodeDetectorLike = {
+  detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue?: string }>>;
+};
+
+type BarcodeDetectorConstructor = new (options?: { formats?: string[] }) => BarcodeDetectorLike;
 
 export default function CameraCaptureView({
   title,
@@ -24,6 +31,7 @@ export default function CameraCaptureView({
   reticleType = 'general',
   autoStart = true,
   defaultFacingMode = 'environment',
+  onBarcodeDetected,
   className = '',
 }: CameraCaptureViewProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -42,6 +50,39 @@ export default function CameraCaptureView({
     captureFrame,
     processUploadedFile,
   } = useCamera({ autoStart, defaultFacingMode });
+
+  useEffect(() => {
+    if (reticleType !== 'barcode' || !onBarcodeDetected || cameraStatus !== 'active') return;
+
+    const detectorConstructor = (window as Window & { BarcodeDetector?: BarcodeDetectorConstructor }).BarcodeDetector;
+    if (!detectorConstructor) return;
+
+    const detector = new detectorConstructor({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'qr_code'] });
+    let stopped = false;
+    let timer: number | undefined;
+
+    const scan = async () => {
+      if (stopped || !videoRef.current) return;
+      try {
+        const detections = await detector.detect(videoRef.current);
+        const barcode = detections.find((item) => item.rawValue?.trim())?.rawValue?.trim();
+        if (barcode) {
+          onBarcodeDetected(barcode);
+          stopped = true;
+          return;
+        }
+      } catch {
+        // The browser may reject frames while the camera is changing state.
+      }
+      if (!stopped) timer = window.setTimeout(scan, 250);
+    };
+
+    timer = window.setTimeout(scan, 250);
+    return () => {
+      stopped = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [cameraStatus, onBarcodeDetected, reticleType, videoRef]);
 
   // Handle capture button click
   const handleCaptureClick = async () => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { scanOrLookupProduct, searchProducts, type ComplianceSnapshot } from "../api";
@@ -40,6 +40,12 @@ export default function ScanSearchPage() {
       }
     },
   });
+
+  const handleBarcodeDetected = useCallback((detectedBarcode: string) => {
+    setBarcode(detectedBarcode);
+    setErrorMessage(null);
+    scanMutation.mutate({ barcode: detectedBarcode, category });
+  }, [category, scanMutation]);
 
   // React Query for live text search
   const { data: searchResults, isFetching: isSearching } = useQuery({
@@ -215,7 +221,23 @@ export default function ScanSearchPage() {
 
         {/* TAB 2: BARCODE & GTIN LOOKUP */}
         {activeTab === "barcode" && (
-          <form onSubmit={handleBarcodeSubmit} className="space-y-4 animate-fade-in">
+          <div className="space-y-4 animate-fade-in">
+            <CameraCaptureView
+              title="Barcode"
+              instruction="Align the barcode inside the box"
+              onCapture={() => undefined}
+              onBarcodeDetected={handleBarcodeDetected}
+              isProcessing={scanMutation.isPending}
+              reticleType="barcode"
+              autoStart={true}
+              defaultFacingMode="environment"
+            />
+
+            <div className="text-center text-xs text-slate-400">
+              The product record and compliance result will load automatically when the barcode is detected.
+            </div>
+
+            <form onSubmit={handleBarcodeSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">
                 Scan or Enter Barcode (GTIN)
@@ -256,7 +278,8 @@ export default function ScanSearchPage() {
                 </>
               )}
             </button>
-          </form>
+            </form>
+          </div>
         )}
 
         {errorMessage && (
