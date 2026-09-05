@@ -1,0 +1,910 @@
+[
+    {
+        "rule_id_code": "JVA2026-S3-PENALTY-REVISION",
+        "source_section": "Jan Vishwas (Amendment of Provisions) Act, 2026, Section 3",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "N/A"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": null,
+        "violation_trigger": "Expiry of every three years from commencement of the Act[cite: 3]",
+        "first_offence_consequence": "10% increase of the minimum amount of fine or penalty[cite: 3]",
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "The fines and penalties provided under various provisions in the enactments mentioned in the Schedule shall be increased by ten per cent. of the minimum amount of fine or penalty, as the case may be, prescribed therefor, after the expiry of every three years from the date of commencement of this Act: Provided that notwithstanding anything contained in this section, if any enactment mentioned in the Schedule provides the manner of revision of fines and penalties therein, only the said provision shall be applicable for increase of fines and penalties for provisions of such enactment.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S2-EA-IMPROVEMENT-NOTICE",
+        "source_section": "Legal Metrology Act, 2009, Section 2(ea)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(A)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "definition"
+        ],
+        "regulated_conduct": null,
+        "violation_trigger": "Definition of improvement notice[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "In section 2, after clause (e), the following clause shall be inserted, namely:–– '(ea) \"improvement notice\" means an improvement notice issued under this Act;'.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S15-5-LAWFUL-WARRANT",
+        "source_section": "Legal Metrology Act, 2009, Section 15(5)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(B)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "enforcement_remediation"
+        ],
+        "regulated_conduct": [
+            "inspection",
+            "search",
+            "seizure"
+        ],
+        "violation_trigger": "Inspection, search or seizure carried out by a legal metrology officer[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "(5) Any inspection, search or seizure carried out by a legal metrology officer under this section in pursuance of a general or special order, instruction or written authorisation issued by the Director or Controller of Legal Metrology shall be deemed to have been made under a lawful warrant.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S15-6-7-IMPROVEMENT-NOTICE",
+        "source_section": "Legal Metrology Act, 2009, Section 15(6)-(7)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(B)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "enforcement_remediation"
+        ],
+        "regulated_conduct": null,
+        "violation_trigger": "Failure to comply with any provision of the Act or rules or directions issued[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": {
+            "type": "administrative",
+            "effect": "suspension or revocation of registration or approval[cite: 3]"
+        },
+        "raw_text": "(6) If the Director, Controller or legal metrology officer has reasonable ground for believing that any person has failed to comply with any provision of the Act or rules or directions issued, wherever applicable, he may, by a improvement notice served on that person,–– (i) state the grounds for believing that the person has failed to comply with the provisions of Act or rules or directions issued; (ii) specify the matters which constitute the person’s failure so to comply; (iii) specify the measures which, in the opinion of the said Authority, the person must take, in order to secure compliance; and (iv) require the person to take those measures, within a reasonable period, as may be specified in the said notice. (7) If the person fails to comply with an improvement notice issued under sub-section (6), his registration or approval, as the case may be, shall be suspended or revoked: Provided that the authorised officer may, after giving the person an opportunity of being heard, suspend or revoke the registration or approval granted, as the case may be, for reasons to be recorded in writing.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S23-REGISTRATION-CERTIFICATE",
+        "source_section": "Legal Metrology Act, 2009, Section 23",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(C)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "enforcement_remediation"
+        ],
+        "regulated_conduct": null,
+        "violation_trigger": "Substitution of terminology[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "(i) in the marginal heading, for the word 'licence', the word 'registration certificate' shall be substituted; (ii) in sub-section (1), for the word 'licence' at both the places where they occur, the word 'registration certificate' shall be substituted; (iii) in sub-section (2), for the word 'licence', the words 'registration certificate' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S25-PENALTY-NONSTD-WEIGHT-MEASURE",
+        "source_section": "Legal Metrology Act, 2009, Section 25",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(D)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "using non-standard weight or measure",
+            "keeping non-standard weight or measure",
+            "using non-standard numeration"
+        ],
+        "violation_trigger": "Using/keeping non-standard weight or measure; using non-standard numeration[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 100000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to one lakh rupees and for the second offence with fine which may extend to two lakh rupees and for the third and subsequent offence, with fine which may extend to five lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to one lakh rupees and for the subsequent offences the fine shall be not less than two lakhs rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S26-ALTERATION-WEIGHT-MEASURE-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 26",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(E)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "tampering",
+            "altering"
+        ],
+        "violation_trigger": "Tampering with or altering reference, secondary, or working standards[cite: 3]",
+        "first_offence_consequence": "fine up to INR 50,000",
+        "second_offence_consequence": {
+            "type": "fine",
+            "maximum_inr": 100000
+        },
+        "subsequent_offence_consequence": {
+            "type": "imprisonment_and_or_fine",
+            "minimum_imprisonment_months": 6,
+            "maximum_imprisonment_months": 12
+        },
+        "raw_text": "for the words 'second and subsequent offence', the words 'second offence with fine which may extend to one lakh rupees and for the third or subsequent offence' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S27-PENALTY-MANUFACTURE-SALE-NONSTD",
+        "source_section": "Legal Metrology Act, 2009, Section 27",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(F)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "manufacture",
+            "sale"
+        ],
+        "violation_trigger": "Manufacturing or selling a non-standard weight or measure[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 100000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 400000
+        },
+        "raw_text": "in the long line, for the words 'shall be punished with a fine which may extend to one lakh rupees and for the second offence with fine which may extend to two lakh rupees and for the third and subsequent offence, with fine which may extend to four lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to one lakh rupees and for the subsequent offences the fine shall be not less than two lakh rupees but may extend to four lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S28-TRANSACTION-CONTRAVENTION-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 28",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(G)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "transaction",
+            "deal",
+            "contract"
+        ],
+        "violation_trigger": "Transaction/deal/contract contravening Section 10 standards[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 50000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 100000,
+            "maximum_inr": 200000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to fifty thousand rupees and for the second offence with fine which may extend to one lakh rupees and for the third and subsequent offence with fine which may extend to two lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to fifty thousand rupees and for the subsequent offences the fine shall not be less than one lakh rupees but may extend to two lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S29-PENALTY-NONSTD-PRICE-QUOTATION",
+        "source_section": "Legal Metrology Act, 2009, Section 29",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(H)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "quotation",
+            "publication"
+        ],
+        "violation_trigger": "Violating Section 11’s standard-unit requirements[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 50000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 100000,
+            "maximum_inr": 200000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to fifty thousand rupees, for the second offence with fine which may extend to one lakh rupees and for the third and subsequent offence with a fine which may extend to two lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to fifty thousand rupees and for the subsequent offences the fine shall not be less than one lakh rupees but may extend to two lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S30-TRANSACTION-STANDARD-WEIGHT-MEASURE-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 30",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(I)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "delivery",
+            "service"
+        ],
+        "violation_trigger": "Short delivery, short service, fraudulent excess receipt, or excess service obtained[cite: 3]",
+        "first_offence_consequence": "fine up to INR 10,000",
+        "second_offence_consequence": {
+            "type": "fine",
+            "maximum_inr": 20000
+        },
+        "subsequent_offence_consequence": {
+            "type": "imprisonment_and_or_fine",
+            "maximum_imprisonment_months": 12
+        },
+        "raw_text": "in the long line, for the words 'second or subsequent offence', the words 'second offence with fine which may extend to twenty thousand rupees and for the third or subsequent offence' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S31-NON-PRODUCTION-DOCS-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 31",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(J)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "reporting",
+            "record-keeping"
+        ],
+        "violation_trigger": "Failure to submit returns, maintain records/registers, or produce required items/documents[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 25000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 50000,
+            "maximum_inr": 100000
+        },
+        "drafting_anomaly_flag": true,
+        "anomaly_note": "Official consolidated text reads 'shall not be fifty thousand rupees but may extend to one lakh rupees'; apparent omission of 'less than' requires Gazette/current-source verification.",
+        "raw_text": "for the words 'shall be punished with fine which may extend to twenty-five thousand rupees and for the second offence with fine which may extend to fifty thousand rupees and for the third and subsequent offence, with fine which may extend to one lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty-five thousand rupees and for the subsequent offences the fine shall not be fifty thousand rupees but may extend to one lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S32-UNAPPROVED-MODEL-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 32",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(K)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "model approval"
+        ],
+        "violation_trigger": "Failure to submit a model of weight/measure for approval[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 500000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 1000000,
+            "maximum_inr": 2000000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to twenty thousand rupees and for the second or subsequent offence with imprisonment for a term which may extend to one year and also with fine', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to five lakh rupees and for the subsequent offences the fine shall not be less than ten lakh rupees but may extend to twenty lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S34-SALE-NONSTD-WEIGHT-MEASURE-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 34",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(L)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "sale",
+            "delivery"
+        ],
+        "violation_trigger": "Sale/delivery using non-standard weight, measure, or number[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 25000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 50000,
+            "maximum_inr": 100000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to twenty-five thousand rupees and for the second offence with fine which may extend to fifty thousand rupees and for the third and subsequent offence, with fine which may extend to one lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty-five thousand rupees and for the subsequent offences the fine shall not be less than fifty thousand rupees but may extend to one lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S35-RENDERING-SERVICES-NONSTD-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 35",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(M)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "rendering services"
+        ],
+        "violation_trigger": "Rendering service using non-standard weight, measure, or number[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 25000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 50000,
+            "maximum_inr": 100000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to twenty-five thousand rupees and for the second offence with fine which may extend to fifty thousand rupees and for the third and subsequent offence, with fine which may extend to one lakh rupees', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty-five thousand rupees and for the subsequent offences the fine shall not be less than fifty thousand rupees but may extend to one lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S36-1-ECOMMERCE-DECLARATIONS",
+        "source_section": "Legal Metrology Act, 2009, Section 36(1)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(N)(i)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "prepackaged_commodities",
+            "ecommerce"
+        ],
+        "regulated_conduct": [
+            "manufacture",
+            "packing",
+            "import",
+            "sale",
+            "distribution",
+            "delivery",
+            "offer for sale",
+            "exposure for sale",
+            "possession for sale",
+            "digital/e-commerce facilitation"
+        ],
+        "violation_trigger": "Pre-packaged commodity does not conform to required package declarations[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 500000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 2500000,
+            "maximum_inr": 5000000
+        },
+        "raw_text": "Whoever manufactures, packs, imports, sells, distributes, delivers or otherwise transfers, offers, exposes or possesses for sale, or causes to be sold, distributed, delivered or otherwise transferred, offered, exposed for sale, including through digital modes of sale such as e-commerce platforms, online market places or any other digital or electronic means including electronic service providers facilitating such sales, any pre-packaged commodity which does not conform to the declarations on the package as provided in this Act, shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to five lakh rupees and for the subsequent offences the fine shall not be less than twenty-five lakh rupees but may extend to fifty lakh rupees. Explanation.–– For the purposes of this sub-section, the expressions 'e-commerce' and 'electronic service provider' shall have the same meaning as assigned to them in clauses (16) and (17) of section 2 of the Consumer Protection Act, 2019 (35 of 2019).",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S36-2-NETQTY-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 36(2)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(N)(ii)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "quantity_shortfall"
+        ],
+        "regulated_conduct": [
+            "sale",
+            "delivery"
+        ],
+        "violation_trigger": "Prescribed error in net quantity[cite: 3]",
+        "first_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 10000,
+            "maximum_inr": 100000
+        },
+        "second_offence_consequence": {
+            "type": "fine",
+            "maximum_inr": 500000
+        },
+        "subsequent_offence_consequence": {
+            "type": "imprisonment_and_or_fine",
+            "maximum_inr": 5000000,
+            "maximum_imprisonment_months": 12
+        },
+        "raw_text": "in sub-section (2), for the words 'shall be punished with fine which shall not be less than ten thousand rupees but which may extend to fifty thousand rupees and for the second and subsequent offence, with fine which may extend to one lakh rupees or with imprisonment for a term which may extend to one year or with both', the words 'shall be punished with fine which shall not be less than ten thousand rupees but which may extend to one lakh rupees and for the second offence with fine which may extend to five lakh rupees and for the third or subsequent offence, with fine which may extend to fifty lakh rupees or with imprisonment for a term which may extend to one year or with both' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S37-1-GATC-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 37(1)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(O)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "government_approved_test_centre"
+        ],
+        "regulated_conduct": [
+            "testing",
+            "certification"
+        ],
+        "violation_trigger": "Government Approved Test Centre contravenes Act, rules, or licence conditions[cite: 3]",
+        "first_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 100000
+        },
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "In section 37, in sub-section (1), for the words 'shall be punished with fine which may extend to one lakh rupees', the words 'shall be liable to penalty which may extend to one lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S38-IMPORTER-REGISTRATION-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 38",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(P)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "import"
+        ],
+        "violation_trigger": "Importing a weight or measure without registration[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 25000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "for the words 'shall be punished with fine which may extend to twenty-five thousand rupees and for the second or subsequent offence, with imprisonment for a term which may extend to six months, or with fine, or with both', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty-five thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S39-IMPORT-NONSTD-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 39",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(Q)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "import"
+        ],
+        "violation_trigger": "Import of non-standard weight or measure[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 50000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "for the words 'shall be punished with fine, which may extend to fifty thousand rupees and for the second or subsequent offence, with imprisonment for a term which may extend to one year and also with fine', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to fifty thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S40-OBSTRUCTION-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 40",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(R)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "obstruction"
+        ],
+        "violation_trigger": "Penalty for obstructing Director, Controller or legal metrology officer[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "normalized_effect": "The relevant imprisonment provisions are replaced by punishment in accordance with the Bharatiya Nyaya Sanhita, 2023[cite: 3].",
+        "raw_text": "for the words 'with imprisonment for a term which may extend to two years and for the second or subsequent offence, with imprisonment for a term which may extend to five years', the words 'in accordance with the provisions of the Bharatiya Nyaya Sanhita, 2023 (45 of 2023) shall be substituted.'.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S41-FALSE-INFORMATION-RETURN-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 41",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(S)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "reporting"
+        ],
+        "violation_trigger": "Giving false information/return[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 5000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "(i) in sub-section (1), for the words 'shall be punished with fine which may extend to five thousand rupees and for the second or subsequent offence with imprisonment for a term which may extend to six months and also with fine', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to five thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted; (ii) in sub-section (2), for the words 'shall be punished with fine which may extend to five thousand rupees and for the second or subsequent offence, with imprisonment for a term which may extend to one year and also with fine', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to five thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S45-MANUFACTURE-WEIGHT-MEASURE-WITHOUT-REGISTRATION",
+        "source_section": "Legal Metrology Act, 2009, Section 45",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(T)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "manufacture"
+        ],
+        "violation_trigger": "Manufacture of weight or measure without registration[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 20000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "(i) for the word 'licence' wherever it occurs, the word 'registration' shall be substituted; (ii) for the words 'shall be punished with fine which may extend to twenty thousand rupees and for the second or subsequent offence, with imprisonment for a term which may extend to one year, or with fine, or with both', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S46-REPAIR-SALE-WEIGHT-MEASURE-WITHOUT-REGISTRATION",
+        "source_section": "Legal Metrology Act, 2009, Section 46",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(U)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "repair",
+            "sale"
+        ],
+        "violation_trigger": "Repair, sale, etc. without registration[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 5000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "(i) for the word 'licence' wherever it occurs, the word 'registration' shall be substituted; (ii) for the words 'shall be punished with fine which may extend to five thousand rupees and for the second or subsequent offence, with imprisonment for a term which may extend to one year, or with fine, or with both', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to five thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S47-TAMPERING-REGISTRATION-CERTIFICATE-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 47",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(V)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "penalty_revision"
+        ],
+        "regulated_conduct": [
+            "tampering"
+        ],
+        "violation_trigger": "Tampering with registration certificate[cite: 3]",
+        "first_offence_consequence": "improvement notice[cite: 3]",
+        "second_offence_consequence": {
+            "type": "penalty",
+            "maximum_inr": 20000
+        },
+        "subsequent_offence_consequence": {
+            "type": "fine",
+            "minimum_inr": 200000,
+            "maximum_inr": 500000
+        },
+        "raw_text": "(i) for the word 'licence', occurring at both the places, the words 'registration certificate' shall be substituted; (ii) for the words 'shall be punished with fine which may extend to twenty thousand rupees, or with imprisonment for a term which may extend to one year or with both', the words 'shall be warned with an improvement notice and for the second offence shall be liable to penalty which may extend to twenty thousand rupees and for the subsequent offences the fine shall not be less than two lakh rupees but may extend to five lakh rupees' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S48-COMPOUNDING",
+        "source_section": "Legal Metrology Act, 2009, Section 48",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(W)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "compounding",
+            "criminal_procedure"
+        ],
+        "regulated_conduct": [
+            "enforcement",
+            "compounding",
+            "prosecution"
+        ],
+        "violation_trigger": "Compounding of offences under specific sections[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "48. Compounding of offences.––(1) Any offence punishable under sections 25 to 39, section 41, sections 45 to 47, any rule made under sub-section (3) of section 52 or any rule made under sub-section (3) of section 53 may, either before or after the institution of the prosecution, be compounded, on payment for credit to the Government of such sum as may be prescribed. (2) The Director or legal metrology officer as may be specially authorised by him in this behalf, may compound offences punishable under sections 25 to 39, section 41, or any rule made under sub-section (3) of section 52. (3) The Controller or legal metrology officer specially authorised by him, may compound offences punishable under sections 25 to 31, sections 33 to 37, section 41, sections 45 to 47, and any rule made under sub-section (3) of section 53: Provided that such sum shall not, in any case, exceed the maximum amount of the fine, which may be imposed under this Act for the offence so compounded. (4) Where an offence has been compounded under sub-section (1), no proceeding or further proceeding, as the case may be, shall be taken against the offender in respect of the offence so compounded. (5) No offence under this Act shall be compounded except as provided by this section. (6) No court shall take cognizance of an offence punishable under this Act except upon a complaint, in writing, made by— (i) the Director; (ii) the Controller; (iii) any officer authorised by them. (7) If the person does not compound the offence, shall be tried by the Magistrate in accordance with the procedure laid down in the Bharatiya Nagarik Suraksha Sanhita, 2023 (46 of 2023). (8) Where the offender fails to pay the fine imposed by the Magistrate, such fine and costs of prosecution shall be recoverable as provided under the Bharatiya Nagarik Suraksha Sanhita, 2023 (46 of 2023): Provided that in case of failure to pay the fine, such fine shall be recoverable in accordance with the provisions of the Bharatiya Nagarik Suraksha Sanhita, 2023 (46 of 2023), and any order of the Magistrate shall be deemed executable as a decree for recovery of money.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S50-1C-APPELLATE-AUTHORITY",
+        "source_section": "Legal Metrology Act, 2009, Section 50(1)(c)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(X)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "enforcement_remediation"
+        ],
+        "regulated_conduct": [
+            "appeal"
+        ],
+        "violation_trigger": "Appeals framework expansion[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "In section 50, in sub-section (1), in clause (c), after the words 'the Central Government', the words 'or any officer not below the rank of Joint Secretary specially authorised in this behalf by that Government' shall be inserted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S52-3-RULE-VIOLATION-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 52(3)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(Y)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "rulemaking_and_enforcement"
+        ],
+        "regulated_conduct": [
+            "rule violation"
+        ],
+        "violation_trigger": "Contravention of Central Government rules[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "normalized_effect": "shall be liable to penalty which may extend to five lakh rupees and suspension or, as the case may be, revocation[cite: 3]",
+        "raw_text": "In section 52, in sub-section (3), for the words 'shall be punishable with fine which may extend to five thousand rupees', the words 'shall liable to penalty which may extend to five lakh rupees and suspension, or as the case may be, revocation' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S53-2C-REGISTRATION-CERTIFICATE",
+        "source_section": "Legal Metrology Act, 2009, Section 53(2)(c)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(Z)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "rulemaking_and_enforcement"
+        ],
+        "regulated_conduct": null,
+        "violation_trigger": "Terminology substitution[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "raw_text": "(i) in sub-section (2), in clause (c), for the word 'licence', the words 'registration certificate' shall be substituted;",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    },
+    {
+        "rule_id_code": "JVA2026-LMA-S53-3-RULE-CONTRAVENTION-PENALTY",
+        "source_section": "Legal Metrology Act, 2009, Section 53(3)",
+        "amending_instrument": {
+            "name": "Jan Vishwas (Amendment of Provisions) Act, 2026[cite: 3]",
+            "act_number": "8 of 2026[cite: 3]",
+            "schedule_item": "66(Z)[cite: 3]"
+        },
+        "effective_from": "2026-05-01",
+        "category": [
+            "rulemaking_and_enforcement"
+        ],
+        "regulated_conduct": [
+            "rule violation"
+        ],
+        "violation_trigger": "Contravention of State Government rules[cite: 3]",
+        "first_offence_consequence": null,
+        "second_offence_consequence": null,
+        "subsequent_offence_consequence": null,
+        "normalized_effect": "shall be liable to penalty which may extend to one lakh rupees and suspension or, as the case may be, revocation[cite: 3]",
+        "raw_text": "(ii) in sub-section (3), for the words 'shall be punishable with fine which may extend to five thousand rupees', the words 'shall liable to penalty which may extend to one lakh rupees and suspension, or as the case may be, revocation' shall be substituted.",
+        "source": {
+            "publisher": "India Code",
+            "consolidated_as_of": "2026-05-07"
+        }
+    }
+]

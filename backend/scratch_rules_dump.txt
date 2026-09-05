@@ -1,0 +1,580 @@
+TOTAL RULES IN 2011_rule.json: 77
+
+[01] PCR2011-R1-TITLE-COMMENCEMENT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 1
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: (1)These rules may be called The Legal Metrology (Packaged Commodities) Rules, 2...
+
+[02] PCR2011-R2-DEFINITIONS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 2
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Definitions (a) through (l) and (n) through (q), establishing terms such as deal...
+
+[03] PCR2011-R2-M-MRP-FORMAT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 2(m)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: retail sale price
+     Format: Printed as 'Maximum or Max. retail price Rs/.......inclusive of all taxes' or in the form 'MRP Rs/.........incl., of all taxes'
+     ManualReviewNeeded: False
+     RawText: ...
+
+[04] PCR2011-R3-APPLICABILITY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 3
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The provisions of this Chapter shall not apply to,- (a) packages of commodities ...
+
+[05] PCR2011-R4-GENERAL-PREPACK
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 4
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: no person shall pre-pack or cause or permit to be pre-packed any commodity for s...
+
+[06] PCR2011-R5-STD-PACKAGES
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 5
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The commodities specified in the Second Schedule shall be packed for sale, distr...
+
+[07] PCR2011-R5-NONSTD-PROVISO
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 5 proviso
+     Category: general | Status: withdrawn | EffFrom: 2011-04-01 | EffTo: 2012-06-30
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Provided that if a commodity specified in the Second Schedule is packed in a siz...
+
+[08] PCR2011-R6-1-A-NAMEADDR
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(a)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: name and address of the manufacturer, packer, or importer
+     Exemptions: ['packages containing food articles (Rule 6(1)(a) is displaced; governed by Prevention of Food Adulteration Act, 1954 and rules made thereunder)']
+     ManualReviewNeeded: False
+     RawText: ...
+
+[09] PCR2011-R6-1-B-GENNAME
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(b)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: common or generic names of the commodity (and name and number/quantity of each product if multiple)
+     Exemptions: []
+     ManualReviewNeeded: False
+     RawText: ...
+
+[10] PCR2011-R6-1-C-NETQTY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(c)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: net quantity (in standard unit of weight, measure, or number)
+     Exemptions: []
+     ManualReviewNeeded: False
+     RawText: ...
+
+[11] PCR2011-R6-1-D-MFGDATE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(d)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: month and year in which the commodity is manufactured or pre-packed or imported
+     Exemptions: ['packages containing food articles (governed by applicable food law)', 'packages containing seeds (only where labelled and certified under the Seeds Act, 1966 and its rules)', 'packages containing cosmetics products (governed by Drugs and Cosmetics Rules, 1945)', 'any package containing bidis or incense sticks', 'any domestic liquefied petroleum gas cylinder of 14.2kg or 5kg, bottled and marketed by a public sector undertaking']
+     ManualReviewNeeded: False
+     RawText: ...
+
+[12] PCR2011-R6-1-E-MRP
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(e)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The retail sale price of the package is generally required. For packages contain...
+
+[13] PCR2011-R6-1-F-DIMENSIONS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(1)(f)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where the sizes of the commodity contained in the package are relevant, the dime...
+
+[14] PCR2011-R6-2-CONSUMERCARE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: name, address, telephone number, e mail address, if available, of the person who can be or the office which can be, contacted, in case of consumer complaints
+     Exemptions: []
+     ManualReviewNeeded: False
+     RawText: ...
+
+[15] PCR2011-R6-3-STICKERS-ALTERATION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: It shall not be permissible to affix individual stickers on the package for alte...
+
+[16] PCR2011-R6-4-STICKERS-OTHER
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: It shall be permissible to use stickers for making any declaration other than th...
+
+[17] PCR2011-R6-5-MULTICOMPONENT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(5)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where a commodity consists of a number of components and these components are pa...
+
+[18] PCR2011-R6-6-TRANSITIONAL
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 6(6)
+     Category: general | Status: withdrawn | EffFrom: 2011-04-01 | EffTo: 2012-03-31
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Any packaging material or wrapper which could not be exhausted by the manufactur...
+
+[19] PCR2011-R7-1-SMALLPACK
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 7(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: placement_check
+     Field: required information for package having capacity of 5 cubic cm or less
+     ManualReviewNeeded: False
+     RawText: ...
+
+[20] PCR2011-R7-2-NUMERALHEIGHT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 7(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Numeral height tables: Table I (weight/volume) - Up to 200 g/ml: 1mm (2mm blown/...
+
+[21] PCR2011-R7-3-LETTERHEIGHT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 7(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The height of letters in the declaration shall not be less than 1 mm height and ...
+
+[22] PCR2011-R7-4-OTHERLAW-EXCEPTION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 7(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The provisions under sub-rule (1) to (3) shall not apply to a package if the inf...
+
+[23] PCR2011-R8-1-PLACEMENT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 8(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: placement_check
+     Field: every declaration required to be made under these rules
+     ManualReviewNeeded: False
+     RawText: ...
+
+[24] PCR2011-R8-1-FREESPACE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 8(1) proviso
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Provided that the area surrounding the quantity declaration shall be free from p...
+
+[25] PCR2011-R8-2-CROWNCAP
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 8(2)
+     Category: food | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: For soft drink, ready to serve fruit beverages or the like, the bottle which is ...
+
+[26] PCR2011-R9-1A-LEGIBILITY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 9(1)(a)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: every declaration
+     Format: legible and prominent
+     ManualReviewNeeded: False
+     RawText: ...
+
+[27] PCR2011-R9-1B-COLORCONTRAST
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 9(1)(b)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Numerals of the retail sale price and net quantity declaration shall be printed,...
+
+[28] PCR2011-R9-2-LIQUIDREADABILITY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 9(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: all declarations
+     Format: No declaration shall be made so as to require it to be read through any liquid commodity contained in the package
+     ManualReviewNeeded: False
+     RawText: ...
+
+[29] PCR2011-R9-3-OUTERWRAPPER
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 9(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where a package is provided with an outside container or wrapper such container ...
+
+[30] PCR2011-R9-4-LANGUAGE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 9(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: particulars of the declarations
+     Format: either be in Hindi in Devnagri script or in English (use of any other language in addition is permitted)
+     ManualReviewNeeded: False
+     RawText: ...
+
+[31] PCR2011-R10-1-COMPLETEADDR
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 10(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: required_field
+     Field: complete address of the manufacturer, packer, or importer
+     Exemptions: ['packages of capacity 5 cubic cm or less (mark/inscription sufficient)']
+     ManualReviewNeeded: False
+     RawText: ...
+
+[32] PCR2011-R10-2-CORPORATENAME
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 10(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: name of manufacturer, packer, or importer
+     Format: shall be the actual corporate name, or if not incorporated, the name under which the business is conducted in India
+     ManualReviewNeeded: False
+     RawText: ...
+
+[33] PCR2011-R11-1-TAREEXCLUSION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 11(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: In declaring the net quantity of the commodity contained in a package, the weigh...
+
+[34] PCR2011-R11-2-NOWHENPACKED
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 11(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: declaration of quantity
+     Format: shall correspond to the net quantity which will be received by the consumer, and shall not be qualified by the words 'when packed' or the like (unless exempt under sub-rule 4)
+     ManualReviewNeeded: False
+     RawText: ...
+
+[35] PCR2011-R11-3-NEGLIGIBLEVAR
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 11(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: For commodities subject to negligible environmental variation, the declaration o...
+
+[36] PCR2011-R11-4-WHENPACKED
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 11(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: format_check
+     Field: declaration of quantity for specific commodities
+     Format: may be qualified by the words 'when packed', as specified in the Third Schedule
+     ManualReviewNeeded: False
+     RawText: ...
+
+[37] PCR2011-R12-1-MANNERQTY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The declaration of quantity shall be expressed in terms of such unit of weight, ...
+
+[38] PCR2011-R12-2-QTYUNITS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Except in the cases of commodities specified in the Fourth Schedule, the declara...
+
+[39] PCR2011-R12-3-OPTIONALNUMBER
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where the declaration of quantity has been made in terms of mass, the manufactur...
+
+[40] PCR2011-R12-4-DIMSNOTSUFF
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where the declaration of quantity by weight or measure or number is not sufficie...
+
+[41] PCR2011-R12-5-ADDINFO
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(5)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: placement_check
+     Field: additional information about the commodity
+     ManualReviewNeeded: False
+     RawText: ...
+
+[42] PCR2011-R12-6-NOEXAGGERATION-OLD
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(6)
+     Category: general | Status: withdrawn | EffFrom: 2011-04-01 | EffTo: 2012-06-30
+     ConditionType: format_check
+     Field: declaration of quantity
+     Format: shall not contain any word or expression which tends to create an exaggerated, misleading or inadequate impression (e.g. 'minimum', 'not less than', 'average')
+     ManualReviewNeeded: False
+     RawText: ...
+
+[43] PCR2011-R12-6-NOEXAGGERATION-NEW
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(6)
+     Category: general | Status: operative | EffFrom: 2012-07-01 | EffTo: None
+     ConditionType: format_check
+     Field: declaration of quantity
+     Format: shall not contain any word or expression of any sort, whatsoever, which tends to create or likely to create an exaggerated, misleading or inadequate expression as to the quantity of the commodity contained in the package
+     ManualReviewNeeded: False
+     RawText: ...
+
+[44] PCR2011-R12-7-TAGDECLARATION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 12(7)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: placement_check
+     Field: declaration of quantity for packages having capacity 5 cubic cm or less
+     ManualReviewNeeded: False
+     RawText: ...
+
+[45] PCR2011-R13-UNITSFORMAT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 13
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Units thresholds: Less than 1 kg (gram), 1 kg or more (kilogram, subject to stat...
+
+[46] PCR2011-R14-TEXTILEDIMENSIONS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 14
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where a package contains commodities like bed-sheets, hemmed fabric materials, d...
+
+[47] PCR2011-R15-DIMENSIONPRICE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 15
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Where the dimensions and weight, or combination thereof, of a commodity has or h...
+
+[48] PCR2011-R16-USABLESHEETS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 16
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: In the case of a package containing sheets like aluminum foil, facial tissues, w...
+
+[49] PCR2011-R17-CONTAINERDIMS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 17
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The commodities shall be expressed as bags, boxes, cups, pans or the like design...
+
+[50] PCR2011-R18-1-COMPLIANCE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: No wholesale dealer or retail dealer or importer shall sell, distribute, deliver...
+
+[51] PCR2011-R18-2-MRP-LIMIT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: No retail dealer or other person including manufacturer, packer, importer and wh...
+
+[52] PCR2011-R18-3-TAXREVISION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Tax-revision procedure and revised-price limits: Outlines rules for retail prici...
+
+[53] PCR2011-R18-4-TAXREV-EXCLUSION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(4)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Nothing in sub-rule (3) shall apply to a package which is not required, under th...
+
+[54] PCR2011-R18-5-NO-ALTER-MRP
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(5)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: No wholesale dealer or retail dealer or other person shall obliterate, smudge or...
+
+[55] PCR2011-R18-6-WRAPPERPRICE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(6)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The manufacturer or packer or the importer shall not alter the price on the wrap...
+
+[56] PCR2011-R18-7-WEIGHINGMACHINE
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 18(7)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: All retailers who are covered under the Value Added Tax VAT or Turn Over Tax (TO...
+
+[57] PCR2011-R19-1-3-INSPECTION-MFG
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 19(1)-(3)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Inspection and testing of quantity and error in packages at the premises of the ...
+
+[58] PCR2011-R19-4-7-INSPECTION-RETEST
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 19(4)-(7)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Provides for fresh tests upon request with a fee of ₹2,500. Outlines conditions ...
+
+[59] PCR2011-R19-8-NONCOMPLIANCE-OLD
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 19(8)
+     Category: general | Status: withdrawn | EffFrom: 2011-04-01 | EffTo: 2012-06-30
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: For non-compliance of the provisions of this rule, action may be taken after sei...
+
+[60] PCR2011-R19-8-NONCOMPLIANCE-NEW
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 19(8)
+     Category: general | Status: operative | EffFrom: 2012-07-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: For non-compliance of the provisions of this rule, action may be taken after sei...
+
+[61] PCR2011-R20-INSPECTION-ACTION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 20
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Action to be taken on completion of inspection of packages at the premises of th...
+
+[62] PCR2011-R21-INSPECTION-DEALER
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 21
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Inspection of quantity and error in packages at the premises of the wholesale/re...
+
+[63] PCR2011-R22-MAX-ERROR
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 22
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Establishment of maximum permissible error on packages as indicated in the First...
+
+[64] PCR2011-R23-DECEPTIVE-PACKAGES
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 23
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Deceptive packages (designed to deliberately give an exaggerated/misleading impr...
+
+[65] PCR2011-R24-WHOLESALE-DECLARATIONS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 24
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Every wholesale package shall bear thereon a legible, definite, plain and conspi...
+
+[66] PCR2011-R25-EXPORTREPACK
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 25
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: An export package shall not be sold in India unless the manufacturer or packer h...
+
+[67] PCR2011-R26-EXEMPTIONS-GENERAL
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 26
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Nothing contained in these rules shall apply to any package containing a commodi...
+
+[68] PCR2011-R26A-EXEMPTIONQTY-PROVISO
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 26(a) proviso
+     Category: general | Status: withdrawn | EffFrom: 2011-04-01 | EffTo: 2012-06-30
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Provided that the declaration in respect of maximum retail price and net quantit...
+
+[69] PCR2011-R27-REGISTRATION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 27
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Registration requirements for manufacturers, packers, and importers, including a...
+
+[70] PCR2011-R28-SHORTERADDR
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 28
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Registration of shorter address permissible. The Director or Controller may regi...
+
+[71] PCR2011-R29-REGISTER
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 29
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Maintenance of a public register of manufacturers and packers by the Director or...
+
+[72] PCR2011-R30-LIST-COMPILATION
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 30
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Compilation of State-wise lists of registered manufacturers or packers and their...
+
+[73] PCR2011-R31-1-ADVERTISEMENTS
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 31(1)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Any advertisement mentioning the retail sale price of the pre-packaged commodity...
+
+[74] PCR2011-R31-2-ADFONT
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 31(2)
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: The font size of the net quantity in the advertisement shall be same as that of ...
+
+[75] PCR2011-R32-PENALTY
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 32
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Penalty for contravention of Rules: Fines specified for violating rules 27 to 31...
+
+[76] PCR2011-R33-POWER-RELAX
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 33
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Power of the Central Government to relax one or more provisions of these Rules f...
+
+[77] PCR2011-R34-REPEAL
+     Section: The Legal Metrology (Packaged Commodities) Rules, 2011, Rule 34
+     Category: general | Status: operative | EffFrom: 2011-04-01 | EffTo: None
+     ConditionType: NO_CONDITION
+     ManualReviewNeeded: True
+     RawText: Repeal and savings of The Standards of Weights and Measures (Packaged Commoditie...
+
+============================================================
+Condition Counts: {'NO_CONDITION': 58, 'format_check': 9, 'required_field': 6, 'placement_check': 4}
+Status Counts: {'operative': 72, 'withdrawn': 5}
+Manual Review Needed Count: 58
+Field Counts: {'retail sale price': 1, 'name and address of the manufacturer, packer, or importer': 1, 'common or generic names of the commodity (and name and number/quantity of each product if multiple)': 1, 'net quantity (in standard unit of weight, measure, or number)': 1, 'month and year in which the commodity is manufactured or pre-packed or imported': 1, 'name, address, telephone number, e mail address, if available, of the person who can be or the office which can be, contacted, in case of consumer complaints': 1, 'required information for package having capacity of 5 cubic cm or less': 1, 'every declaration required to be made under these rules': 1, 'every declaration': 1, 'all declarations': 1, 'particulars of the declarations': 1, 'complete address of the manufacturer, packer, or importer': 1, 'name of manufacturer, packer, or importer': 1, 'declaration of quantity': 3, 'declaration of quantity for specific commodities': 1, 'additional information about the commodity': 1, 'declaration of quantity for packages having capacity 5 cubic cm or less': 1}

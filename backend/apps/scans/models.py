@@ -54,6 +54,7 @@ class Scan(models.Model):
         choices=STATUS_CHOICES,
         default="pending",
     )
+    canonical_data = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -183,3 +183,15 @@ OCR_TIMEOUT_SECONDS = float(os.environ.get("OCR_TIMEOUT_SECONDS", "300.0"))
 OCR_USE_MOCK = os.environ.get("OCR_USE_MOCK", "false").lower() in ("true", "1", "yes")
 OCR_MAX_UPLOAD_BYTES = int(os.environ.get("OCR_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024)))
 
+# ---------------------------------------------------------------------------
+# Local LLM Semantic-Validation Layer (Auxiliary Reasoning Layer)
+# ---------------------------------------------------------------------------
+LLM_ENABLED = os.environ.get("LLM_ENABLED", "true").lower() in ("true", "1", "yes")
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama").lower()
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
+LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
+LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "15.0"))
+
+
+

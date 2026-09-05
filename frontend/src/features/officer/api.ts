@@ -50,6 +50,63 @@ export interface ViolationItem {
   created_at: string;
 }
 
+export interface RuleFinding {
+  rule_id: string;
+  section_ref: string;
+  title: string;
+  status: 'PASS' | 'FAIL' | 'WARNING' | 'REVIEW' | 'NOT_APPLICABLE';
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  detected_value: string;
+  expected: string;
+  reason: string;
+  evidence: {
+    field?: string | null;
+    raw_text?: string | null;
+    source_panel?: string;
+    normalized_value?: any;
+    bounding_box?: number[] | null;
+    matched_snippets?: string[];
+  };
+  source_panel: string;
+  confidence: number;
+  requires_human_review: boolean;
+  evaluation_source?: string;
+}
+
+export interface ReportSummary {
+  total_rules: number;
+  passed: number;
+  failed: number;
+  warnings: number;
+  review_required: number;
+  not_applicable: number;
+}
+
+export interface EvidenceItem {
+  field: string;
+  raw_text: string | null;
+  normalized_value: any;
+  confidence: number;
+  source_panel: string;
+  bounding_box?: number[] | null;
+  detected: boolean;
+  normalization_status: string;
+  ambiguity?: string | null;
+  barcode?: string;
+}
+
+export interface ComplianceReport {
+  inspection_id: string;
+  overall_status: 'COMPLIANT' | 'NON_COMPLIANT' | 'NEEDS_REVIEW';
+  summary: ReportSummary;
+  violations: RuleFinding[];
+  warnings: RuleFinding[];
+  reviews: RuleFinding[];
+  passed_rules: RuleFinding[];
+  evidence: EvidenceItem[];
+  generated_at: string;
+}
+
 export interface ComplianceCheckResult {
   id: number;
   scan: number;
@@ -62,7 +119,67 @@ export interface ComplianceCheckResult {
   reviewed_by_officer?: number;
   reviewed_by_officer_username?: string;
   violations: ViolationItem[];
+  report_data?: ComplianceReport;
   created_at: string;
+}
+
+export interface CanonicalField<T = any> {
+  raw: string | null;
+  normalized: T | null;
+  confidence: number | null;
+  source_panel: string | null;
+  bbox: number[] | null;
+  detected: boolean;
+  normalization_status: 'success' | 'failed' | 'ambiguous' | 'not_detected';
+  ambiguity: string | null;
+}
+
+export interface NormalizedMrp {
+  amount: number;
+  currency: string;
+  inclusive_of_taxes?: boolean | null;
+}
+
+export interface NormalizedQuantity {
+  quantity: number;
+  unit: string;
+}
+
+export interface NormalizedUnitPrice {
+  amount: number;
+  currency: string;
+  unit: string;
+}
+
+export interface NormalizedDate {
+  year: number;
+  month?: number | null;
+  day?: number | null;
+  date_iso: string;
+}
+
+export interface CanonicalPackageData {
+  mrp: CanonicalField<NormalizedMrp>;
+  net_quantity: CanonicalField<NormalizedQuantity>;
+  unit_sale_price: CanonicalField<NormalizedUnitPrice>;
+  mfg_date: CanonicalField<NormalizedDate>;
+  expiry_date: CanonicalField<NormalizedDate>;
+  best_before_date: CanonicalField<any>;
+  fssai_license_no: CanonicalField<{ license_number: string; is_valid_format: boolean }>;
+  batch_number: CanonicalField<{ batch_number: string }>;
+  consumer_care_details: CanonicalField<{ phone?: string; email?: string; address?: string; website?: string }>;
+  country_of_origin: CanonicalField<{ country: string; iso_code?: string }>;
+  manufacturer_name: CanonicalField<{ name: string }>;
+  manufacturer_address: CanonicalField<{ full_address: string; pin_code?: string; city?: string; state?: string }>;
+  commodity_name: CanonicalField<{ commodity_name: string }>;
+  barcode: CanonicalField<{ barcode: string; type?: string }>;
+  other_fields?: Record<string, CanonicalField>;
+  raw_text?: string | null;
+  metadata?: {
+    fields_detected_count: number;
+    fields_normalized_count: number;
+    overall_status: 'complete' | 'partial' | 'empty';
+  };
 }
 
 export interface ScanProcessingResult {
@@ -73,8 +190,11 @@ export interface ScanProcessingResult {
   location: string;
   capture_method: string;
   status: string;
-  scan_images: Array<{ id: number; image_url: string; angle: string }>;
+  scan_images: Array<{ id: number; image_url: string; angle?: string; angle_type?: string }>;
   extracted_fields: ExtractedFieldItem[];
+  canonical_data?: CanonicalPackageData & {
+    compliance_report?: ComplianceReport;
+  };
   compliance_check?: ComplianceCheckResult;
   created_at: string;
 }

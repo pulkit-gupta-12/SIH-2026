@@ -4,7 +4,7 @@ Implements fixed contract per 03_Backend_Specification.md §OCR Stub Contract.
 Runs on port 8001.
 """
 from typing import List, Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 
 app = FastAPI(title="Legal Metrology OCR Stub Service", version="1.0.0")
@@ -36,7 +36,18 @@ def health_check():
 
 
 @app.post("/process", response_model=ProcessResponse)
-def process_scan(req: ProcessRequest):
+async def process_scan(request: Request):
+    content_type = request.headers.get("content-type", "")
+    if "multipart/form-data" in content_type:
+        form = await request.form()
+        req = ProcessRequest(
+            scan_id=form.get("scan_id"),
+            category=form.get("category") or "general",
+            image_urls=[],
+        )
+    else:
+        req = ProcessRequest(**await request.json())
+
     category = (req.category or "general").lower()
 
     # Base extracted fields plausible for demo

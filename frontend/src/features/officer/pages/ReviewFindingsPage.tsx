@@ -8,6 +8,7 @@ import {
   type ComplianceCheckResult,
 } from '../api';
 import StatusPill from '../../../components/ui/StatusPill';
+import RuleFindingCard from '../components/RuleFindingCard';
 
 export default function ReviewFindingsPage() {
   const { checkId } = useParams<{ checkId: string }>();
@@ -144,11 +145,20 @@ export default function ReviewFindingsPage() {
         </div>
       </div>
 
-      {/* Violations Checklist */}
+      {/* Findings Checklist */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-foreground">Detected Findings & Rule Citations</h3>
 
-        {check.violations.length === 0 ? (
+        {check.report_data && (check.report_data.violations?.length > 0 || check.report_data.reviews?.length > 0) ? (
+          <div className="space-y-3">
+            {check.report_data.violations?.map((v) => (
+              <RuleFindingCard key={v.rule_id} finding={v} defaultExpanded={true} />
+            ))}
+            {check.report_data.reviews?.map((r) => (
+              <RuleFindingCard key={r.rule_id} finding={r} defaultExpanded={true} />
+            ))}
+          </div>
+        ) : check.violations.length === 0 ? (
           <div className="p-6 rounded-xl glass-card border border-border/50 text-center text-xs text-muted-foreground">
             No violations recorded for this inspection scan.
           </div>

@@ -33,6 +33,7 @@ class ComplianceCheck(models.Model):
         blank=True,
         related_name="reviewed_compliance_checks",
     )
+    report_data = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

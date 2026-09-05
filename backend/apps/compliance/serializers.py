@@ -60,6 +60,7 @@ class ComplianceCheckDetailSerializer(serializers.ModelSerializer):
             "reviewed_by_officer",
             "reviewed_by_officer_username",
             "violations",
+            "report_data",
             "created_at",
         ]
 

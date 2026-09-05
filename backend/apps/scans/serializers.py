@@ -41,7 +41,7 @@ class ComplianceCheckSerializer(serializers.ModelSerializer):
         model = ComplianceCheck
         fields = [
             "id", "verdict", "overall_confidence",
-            "evaluated_against_rule_set_date", "violations", "created_at",
+            "evaluated_against_rule_set_date", "violations", "report_data", "created_at",
         ]
 
 
@@ -56,7 +56,7 @@ class ScanDetailSerializer(serializers.ModelSerializer):
         fields = [
             "id", "product", "performed_by", "role_context",
             "location", "capture_method", "status",
-            "scan_images", "extracted_fields", "compliance_check", "created_at",
+            "scan_images", "extracted_fields", "canonical_data", "compliance_check", "created_at",
         ]
 
 

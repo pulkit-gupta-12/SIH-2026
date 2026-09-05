@@ -11,17 +11,53 @@ import requests
 from datetime import date
 from django.conf import settings
 from .models import Scan, ScanImage, ExtractedField
+from .canonical import build_canonical_package_data
 from apps.product_master.models import Product
 from apps.rules_engine.evaluate import evaluate_scan
 from apps.compliance.models import ComplianceCheck, Violation
 from apps.compliance.history import classify_and_record
+from apps.compliance.report import generate_compliance_report
 
 logger = logging.getLogger(__name__)
 
 
 class OCRServiceError(Exception):
     """Raised when the OCR microservice fails and mock mode is disabled."""
-    pass
+    def __init__(self, message: str, scan_id: str = None, status_code: int = 502):
+        super().__init__(message)
+        self.message = message
+        self.scan_id = scan_id
+        self.status_code = status_code
+
+
+def infer_angle_type(ref, index: int) -> str:
+    """
+    Infers ScanImage.angle_type from image name/URL hints or guided capture step sequence.
+    Choices: front_panel, declaration_panel, close_up, barcode, wrap_around.
+    """
+    name = str(getattr(ref, "name", ref)).lower()
+    if any(k in name for k in ("front", "pdp", "principal", "step-1", "capture-1")):
+        return "front_panel"
+    if any(k in name for k in ("close", "mrp", "zoom", "detail", "step-3", "capture-3")):
+        return "close_up"
+    if any(k in name for k in ("bar", "gtin", "ean", "code", "qr", "step-5", "capture-5")):
+        return "barcode"
+    if any(k in name for k in ("wrap", "seal", "side", "seam", "step-6", "capture-6")):
+        return "wrap_around"
+    if any(k in name for k in ("decl", "mfg", "back", "info", "address", "step-2", "capture-2", "step-4", "capture-4")):
+        return "declaration_panel"
+
+    guided_sequence = [
+        "front_panel",
+        "declaration_panel",
+        "close_up",
+        "declaration_panel",
+        "barcode",
+        "wrap_around",
+    ]
+    if 0 <= index < len(guided_sequence):
+        return guided_sequence[index]
+    return "declaration_panel"
 
 
 def resolve_product_from_barcode(barcode, category=None, name_hint=None):
@@ -68,6 +104,7 @@ def resolve_image_bytes(image_ref) -> tuple[bytes, str]:
       - Raw bytes or bytearrays
       - UploadedFile or file-like objects (with .read())
       - Data URLs (data:image/jpeg;base64,...)
+      - Pure base64 strings
       - Filesystem paths (absolute or relative to MEDIA_ROOT / BASE_DIR)
       - Remote HTTP/HTTPS URLs
     """
@@ -79,7 +116,10 @@ def resolve_image_bytes(image_ref) -> tuple[bytes, str]:
 
     if hasattr(image_ref, "read"):
         filename = getattr(image_ref, "name", "upload.jpg")
-        image_ref.seek(0)
+        try:
+            image_ref.seek(0)
+        except Exception:
+            pass
         data = image_ref.read()
         return data, filename
 
@@ -98,6 +138,16 @@ def resolve_image_bytes(image_ref) -> tuple[bytes, str]:
             except Exception as e:
                 logger.error("Failed to decode base64 data URL: %s", e)
                 raise ValueError(f"Invalid base64 image data: {e}")
+
+        # 1b. Pure base64 string
+        if len(image_ref) > 100 and not image_ref.startswith(("http://", "https://", "/", ".", "\\")):
+            try:
+                data = base64.b64decode(image_ref, validate=False)
+                if len(data) > 10:
+                    ext = "png" if data.startswith(b"\x89PNG") else "jpg"
+                    return data, f"captured.{ext}"
+            except Exception:
+                pass
 
         # 2. Local File Path
         if os.path.isabs(image_ref) and os.path.exists(image_ref):
@@ -150,28 +200,32 @@ def resolve_image_bytes(image_ref) -> tuple[bytes, str]:
 def process_scan_pipeline(scan, image_urls=None, image_files=None, category="general", is_citizen_scan=False):
     """
     Executes complete production scan pipeline:
-    1. Resolves real image bytes and stores ScanImage records.
-    2. Sends multipart/form-data to PaddleOCR FastAPI microservice (http://localhost:8001/process).
+    1. Resolves real image bytes and stores ScanImage records with accurate angle types.
+    2. Sends multipart/form-data to PaddleOCR FastAPI microservice.
     3. Persists detected ExtractedFields in DB (no hardcoded demo data).
-    4. Evaluates Rule Engine: evaluate_scan().
-    5. Persists ComplianceCheck and Violation objects.
-    6. Classifies repeat offenses and updates scan status.
+    4. Normalizes extracted fields into Canonical Package Data representation.
+    5. Evaluates Legal Metrology Compliance Rule Engine (both 2011 Rules and DB rules).
+    6. Persists ComplianceCheck and Violation objects idempotently.
+    7. Classifies repeat offenses and marks scan status as processed.
     """
+    from apps.rules_engine.evaluate import evaluate_canonical_package
+
     all_image_refs = []
     if image_urls:
         all_image_refs.extend(image_urls)
     if image_files:
         all_image_refs.extend(image_files)
 
-    # Persist ScanImage rows
-    for ref in all_image_refs:
+    # Persist ScanImage rows with inferred angle types
+    for idx, ref in enumerate(all_image_refs):
         display_url = getattr(ref, "name", str(ref))
         if isinstance(ref, str) and ref.startswith("data:image/"):
             display_url = f"data:image/jpeg;base64,[{len(ref)} chars]"
+        angle = infer_angle_type(ref, idx)
         ScanImage.objects.create(
             scan=scan,
             image_url=display_url[:500],
-            angle_type="declaration_panel",
+            angle_type=angle,
             quality_check_passed=True,
         )
 
@@ -181,6 +235,7 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
 
     extracted_items = []
     detected_barcode = None
+    detected_raw_text = None
 
     # Resolve image bytes for multipart upload
     resolved_files = []
@@ -205,11 +260,12 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
                 result_data = resp.json()
                 extracted_items = result_data.get("extracted_fields", [])
                 detected_barcode = result_data.get("barcode")
+                detected_raw_text = result_data.get("raw_text")
                 logger.info("OCR service returned %d extracted fields for scan %s", len(extracted_items), scan.id)
             else:
                 err_detail = f"OCR microservice returned status {resp.status_code}: {resp.text[:200]}"
                 logger.error(err_detail)
-                raise OCRServiceError(err_detail)
+                raise OCRServiceError(err_detail, scan_id=str(scan.id), status_code=resp.status_code)
         else:
             logger.warning("No image files could be resolved for OCR processing on scan %s", scan.id)
 
@@ -223,12 +279,13 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
                 for f in stub_res.extracted_fields
             ]
             detected_barcode = stub_res.barcode
+            detected_raw_text = getattr(stub_res, "raw_text", None)
         else:
             # Production path: Mark scan as failed and raise clear exception
             logger.error("OCR pipeline failed on scan %s: %s", scan.id, e)
             scan.status = "failed"
             scan.save(update_fields=["status"])
-            raise OCRServiceError(f"OCR microservice failed: {e}") from e
+            raise OCRServiceError(f"OCR microservice failed: {e}", scan_id=str(scan.id)) from e
 
     # If OCR detected a barcode and product is not yet associated, resolve it
     if detected_barcode and not scan.product:
@@ -237,20 +294,59 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
             scan.product = resolved_prod
             scan.save(update_fields=["product"])
 
+    # Build Canonical Package Data representation
+    canonical_package = build_canonical_package_data(
+        extracted_fields=extracted_items,
+        raw_text=detected_raw_text,
+        barcode=detected_barcode,
+    )
+
     # Persist ExtractedField records with actual OCR values
     for item in extracted_items:
         ExtractedField.objects.create(
             scan=scan,
-            field_type=item["field_type"],
-            extracted_value=item["value"],
-            confidence_score=item.get("confidence", item.get("confidence_score", 0.90)),
+            field_type=item.get("field_type") or "unknown",
+            extracted_value=str(item.get("value") or ""),
+            confidence_score=float(item.get("confidence", item.get("confidence_score", 0.90))),
             font_size_mm=item.get("font_size_mm"),
             placement_zone=item.get("placement_zone", "unknown"),
         )
 
-    # Evaluate Rules Engine
     product = scan.product
     scan_date = scan.created_at.date() if scan.created_at else date.today()
+
+    # Evaluate Legal Metrology Compliance Rule Engine on canonical data
+    canonical_eval = []
+    try:
+        from apps.rules_engine.evaluate import evaluate_canonical_package
+        canonical_eval = evaluate_canonical_package(
+            canonical_package_data=canonical_package,
+            product=product,
+            scan_date=scan_date,
+            channel="physical",
+        )
+        canonical_package["compliance_evaluation"] = canonical_eval
+    except Exception as e:
+        logger.warning("Deterministic rule engine evaluation warning: %s", e)
+
+    # Generate unified compliance report combining canonical package data,
+    # deterministic rule-engine results, semantic evaluations, and complete raw evidence
+    try:
+        compliance_report = generate_compliance_report(
+            canonical_package_data=canonical_package,
+            evaluation_results=canonical_eval or [],
+            inspection_id=f"INSP-{scan.id}",
+            scan=scan,
+        )
+        canonical_package["compliance_report"] = compliance_report
+    except Exception as e:
+        logger.warning("Unified compliance report generation warning: %s", e)
+        compliance_report = {}
+
+    scan.canonical_data = canonical_package
+    scan.save(update_fields=["canonical_data"])
+
+    # Evaluate DB-backed Rules for violation creation and audit tracking
     violations_detected = evaluate_scan(
         extracted_fields=extracted_items,
         product=product,
@@ -258,19 +354,34 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
         channel="physical",
     )
 
-    verdict = "non_compliant" if violations_detected else "compliant"
+    if compliance_report and "overall_status" in compliance_report:
+        rep_status = compliance_report["overall_status"]
+        if rep_status == "NON_COMPLIANT":
+            verdict = "non_compliant"
+        elif rep_status == "NEEDS_REVIEW":
+            verdict = "needs_review"
+        else:
+            verdict = "compliant"
+    else:
+        verdict = "non_compliant" if violations_detected else "compliant"
+
     avg_conf = (
-        sum(item.get("confidence", 0.90) for item in extracted_items) / len(extracted_items)
+        sum(float(item.get("confidence", 0.90)) for item in extracted_items) / len(extracted_items)
         if extracted_items else 0.0
     )
 
-    # Create ComplianceCheck in DB
-    check = ComplianceCheck.objects.create(
+    # Persist ComplianceCheck in DB idempotently with full report_data
+    check, created = ComplianceCheck.objects.update_or_create(
         scan=scan,
-        verdict=verdict,
-        overall_confidence=avg_conf,
-        evaluated_against_rule_set_date=scan_date,
+        defaults={
+            "verdict": verdict,
+            "overall_confidence": avg_conf,
+            "evaluated_against_rule_set_date": scan_date,
+            "report_data": compliance_report,
+        },
     )
+    if not created:
+        check.violations.all().delete()
 
     # Create Violations in DB & classify first-time vs repeat
     for v in violations_detected:
@@ -283,6 +394,7 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
             classify_and_record(product, viol, case=None if is_citizen_scan else None)
 
     scan.status = "processed"
-    scan.save(update_fields=["status"])
+    scan.save(update_fields=["status", "canonical_data"])
 
     return check
+
