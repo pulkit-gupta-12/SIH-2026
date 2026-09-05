@@ -90,15 +90,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 # ---------------------------------------------------------------------------
 # Database — PostgreSQL
 # ---------------------------------------------------------------------------
+import dj_database_url
+from decouple import config
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "legalmetro"),
-        "USER": os.environ.get("DB_USER", "legalmetro"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "legalmetro_dev"),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-    }
+    "default": dj_database_url.parse(
+        config("DATABASE_URL", default="postgres://legalmetro:legalmetro_dev@localhost:5432/legalmetro"),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # ---------------------------------------------------------------------------
@@ -187,11 +187,19 @@ OCR_MAX_UPLOAD_BYTES = int(os.environ.get("OCR_MAX_UPLOAD_BYTES", str(20 * 1024 
 # Local LLM Semantic-Validation Layer (Auxiliary Reasoning Layer)
 # ---------------------------------------------------------------------------
 LLM_ENABLED = os.environ.get("LLM_ENABLED", "true").lower() in ("true", "1", "yes")
-LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama").lower()
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openrouter").lower()
+
+# OpenRouter Settings
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "minimax/minimax-m3:free")
+
+# Ollama Settings (Legacy)
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.2")
+
 LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
-LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "15.0"))
+LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")) # Increased timeout for cloud API
 
 
 
