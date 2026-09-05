@@ -32,50 +32,51 @@ export default function InspectionQueuePage() {
   });
 
   const getPriorityBadgeClass = (score: number) => {
-    if (score >= 75) return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
-    if (score >= 50) return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-    return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+    if (score >= 75) return 'bg-red-50 text-red-700 border-red-200';
+    if (score >= 50) return 'bg-amber-50 text-amber-700 border-amber-200';
+    return 'bg-blue-50 text-blue-700 border-blue-200';
   };
 
   const getSourceLabel = (source: string) => {
     switch (source) {
       case 'complaint':
-        return { label: 'Citizen Complaint', icon: '📢', color: 'text-amber-400 border-amber-500/30 bg-amber-500/10' };
+        return { label: 'Citizen Complaint', icon: '📢', color: 'text-amber-700 border-amber-200 bg-amber-50' };
       case 'ecommerce_flag':
-        return { label: 'E-commerce Flag', icon: '🛒', color: 'text-purple-400 border-purple-500/30 bg-purple-500/10' };
+        return { label: 'E-commerce Flag', icon: '🛒', color: 'text-purple-700 border-purple-200 bg-purple-50' };
       default:
-        return { label: 'Risk Engine', icon: '⚡', color: 'text-blue-400 border-blue-500/30 bg-blue-500/10' };
+        return { label: 'Risk Engine', icon: '⚡', color: 'text-blue-700 border-blue-200 bg-blue-50' };
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--color-border)] pb-5">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">Field Inspection Queue</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/20 text-primary border border-primary/30">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Field Inspection Queue</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
               Live Jurisdiction
             </span>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
             Prioritized Legal Metrology inspection targets, automated risk scores, and routed citizen grievances.
           </p>
         </div>
 
         {/* Action button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card/60 border border-border/50 text-xs text-muted-foreground">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span>State DB Synced</span>
           </div>
           <button
             onClick={() => navigate('/officer/capture')}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all shadow-md flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-sm font-semibold text-[var(--color-text-primary)] transition-colors shadow-sm flex items-center gap-2"
+            style={{ background: 'var(--color-accent)' }}
           >
             <span>📷</span>
-            <span>New Inspection Scan</span>
+            <span>New inspection scan</span>
           </button>
         </div>
       </div>
@@ -88,40 +89,38 @@ export default function InspectionQueuePage() {
             placeholder="Search by brand, product name, or GTIN barcode..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 search-input"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="w-full px-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-xs text-slate-300 whitespace-nowrap">Filter Source:</label>
+          <label className="text-xs text-[var(--color-text-secondary)] whitespace-nowrap">Filter source:</label>
           <select
             value={filterSource}
             onChange={(e) => setFilterSource(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg bg-black border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 dropdown-select"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="w-full px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors"
           >
-            <option value="all" className="bg-black text-white">All Sources ({queueList.length})</option>
-            <option value="complaint" className="bg-black text-white">Citizen Complaints</option>
-            <option value="risk_engine" className="bg-black text-white">Risk Engine Prioritization</option>
-            <option value="ecommerce_flag" className="bg-black text-white">E-commerce Flagged</option>
+            <option value="all">All Sources ({queueList.length})</option>
+            <option value="complaint">Citizen Complaints</option>
+            <option value="risk_engine">Risk Engine Prioritization</option>
+            <option value="ecommerce_flag">E-commerce Flagged</option>
           </select>
         </div>
       </div>
 
       {/* Queue List Content */}
       {isLoading ? (
-        <div className="p-12 text-center text-muted-foreground glass-card rounded-xl border border-border/50">
+        <div className="p-12 text-center text-[var(--color-text-muted)] glass-card">
           <div className="animate-spin text-3xl mb-3">⚙️</div>
-          <p>Loading prioritized inspection queue from PostgreSQL...</p>
+          <p>Loading prioritized inspection queue from database...</p>
         </div>
       ) : error ? (
-        <div className="p-6 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 flex items-center justify-between">
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-center justify-between">
           <p>Failed to load inspection queue.</p>
-          <button onClick={() => refetch()} className="px-3 py-1 bg-rose-500/20 rounded text-xs">Retry</button>
+          <button onClick={() => refetch()} className="px-3 py-1 bg-red-100 rounded text-xs">Retry</button>
         </div>
       ) : filteredQueue.length === 0 ? (
-        <div className="p-12 text-center text-muted-foreground glass-card rounded-xl border border-border/50">
+        <div className="p-12 text-center text-[var(--color-text-muted)] glass-card">
           <p className="text-base font-medium">No pending inspection targets found matching filter.</p>
           <p className="text-xs mt-1">All assigned market verification targets are up to date.</p>
         </div>
@@ -132,7 +131,7 @@ export default function InspectionQueuePage() {
             return (
               <div
                 key={item.id}
-                className="p-4 rounded-xl glass-card border border-border/60 hover:border-primary/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-lg glass-card hover:border-[var(--color-accent)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 {/* Left: Product & Source metadata */}
                 <div className="space-y-1.5 flex-1">
@@ -146,22 +145,22 @@ export default function InspectionQueuePage() {
                     <StatusPill verdict={item.status} />
                   </div>
 
-                  <h3 className="text-base font-bold text-foreground">
+                  <h3 className="text-base font-bold text-[var(--color-text-primary)]">
                     {item.product_detail?.brand_name ?? 'Target'} — {item.product_detail?.product_name ?? 'Market Inspection'}
                   </h3>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    <span>Barcode: <span className="font-mono text-foreground/80">{item.product_detail?.gtin_barcode ?? 'N/A'}</span></span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--color-text-muted)]">
+                    <span>Barcode: <span className="font-mono text-[var(--color-text-secondary)]">{item.product_detail?.gtin_barcode ?? 'N/A'}</span></span>
                     <span>Category: <span className="capitalize">{item.product_detail?.category ?? 'general'}</span></span>
                     {item.complaint_detail && (
-                      <span className="text-amber-300">
+                      <span className="text-amber-600">
                         Location: {item.complaint_detail.location}
                       </span>
                     )}
                   </div>
 
                   {item.complaint_detail && (
-                    <p className="text-xs text-muted-foreground bg-black/20 p-2 rounded border border-border/30 italic">
+                    <p className="text-xs text-[var(--color-text-muted)] bg-[var(--color-surface-tertiary)] p-2 rounded border border-[var(--color-border)] italic">
                       "{item.complaint_detail.description}"
                     </p>
                   )}
@@ -171,7 +170,7 @@ export default function InspectionQueuePage() {
                 <div className="flex items-center gap-2 self-end md:self-center">
                   <button
                     onClick={() => navigate(`/officer/product/${item.product}/history`)}
-                    className="px-3 py-2 rounded-lg bg-card/60 border border-border/60 hover:bg-card text-xs font-medium text-muted-foreground hover:text-foreground transition-all"
+                    className="px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] hover:bg-gray-200 text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
                   >
                     History
                   </button>
@@ -186,9 +185,10 @@ export default function InspectionQueuePage() {
                         },
                       })
                     }
-                    className="px-4 py-2 rounded-lg bg-primary/20 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/40 text-xs font-semibold transition-all flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 text-[var(--color-text-primary)]"
+                    style={{ background: 'var(--color-accent)' }}
                   >
-                    <span>Start Guided Inspection</span>
+                    <span>Start guided inspection</span>
                     <span>→</span>
                   </button>
                 </div>

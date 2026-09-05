@@ -10,25 +10,25 @@ export default {
         sans: ['Inter', 'Segoe UI', 'system-ui', '-apple-system', 'sans-serif'],
       },
       colors: {
-        // === Lane colors (matching approved flow diagram legend) ===
+        // === Lane colors (role identification badges only) ===
         citizen: {
           DEFAULT: '#16a34a',
-          light: '#bbf7d0',
+          light: '#dcfce7',
           dark: '#15803d',
         },
         officer: {
           DEFAULT: '#2563eb',
-          light: '#bfdbfe',
+          light: '#dbeafe',
           dark: '#1d4ed8',
         },
         controller: {
           DEFAULT: '#9333ea',
-          light: '#e9d5ff',
+          light: '#f3e8ff',
           dark: '#7e22ce',
         },
         national: {
           DEFAULT: '#4f46e5',
-          light: '#c7d2fe',
+          light: '#e0e7ff',
           dark: '#4338ca',
         },
         business: {
@@ -38,61 +38,60 @@ export default {
         },
         ecommerce: {
           DEFAULT: '#e11d48',
-          light: '#fecdd3',
+          light: '#ffe4e6',
           dark: '#be123c',
         },
         ruleadmin: {
           DEFAULT: '#ea580c',
-          light: '#fed7aa',
+          light: '#ffedd5',
           dark: '#c2410c',
         },
         enforcement: '#d97706',
 
-        // === Surfaces (dark mode) ===
+        // === Primary accent (orange) ===
+        accent: {
+          DEFAULT: '#e8730c',
+          hover: '#d4670a',
+          subtle: '#fef3e7',
+          muted: '#fde0c2',
+        },
+
+        // === Surfaces (light theme) ===
         surface: {
-          primary: '#0f172a',
-          secondary: '#1e293b',
-          tertiary: '#334155',
-          card: 'rgba(30, 41, 59, 0.8)',
-          glass: 'rgba(30, 41, 59, 0.5)',
+          primary: '#f8f8f8',
+          secondary: '#ffffff',
+          tertiary: '#f1f1f1',
+          card: '#ffffff',
         },
 
         // === Text ===
-        'text-primary': '#f1f5f9',
-        'text-secondary': '#94a3b8',
-        'text-muted': '#64748b',
+        'text-primary': '#1a1a1a',
+        'text-secondary': '#5a5a5a',
+        'text-muted': '#9a9a9a',
 
         // === Status ===
-        compliant: '#22c55e',
-        'non-compliant': '#ef4444',
-        'needs-review': '#f59e0b',
-        pending: '#64748b',
+        compliant: '#16a34a',
+        'non-compliant': '#dc2626',
+        'needs-review': '#d97706',
+        pending: '#6b7280',
 
         // === Borders ===
-        border: 'rgba(148, 163, 184, 0.15)',
-        'border-focus': 'rgba(99, 102, 241, 0.5)',
+        border: '#e5e5e5',
+        'border-focus': 'rgba(232, 115, 12, 0.45)',
       },
       animation: {
-        'fade-in': 'fadeIn 0.4s ease-out both',
-        'slide-up': 'slideUp 0.5s ease-out both',
-        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+        'fade-in': 'fadeIn 0.2s ease-out both',
+        'slide-up': 'slideUp 0.25s ease-out both',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(99, 102, 241, 0.3)' },
-          '50%': { boxShadow: '0 0 20px 4px rgba(99, 102, 241, 0.15)' },
-        },
-      },
-      backdropBlur: {
-        xs: '2px',
       },
     },
   },

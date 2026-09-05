@@ -61,7 +61,7 @@ export default function ReviewFindingsPage() {
 
   if (error || !check) {
     return (
-      <div className="p-8 glass-card rounded-2xl border border-rose-500/30 text-rose-300 space-y-3">
+      <div className="p-8 glass-card rounded-2xl border border-red-200 text-red-600 space-y-3">
         <h2 className="text-lg font-bold">Failed to load compliance check.</h2>
         <button onClick={() => navigate('/officer/queue')} className="px-4 py-2 bg-card border rounded-lg text-xs">
           ← Return to Queue
@@ -76,7 +76,7 @@ export default function ReviewFindingsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold">
               Officer Review Panel
             </span>
             <span className="text-xs text-muted-foreground">Compliance Check #{check.id}</span>
@@ -102,7 +102,7 @@ export default function ReviewFindingsPage() {
                 },
               })
             }
-            className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md"
+            className="px-4 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md"
           >
             <span>Proceed to Case Creation</span>
             <span>→</span>
@@ -112,7 +112,7 @@ export default function ReviewFindingsPage() {
 
       {/* Success Notification */}
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-[var(--color-accent)]/10 border border-green-200 text-[var(--color-accent)] text-sm flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span>✓</span>
             <span>{successMessage}</span>
@@ -133,11 +133,11 @@ export default function ReviewFindingsPage() {
           <div className="flex items-center gap-3">
             <StatusPill verdict={check.verdict} />
             {check.reviewed_by_officer ? (
-              <span className="px-3 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
+              <span className="px-3 py-1 rounded bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-200 text-xs font-semibold">
                 ✓ Signed off by {check.reviewed_by_officer_username}
               </span>
             ) : (
-              <span className="px-3 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold">
+              <span className="px-3 py-1 rounded bg-amber-50 text-amber-600 border border-amber-200 text-xs font-semibold">
                 Awaiting Sign-off
               </span>
             )}
@@ -170,7 +170,7 @@ export default function ReviewFindingsPage() {
             >
               <div className="space-y-1 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono text-xs font-bold">
+                  <span className="px-2 py-0.5 rounded bg-red-50 text-red-600 border border-red-200 font-mono text-xs font-bold">
                     {v.rule_id_code}
                   </span>
                   <span className="text-xs text-muted-foreground">{v.section_ref}</span>
@@ -181,8 +181,8 @@ export default function ReviewFindingsPage() {
               <span
                 className={`px-2 py-1 rounded text-xs font-semibold self-start ${
                   v.is_first_time
-                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                    ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                    : 'bg-red-50 text-red-600 border border-red-200'
                 }`}
               >
                 {v.is_first_time ? '1st-Time Procedural' : 'Repeat Offense'}
@@ -213,7 +213,7 @@ export default function ReviewFindingsPage() {
             <button
               onClick={() => confirmMutation.mutate()}
               disabled={confirmMutation.isPending}
-              className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-md flex-1 sm:flex-none"
+              className="px-5 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-md flex-1 sm:flex-none"
             >
               <span>✓ Confirm & Sign-off</span>
             </button>
@@ -229,12 +229,12 @@ export default function ReviewFindingsPage() {
                 <select
                   value={overrideVerdict}
                   onChange={(e) => setOverrideVerdict(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 rounded bg-black border border-slate-700 text-white text-xs dropdown-select"
-                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                  className="mt-1 w-full px-3 py-2 rounded bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-xs"
+                  style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
                 >
-                  <option value="compliant" className="bg-black text-white">Compliant (Exemption / Secondary Label Verified)</option>
-                  <option value="non_compliant" className="bg-black text-white">Non-Compliant (Confirmed Violation)</option>
-                  <option value="needs_review" className="bg-black text-white">Needs State Controller Review</option>
+                  <option value="compliant" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Compliant (Exemption / Secondary Label Verified)</option>
+                  <option value="non_compliant" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Non-Compliant (Confirmed Violation)</option>
+                  <option value="needs_review" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Needs State Controller Review</option>
                 </select>
               </div>
 
@@ -245,8 +245,8 @@ export default function ReviewFindingsPage() {
                   placeholder="e.g., Exemption under Rule 26 verified during visual inspection..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="mt-1 w-full px-3 py-2 rounded bg-black border border-slate-700 text-white placeholder-slate-400 text-xs search-input"
-                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                  className="mt-1 w-full px-3 py-2 rounded bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] text-xs"
+                  style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
                 />
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function ReviewFindingsPage() {
               <button
                 onClick={() => overrideMutation.mutate()}
                 disabled={overrideMutation.isPending}
-                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition-all shadow-md"
+                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-[var(--color-text-primary)] font-semibold text-xs transition-all shadow-md"
               >
                 Submit Legal Override
               </button>

@@ -4,7 +4,6 @@
  */
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { getRoleConfig } from '../../utils/roleConfig';
 import type { UserRole } from '../../store/authStore';
 
 interface BottomNavItem {
@@ -24,11 +23,7 @@ const BOTTOM_NAV_ITEMS: Record<UserRole, BottomNavItem[]> = {
     { label: 'Capture', path: '/officer/capture', icon: '📷' },
     { label: 'Cases', path: '/officer/cases', icon: '📁' },
   ],
-  state_controller: [
-    { label: 'Home', path: '/controller', icon: '🏠' },
-    { label: 'Map', path: '/controller/heatmap', icon: '🗺️' },
-    { label: 'Escalations', path: '/controller/escalations', icon: '⚠️' },
-  ],
+
   national_admin: [
     { label: 'Console', path: '/admin', icon: '🇮🇳' },
     { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },
@@ -39,11 +34,7 @@ const BOTTOM_NAV_ITEMS: Record<UserRole, BottomNavItem[]> = {
     { label: 'Pre-Check', path: '/business/pre-check', icon: '✅' },
     { label: 'Notices', path: '/business/notices', icon: '📨' },
   ],
-  ecommerce_partner: [
-    { label: 'Home', path: '/ecommerce', icon: '🏠' },
-    { label: 'Upload', path: '/ecommerce/upload', icon: '📤' },
-    { label: 'Flagged', path: '/ecommerce/flagged', icon: '🚩' },
-  ],
+
   rule_admin: [
     { label: 'Console', path: '/admin', icon: '⚖️' },
     { label: 'Notices', path: '/admin/rules/notifications', icon: '🔔' },
@@ -55,25 +46,23 @@ export default function BottomNav() {
   const { activeRole } = useAuthStore();
   if (!activeRole) return null;
 
-  const roleConfig = getRoleConfig(activeRole);
   const items = BOTTOM_NAV_ITEMS[activeRole] || [];
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-stretch justify-around px-2 py-1 backdrop-blur-xl"
-      style={{
-        background: 'rgba(15, 23, 42, 0.95)',
-        borderTop: '1px solid var(--color-border)',
-      }}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-stretch justify-around px-2 py-1 bg-white border-t border-[var(--color-border)]"
     >
       {items.map((item) => (
         <NavLink
           key={item.path}
           to={item.path}
-          className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-xl text-xs font-medium transition-all duration-200 min-w-[60px] no-underline"
-          style={({ isActive }) => ({
-            color: isActive ? roleConfig.color : 'var(--color-text-muted)',
-          })}
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-0.5 py-2 px-3 rounded-lg text-xs font-medium transition-colors duration-150 min-w-[60px] no-underline ${
+              isActive
+                ? 'text-[var(--color-accent)]'
+                : 'text-[var(--color-text-muted)]'
+            }`
+          }
         >
           <span className="text-xl">{item.icon}</span>
           <span>{item.label}</span>

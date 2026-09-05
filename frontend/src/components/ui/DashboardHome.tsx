@@ -1,7 +1,7 @@
 /**
  * DashboardHome — role-specific placeholder dashboard page.
- * Used for all 7 roles in Phase 1. Shows role info, welcome message,
- * and role-colored styling.
+ * Used for placeholder roles (Controller, Business, E-commerce).
+ * Shows role info, welcome message, and KPI stat cards.
  */
 import { useAuthStore } from '../../store/authStore';
 import { getRoleConfig } from '../../utils/roleConfig';
@@ -30,12 +30,7 @@ const ROLE_STATS: Record<UserRole, StatCard[]> = {
     { label: 'Scans This Week', value: '0', icon: '📷' },
     { label: 'Compliance Rate', value: '—', icon: '📊' },
   ],
-  state_controller: [
-    { label: 'Active Officers', value: '—', icon: '👮' },
-    { label: 'Pending Escalations', value: '0', icon: '⚠️' },
-    { label: 'Open Cases', value: '—', icon: '📁' },
-    { label: 'State Compliance', value: '—', icon: '📊' },
-  ],
+
   national_admin: [
     { label: 'States Monitored', value: '36', icon: '🇮🇳' },
     { label: 'Total Inspections', value: '—', icon: '🔍' },
@@ -48,11 +43,7 @@ const ROLE_STATS: Record<UserRole, StatCard[]> = {
     { label: 'Active Notices', value: '0', icon: '📨' },
     { label: 'Last Pre-Check', value: '—', icon: '🕐' },
   ],
-  ecommerce_partner: [
-    { label: 'Listings Uploaded', value: '—', icon: '📤' },
-    { label: 'Flagged Products', value: '0', icon: '🚩' },
-    { label: 'Screening Pass Rate', value: '—', icon: '✅' },
-  ],
+
   rule_admin: [
     { label: 'Active Rules', value: '—', icon: '📚' },
     { label: 'Pending Drafts', value: '0', icon: '✏️' },
@@ -70,27 +61,22 @@ export default function DashboardHome({ role }: Props) {
     <div className="animate-fade-in">
       {/* Welcome banner */}
       <div
-        className="rounded-2xl p-6 md:p-8 mb-6"
-        style={{
-          background: `linear-gradient(135deg, ${config.color}15, ${config.colorDark}10)`,
-          border: `1px solid ${config.color}25`,
-        }}
+        className="rounded-xl p-6 md:p-8 mb-6 card-accent-left bg-white border border-[var(--color-border)]"
       >
         <div className="flex items-start gap-4">
           <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+            className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shrink-0 text-[var(--color-text-primary)]"
             style={{
-              background: `linear-gradient(135deg, ${config.color}, ${config.colorDark})`,
-              boxShadow: `0 8px 24px ${config.color}30`,
+              background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))',
             }}
           >
             {config.icon}
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+            <h1 className="text-xl md:text-2xl font-bold mb-1 text-[var(--color-text-primary)]">
               Welcome back, {user?.name || 'User'}
             </h1>
-            <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            <p className="text-sm text-[var(--color-text-secondary)]">
               {config.label} Dashboard &middot; {config.description}
             </p>
           </div>
@@ -98,55 +84,47 @@ export default function DashboardHome({ role }: Props) {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
         {stats.map((stat, i) => (
           <div
             key={stat.label}
-            className="glass-card p-4 md:p-5 transition-all duration-300 animate-slide-up"
+            className="glass-card p-4 md:p-5 transition-all duration-150 animate-slide-up hover:shadow-md hover:-translate-y-px"
             style={{
-              animationDelay: `${i * 0.1}s`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = `${config.color}40`;
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border)';
-              e.currentTarget.style.transform = 'translateY(0)';
+              animationDelay: `${i * 0.05}s`,
             }}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-2xl">{stat.icon}</span>
+              <span
+                className="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-[var(--color-accent-subtle)]"
+              >
+                {stat.icon}
+              </span>
               {stat.trend && (
-                <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                  background: `${config.color}15`,
-                  color: config.color,
-                }}>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
                   {stat.trend}
                 </span>
               )}
             </div>
-            <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+            <p className="text-2xl font-bold mb-1 text-[var(--color-text-primary)]">
               {stat.value}
             </p>
-            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="text-xs text-[var(--color-text-muted)]">
               {stat.label}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Phase 1 notice */}
+      {/* Phase notice */}
       <div
-        className="glass-card p-5 flex items-start gap-3"
-        style={{ borderColor: `${config.color}20` }}
+        className="glass-card card-accent-left p-5 flex items-start gap-3"
       >
         <span className="text-xl">🚧</span>
         <div>
-          <p className="text-sm font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+          <p className="text-sm font-semibold mb-1 text-[var(--color-text-primary)]">
             Phase 1 — Foundation
           </p>
-          <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+          <p className="text-xs leading-relaxed text-[var(--color-text-secondary)]">
             Authentication and role-based routing are active. Dashboard widgets will be
             populated with real API data in Phase 2 (Data Layer) and Phase 4 (Dashboard Build).
             All values shown as "—" will be replaced by live database queries.

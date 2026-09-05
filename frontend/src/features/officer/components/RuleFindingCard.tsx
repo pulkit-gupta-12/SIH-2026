@@ -23,16 +23,16 @@ export default function RuleFindingCard({
 
   // Determine border & background accents
   let cardBorder = 'border-border/60';
-  let badgeColor = 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+  let badgeColor = 'bg-gray-50 text-[var(--color-text-secondary)] border-gray-200';
   let statusText = 'Not Applicable';
 
   if (isFail) {
     cardBorder = 'border-rose-500/40 bg-rose-950/10 hover:border-rose-500/70';
-    badgeColor = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+    badgeColor = 'bg-red-50 text-red-600 border-rose-500/40';
     statusText = 'Potential Non-Compliance Detected';
   } else if (isReview) {
     cardBorder = 'border-amber-500/40 bg-amber-950/10 hover:border-amber-500/70';
-    badgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+    badgeColor = 'bg-amber-50 text-amber-600 border-amber-500/40';
     statusText = finding.reason.toLowerCase().includes('ocr') || finding.reason.toLowerCase().includes('confidence')
       ? 'OCR Uncertainty — Review Required'
       : 'Officer Verification Required';
@@ -41,17 +41,17 @@ export default function RuleFindingCard({
     badgeColor = 'bg-orange-500/20 text-orange-300 border-orange-500/40';
     statusText = 'Statutory Advisory / Warning';
   } else if (isPass) {
-    cardBorder = 'border-emerald-500/30 bg-emerald-950/5 hover:border-emerald-500/60';
-    badgeColor = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+    cardBorder = 'border-green-200 bg-green-50 hover:border-green-300';
+    badgeColor = 'bg-[var(--color-accent)]/15 text-[var(--color-accent)] border-green-200';
     statusText = 'Statutory Requirement Verified';
   }
 
   // Severity styling
   const severityStyles: Record<string, string> = {
     CRITICAL: 'bg-red-500/20 text-red-300 border-red-500/40',
-    HIGH: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
-    MEDIUM: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
-    LOW: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+    HIGH: 'bg-red-50 text-red-600 border-rose-500/40',
+    MEDIUM: 'bg-amber-50 text-amber-600 border-amber-500/40',
+    LOW: 'bg-blue-50 text-blue-600 border-blue-500/40',
   };
 
   const panelLabels: Record<string, string> = {
@@ -111,12 +111,12 @@ export default function RuleFindingCard({
       <div
         className={`p-3 rounded-lg text-xs leading-relaxed ${
           isFail
-            ? 'bg-rose-500/10 text-rose-200 border border-rose-500/20'
+            ? 'bg-red-50 text-rose-200 border border-rose-500/20'
             : isReview
-            ? 'bg-amber-500/10 text-amber-200 border border-amber-500/20'
+            ? 'bg-amber-50 text-amber-200 border border-amber-500/20'
             : isWarning
             ? 'bg-orange-500/10 text-orange-200 border border-orange-500/20'
-            : 'bg-emerald-500/10 text-emerald-200 border border-emerald-500/20'
+            : 'bg-[var(--color-accent)]/10 text-emerald-200 border border-green-300/20'
         }`}
       >
         <span className="font-semibold block mb-0.5">Evaluation Analysis:</span>
@@ -178,7 +178,7 @@ export default function RuleFindingCard({
 
           {/* Raw OCR Evidence Drawer */}
           {showEvidence && finding.evidence && (
-            <div className="p-3 rounded-lg bg-slate-950/70 border border-border/70 font-mono text-xs space-y-1.5 animate-slide-up">
+            <div className="p-3 rounded-lg bg-[var(--color-surface-primary)]/70 border border-border/70 font-mono text-xs space-y-1.5 animate-slide-up">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground pb-1 border-b border-border/30">
                 <span>Raw OCR Extracted Snippet</span>
                 {finding.evidence.bounding_box && (
@@ -187,11 +187,11 @@ export default function RuleFindingCard({
                   </span>
                 )}
               </div>
-              <p className="text-emerald-400 whitespace-pre-wrap break-words">
+              <p className="text-[var(--color-accent)] whitespace-pre-wrap break-words">
                 {finding.evidence.raw_text ? `"${finding.evidence.raw_text}"` : 'No raw text snippet captured.'}
               </p>
               {finding.evidence.normalized_value && (
-                <div className="pt-1 text-[11px] text-slate-400">
+                <div className="pt-1 text-[11px] text-[var(--color-text-muted)]">
                   <span className="text-muted-foreground font-sans">Normalized: </span>
                   {typeof finding.evidence.normalized_value === 'object'
                     ? JSON.stringify(finding.evidence.normalized_value)

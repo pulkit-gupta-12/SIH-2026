@@ -25,7 +25,7 @@ import ViolationHistoryPage from '../features/officer/pages/ViolationHistoryPage
 import CaseCreationPage from '../features/officer/pages/CaseCreationPage';
 
 // State Controller Pages
-import ControllerDashboardPage from '../features/controller/pages/DashboardPage';
+
 
 // National Admin & Rule Admin Pages (Phase 4.3)
 import AdminDashboardPage from '../features/admin/pages/AdminDashboardPage';
@@ -37,7 +37,7 @@ import RuleRepositoryPage from '../features/admin/pages/RuleRepositoryPage';
 
 // Other Role Portals
 import BusinessDashboardPage from '../features/business-portal/pages/DashboardPage';
-import EcommerceDashboardPage from '../features/ecommerce-integration/pages/DashboardPage';
+
 
 export const router = createBrowserRouter([
   // Public routes
@@ -83,12 +83,6 @@ export const router = createBrowserRouter([
       },
 
       // === State Controller ===
-      {
-        element: <RequireRole allowedRoles={['state_controller']} />,
-        children: [
-          { path: '/controller', element: <ControllerDashboardPage /> },
-        ],
-      },
 
       // === National Admin & Rule Admin (Phase 4.3) ===
       {
@@ -114,12 +108,6 @@ export const router = createBrowserRouter([
       },
 
       // === E-commerce Integration ===
-      {
-        element: <RequireRole allowedRoles={['ecommerce_partner']} />,
-        children: [
-          { path: '/ecommerce', element: <EcommerceDashboardPage /> },
-        ],
-      },
     ],
   },
 

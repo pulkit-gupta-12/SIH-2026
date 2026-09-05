@@ -64,10 +64,10 @@ export default function ComplianceReportView({
       <div
         className={`p-6 rounded-2xl border transition-all ${
           isNonCompliant
-            ? 'bg-rose-500/10 border-rose-500/40 text-rose-200 shadow-lg shadow-rose-950/20'
+            ? 'bg-red-50 border-rose-500/40 text-rose-200 shadow-lg shadow-rose-950/20'
             : isNeedsReview
-            ? 'bg-amber-500/10 border-amber-500/40 text-amber-200 shadow-lg shadow-amber-950/20'
-            : 'bg-emerald-500/10 border-emerald-500/40 text-emerald-200 shadow-lg shadow-emerald-950/20'
+            ? 'bg-amber-50 border-amber-500/40 text-amber-200 shadow-lg shadow-amber-950/20'
+            : 'bg-[var(--color-accent)]/10 border-green-300/40 text-emerald-200 shadow-lg shadow-emerald-950/20'
         }`}
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -76,10 +76,10 @@ export default function ComplianceReportView({
               <span
                 className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm ${
                   isNonCompliant
-                    ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
+                    ? 'bg-red-50 text-red-600 border-rose-500/50'
                     : isNeedsReview
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                    ? 'bg-amber-50 text-amber-600 border-amber-500/50'
+                    : 'bg-[var(--color-accent)]/20 text-[var(--color-accent)] border-green-300/50'
                 }`}
               >
                 {isNonCompliant ? '✕ NON-COMPLIANT' : isNeedsReview ? '⚠ NEEDS REVIEW' : '✓ COMPLIANT'}
@@ -140,14 +140,14 @@ export default function ComplianceReportView({
         <button
           onClick={() => setActiveTab('passed')}
           className={`p-4 rounded-xl glass-card border text-left transition-all hover:scale-[1.02] ${
-            activeTab === 'passed' ? 'border-emerald-500 ring-1 ring-emerald-500/50' : 'border-border/60'
+            activeTab === 'passed' ? 'border-green-300 ring-1 ring-[var(--color-border-focus)]' : 'border-border/60'
           }`}
         >
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Passed Checks</span>
-            <span className="text-emerald-400 font-bold">✓</span>
+            <span className="text-[var(--color-accent)] font-bold">✓</span>
           </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-emerald-400">{summary.passed}</div>
+          <div className="mt-2 text-2xl font-bold font-mono text-[var(--color-accent)]">{summary.passed}</div>
           <p className="text-[11px] text-muted-foreground mt-0.5">Statutory rules verified</p>
         </button>
 
@@ -160,9 +160,9 @@ export default function ComplianceReportView({
         >
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Violations</span>
-            <span className="text-rose-400 font-bold">✕</span>
+            <span className="text-red-600 font-bold">✕</span>
           </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-rose-400">{summary.failed}</div>
+          <div className="mt-2 text-2xl font-bold font-mono text-red-600">{summary.failed}</div>
           <p className="text-[11px] text-muted-foreground mt-0.5">Regulatory breaches</p>
         </button>
 
@@ -190,9 +190,9 @@ export default function ComplianceReportView({
         >
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Needs Review</span>
-            <span className="text-amber-400 font-bold">⚠</span>
+            <span className="text-amber-600 font-bold">⚠</span>
           </div>
-          <div className="mt-2 text-2xl font-bold font-mono text-amber-400">{summary.review_required}</div>
+          <div className="mt-2 text-2xl font-bold font-mono text-amber-600">{summary.review_required}</div>
           <p className="text-[11px] text-muted-foreground mt-0.5">OCR/human validation</p>
         </button>
 
@@ -205,7 +205,7 @@ export default function ComplianceReportView({
         >
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Total Evaluated</span>
-            <span className="text-slate-400 font-bold">#</span>
+            <span className="text-[var(--color-text-muted)] font-bold">#</span>
           </div>
           <div className="mt-2 text-2xl font-bold font-mono text-foreground">{summary.total_rules}</div>
           <p className="text-[11px] text-muted-foreground mt-0.5">{summary.not_applicable} not applicable</p>
@@ -230,8 +230,8 @@ export default function ComplianceReportView({
             onClick={() => setActiveTab('violations')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'violations'
-                ? 'bg-rose-500 text-white shadow-sm'
-                : 'bg-surface-secondary/60 text-rose-300 hover:text-rose-200'
+                ? 'bg-rose-500 text-[var(--color-text-primary)] shadow-sm'
+                : 'bg-surface-secondary/60 text-red-600 hover:text-rose-200'
             }`}
           >
             Violations ({violations.length})
@@ -241,7 +241,7 @@ export default function ComplianceReportView({
             onClick={() => setActiveTab('warnings')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'warnings'
-                ? 'bg-orange-500 text-white shadow-sm'
+                ? 'bg-orange-500 text-[var(--color-text-primary)] shadow-sm'
                 : 'bg-surface-secondary/60 text-orange-300 hover:text-orange-200'
             }`}
           >
@@ -253,7 +253,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'reviews'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                : 'bg-surface-secondary/60 text-amber-300 hover:text-amber-200'
+                : 'bg-surface-secondary/60 text-amber-600 hover:text-amber-200'
             }`}
           >
             Needs Review ({reviews.length})
@@ -263,8 +263,8 @@ export default function ComplianceReportView({
             onClick={() => setActiveTab('passed')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'passed'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-surface-secondary/60 text-emerald-300 hover:text-emerald-200'
+                ? 'bg-[var(--color-accent)] text-[var(--color-text-primary)] shadow-sm'
+                : 'bg-surface-secondary/60 text-[var(--color-accent)] hover:text-emerald-200'
             }`}
           >
             Passed Checks ({passedRules.length})
@@ -274,8 +274,8 @@ export default function ComplianceReportView({
             onClick={() => setActiveTab('evidence')}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'evidence'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-surface-secondary/60 text-blue-300 hover:text-blue-200'
+                ? 'bg-blue-600 text-[var(--color-text-primary)] shadow-sm'
+                : 'bg-surface-secondary/60 text-blue-600 hover:text-blue-200'
             }`}
           >
             OCR Raw Evidence ({evidenceList.length})
@@ -298,7 +298,7 @@ export default function ComplianceReportView({
         {(activeTab === 'all' || activeTab === 'violations') && violations.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-rose-400 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-red-600 flex items-center gap-2">
                 <span>✕</span>
                 <span>Confirmed & Potential Non-Compliance Issues ({violations.length})</span>
               </h3>
@@ -344,13 +344,13 @@ export default function ComplianceReportView({
         {(activeTab === 'all' || activeTab === 'reviews') && reviews.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-amber-600 flex items-center gap-2">
                 <span>⚠</span>
                 <span>Human Review & Verification Required ({reviews.length})</span>
               </h3>
               <span className="text-[11px] text-muted-foreground font-mono">Status: REVIEW</span>
             </div>
-            <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 leading-relaxed">
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-500/20 text-xs text-amber-600 leading-relaxed">
               <strong>Notice for Officer:</strong> The following checks could not be deterministically confirmed due to
               OCR uncertainty, blurry surface, or semantic ambiguity. Please examine the evidence before making a legal determination.
             </div>
@@ -371,7 +371,7 @@ export default function ComplianceReportView({
         {(activeTab === 'all' || activeTab === 'passed') && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--color-accent)] flex items-center gap-2">
                 <span>✓</span>
                 <span>Statutory Checks Passing Standards ({passedRules.length})</span>
               </h3>
@@ -435,10 +435,10 @@ export default function ComplianceReportView({
                           <span
                             className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                               ev.confidence >= 0.9
-                                ? 'bg-emerald-500/20 text-emerald-300'
+                                ? 'bg-[var(--color-accent)]/20 text-[var(--color-accent)]'
                                 : ev.confidence >= 0.6
-                                ? 'bg-amber-500/20 text-amber-300'
-                                : 'bg-rose-500/20 text-rose-300'
+                                ? 'bg-amber-50 text-amber-600'
+                                : 'bg-red-50 text-red-600'
                             }`}
                           >
                             {Math.round(ev.confidence * 100)}%
@@ -448,10 +448,10 @@ export default function ComplianceReportView({
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
                               ev.normalization_status === 'success'
-                                ? 'text-emerald-300 bg-emerald-500/10'
+                                ? 'text-[var(--color-accent)] bg-[var(--color-accent)]/10'
                                 : ev.normalization_status === 'raw'
-                                ? 'text-blue-300 bg-blue-500/10'
-                                : 'text-amber-300 bg-amber-500/10'
+                                ? 'text-blue-600 bg-blue-50'
+                                : 'text-amber-600 bg-amber-50'
                             }`}
                           >
                             {ev.normalization_status}
@@ -470,7 +470,7 @@ export default function ComplianceReportView({
       {/* Capture Panel Preview Modal */}
       {selectedPanelImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-surface-tertiary)]/80 backdrop-blur-sm animate-fade-in"
           onClick={() => setSelectedPanelImage(null)}
         >
           <div
@@ -486,7 +486,7 @@ export default function ComplianceReportView({
                 ✕ Close
               </button>
             </div>
-            <div className="rounded-xl overflow-hidden border border-border/50 max-h-[60vh] flex items-center justify-center bg-black">
+            <div className="rounded-xl overflow-hidden border border-border/50 max-h-[60vh] flex items-center justify-center bg-[var(--color-surface-tertiary)]">
               <img
                 src={selectedPanelImage}
                 alt="Source Panel Capture"

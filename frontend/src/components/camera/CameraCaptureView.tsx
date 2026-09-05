@@ -131,14 +131,14 @@ export default function CameraCaptureView({
   const renderReticle = () => {
     if (reticleType === 'barcode') {
       return (
-        <div className="absolute inset-8 md:inset-12 border-2 border-emerald-400/80 rounded-lg pointer-events-none flex flex-col justify-between p-3 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-          <div className="flex justify-between text-[11px] font-mono text-emerald-400 font-bold tracking-wider">
+        <div className="absolute inset-8 md:inset-12 border-2 border-emerald-400/80 rounded-lg pointer-events-none flex flex-col justify-between p-3 bg-[var(--color-accent)]/5 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+          <div className="flex justify-between text-[11px] font-mono text-[var(--color-accent)] font-bold tracking-wider">
             <span>[BARCODE SCANNER]</span>
             <span>GS1 ALIGN</span>
           </div>
           {/* Laser scanning beam line */}
           <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_8px_#34d399] animate-pulse" />
-          <div className="flex justify-between text-[10px] font-mono text-emerald-400/80">
+          <div className="flex justify-between text-[10px] font-mono text-[var(--color-accent)]/80">
             <span>FIT 1D/2D CODE IN BOX</span>
             <span>AUTO-FOCUS</span>
           </div>
@@ -149,11 +149,11 @@ export default function CameraCaptureView({
     if (reticleType === 'mrp') {
       return (
         <div className="absolute inset-6 md:inset-10 border-2 border-dashed border-amber-400/80 rounded-xl pointer-events-none flex flex-col justify-between p-3 bg-amber-500/5">
-          <div className="flex justify-between text-[11px] font-mono text-amber-300 font-bold">
+          <div className="flex justify-between text-[11px] font-mono text-amber-600 font-bold">
             <span>[MRP & NET QTY TARGET]</span>
             <span>OCR MACRO</span>
           </div>
-          <div className="flex justify-between text-[10px] font-mono text-amber-300/80">
+          <div className="flex justify-between text-[10px] font-mono text-amber-600/80">
             <span>RULE 5 & 6 COMPLIANCE</span>
             <span>FONT-SIZE CHECK</span>
           </div>
@@ -162,8 +162,8 @@ export default function CameraCaptureView({
     }
 
     return (
-      <div className="absolute inset-4 md:inset-6 border-2 border-dashed border-emerald-400/60 rounded-xl pointer-events-none flex flex-col justify-between p-3 bg-emerald-500/5">
-        <div className="flex justify-between text-[11px] font-mono text-emerald-300">
+      <div className="absolute inset-4 md:inset-6 border-2 border-dashed border-emerald-400/60 rounded-xl pointer-events-none flex flex-col justify-between p-3 bg-[var(--color-accent)]/5">
+        <div className="flex justify-between text-[11px] font-mono text-[var(--color-accent)]">
           <span className="font-semibold">{title ? `[TARGET: ${title.toUpperCase()}]` : '[CAMERA VIEWFINDER]'}</span>
           <span>HIGH-RES CAPTURE</span>
         </div>
@@ -177,7 +177,7 @@ export default function CameraCaptureView({
           <div className="w-12 h-12 border-b border-r border-white/50" />
         </div>
 
-        <div className="flex justify-between text-[10px] font-mono text-emerald-400/80">
+        <div className="flex justify-between text-[10px] font-mono text-[var(--color-accent)]/80">
           <span>LEGAL METROLOGY CV</span>
           <span>{instruction || 'Align label clearly'}</span>
         </div>
@@ -201,17 +201,17 @@ export default function CameraCaptureView({
       <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
 
       {/* Main Viewfinder Frame */}
-      <div className="relative aspect-4/3 md:aspect-16/10 rounded-2xl overflow-hidden bg-slate-950 border border-slate-700/80 shadow-2xl flex items-center justify-center">
+      <div className="relative aspect-4/3 md:aspect-16/10 rounded-2xl overflow-hidden bg-[var(--color-surface-primary)] border border-[var(--color-border)]/80 shadow-lg flex items-center justify-center">
         {/* State A: Captured Image Preview */}
         {capturedImage ? (
-          <div className="relative w-full h-full bg-black flex items-center justify-center">
+          <div className="relative w-full h-full bg-[var(--color-surface-tertiary)] flex items-center justify-center">
             <img
               src={capturedImage}
               alt="Captured Frame Preview"
               className="w-full h-full object-contain"
             />
             {/* Captured Badge Overlay */}
-            <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/90 text-white shadow-lg backdrop-blur-md flex items-center gap-1.5 border border-emerald-400/40">
+            <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-accent)]/90 text-[var(--color-text-primary)] shadow-lg backdrop-blur-md flex items-center gap-1.5 border border-emerald-400/40">
               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
               <span>Snapshot Captured</span>
             </div>
@@ -220,14 +220,14 @@ export default function CameraCaptureView({
             <button
               type="button"
               onClick={handleRetake}
-              className="absolute top-3 right-3 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-600/80 shadow-lg backdrop-blur-md transition-all flex items-center gap-1.5"
+              className="absolute top-3 right-3 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)] border border-[var(--color-border)]/80 shadow-lg backdrop-blur-md transition-all flex items-center gap-1.5"
             >
               <span>🔄 Retake</span>
             </button>
           </div>
         ) : cameraStatus === 'active' || cameraStatus === 'initializing' ? (
           /* State B: Live Active Video Stream */
-          <div className="relative w-full h-full bg-black">
+          <div className="relative w-full h-full bg-[var(--color-surface-tertiary)]">
             <video
               ref={videoRef}
               autoPlay
@@ -238,7 +238,7 @@ export default function CameraCaptureView({
 
             {/* Live Camera Indicators & Controls */}
             <div className="absolute top-3 left-3 flex items-center gap-2">
-              <div className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+              <div className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[var(--color-surface-tertiary)]/60 backdrop-blur-md text-[var(--color-accent)] border border-green-200 flex items-center gap-1.5 shadow-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 <span>{facingMode === 'environment' ? '● REAR CAMERA' : '● FRONT CAMERA'}</span>
               </div>
@@ -249,7 +249,7 @@ export default function CameraCaptureView({
                 type="button"
                 onClick={toggleFacingMode}
                 title="Flip Camera"
-                className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white border border-slate-700 backdrop-blur-md transition-all shadow-md"
+                className="absolute top-3 right-3 p-2 rounded-full bg-[var(--color-surface-tertiary)]/60 hover:bg-[var(--color-surface-tertiary)]/80 text-[var(--color-text-primary)] border border-[var(--color-border)] backdrop-blur-md transition-all shadow-md"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -263,19 +263,19 @@ export default function CameraCaptureView({
         ) : cameraStatus === 'denied' || cameraStatus === 'unsupported' || cameraStatus === 'error' ? (
           /* State C: Permission Denied or Error State */
           <div className="p-6 text-center space-y-4 max-w-md animate-fade-in">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-2xl">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-2xl">
               {cameraStatus === 'denied' ? '🔒' : '⚠️'}
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-bold text-[var(--color-text-primary)]">
                 {cameraStatus === 'denied'
                   ? 'Camera Permission Required'
                   : cameraStatus === 'unsupported' && !isSecureContext
                   ? 'HTTPS Required for Camera'
                   : 'Camera Feed Unavailable'}
               </h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                 {errorMessage ||
                   'Camera access was blocked or is unavailable in this environment. You can retry with permission or choose an image directly from your gallery.'}
               </p>
@@ -285,7 +285,7 @@ export default function CameraCaptureView({
               <button
                 type="button"
                 onClick={() => startCamera(facingMode)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-all flex items-center justify-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-accent)] hover:bg-[var(--color-accent)] text-[var(--color-text-primary)] shadow-md transition-all flex items-center justify-center gap-1.5"
               >
                 <span>🔄</span>
                 <span>Try Camera Again</span>
@@ -294,7 +294,7 @@ export default function CameraCaptureView({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center justify-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-[var(--color-text-primary)] border border-[var(--color-border)] transition-all flex items-center justify-center gap-1.5"
               >
                 <span>📁</span>
                 <span>Select from Gallery</span>
@@ -304,8 +304,8 @@ export default function CameraCaptureView({
         ) : (
           /* State D: Initializing / Starting */
           <div className="text-center p-6 space-y-3">
-            <div className="w-8 h-8 border-3 border-emerald-500/30 border-t-emerald-400 rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-medium text-slate-400">Starting camera preview...</p>
+            <div className="w-8 h-8 border-3 border-green-200 border-t-emerald-400 rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-medium text-[var(--color-text-muted)]">Starting camera preview...</p>
           </div>
         )}
       </div>
@@ -319,7 +319,7 @@ export default function CameraCaptureView({
               type="button"
               disabled={cameraStatus !== 'active' || isCapturing || isProcessing}
               onClick={handleCaptureClick}
-              className="flex-1 w-full py-3.5 px-5 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] shadow-lg shadow-emerald-950/60 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 text-sm"
+              className="flex-1 w-full py-3.5 px-5 rounded-xl font-bold text-[var(--color-text-primary)] bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] shadow-lg shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5 text-sm"
             >
               {isCapturing ? (
                 <>
@@ -339,7 +339,7 @@ export default function CameraCaptureView({
               type="button"
               disabled={isProcessing}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full sm:w-auto py-3 px-4 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-300 border border-slate-700/80 transition-all flex items-center justify-center gap-2 shrink-0"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)]/90 hover:bg-gray-100 text-[var(--color-text-secondary)] border border-[var(--color-border)]/80 transition-all flex items-center justify-center gap-2 shrink-0"
               title="Upload photo from disk or gallery"
             >
               <span>📁</span>
@@ -352,7 +352,7 @@ export default function CameraCaptureView({
             <button
               type="button"
               onClick={handleRetake}
-              className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all flex items-center gap-1.5"
+              className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-[var(--color-text-primary)] border border-[var(--color-border)] transition-all flex items-center gap-1.5"
             >
               <span>🔄 Retake Camera Photo</span>
             </button>
@@ -360,7 +360,7 @@ export default function CameraCaptureView({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-900/60 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-800 transition-all flex items-center gap-1.5"
+              className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-[var(--color-surface-tertiary)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-border)] transition-all flex items-center gap-1.5"
             >
               <span>📁 Pick Different File</span>
             </button>

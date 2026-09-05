@@ -80,42 +80,41 @@ export default function ScanSearchPage() {
     });
   };
 
+  const inputClasses = "w-full rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] px-4 py-2.5 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors";
+
   return (
-    <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-8 animate-fade-in">
+    <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
       {/* Header Banner */}
-      <div className="rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-emerald-950/70 via-slate-900 to-slate-950 border border-emerald-500/20 shadow-xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-          <span className="text-8xl">📷</span>
-        </div>
-        <div className="relative z-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+      <div className="glass-card card-accent-left p-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
             <span>🛡️ Legal Metrology Verified</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            Scan & Verify Product
+          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight">
+            Scan and verify product
           </h1>
-          <p className="text-sm text-slate-300 max-w-lg">
+          <p className="text-sm text-[var(--color-text-secondary)] max-w-lg">
             Instant compliance check on MRP, Net Quantity, Expiry, Manufacturer info, and Consumer Care details under the Legal Metrology Rules.
           </p>
         </div>
       </div>
 
       {/* Mode Selector Tabs */}
-      <div className="grid grid-cols-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+      <div className="grid grid-cols-2 p-1.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)]">
         <button
           type="button"
           onClick={() => {
             setActiveTab("camera");
             setErrorMessage(null);
           }}
-          className={`py-2.5 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+          className={`py-2.5 px-4 rounded-md text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
             activeTab === "camera"
-              ? "bg-emerald-600 text-white shadow-lg shadow-emerald-950/50"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-[var(--color-accent)] text-[var(--color-text-primary)] shadow-sm"
+              : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
           }`}
         >
           <span>📸</span>
-          <span>Live Camera Scan</span>
+          <span>Live camera scan</span>
         </button>
 
         <button
@@ -124,35 +123,34 @@ export default function ScanSearchPage() {
             setActiveTab("barcode");
             setErrorMessage(null);
           }}
-          className={`py-2.5 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+          className={`py-2.5 px-4 rounded-md text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${
             activeTab === "barcode"
-              ? "bg-emerald-600 text-white shadow-lg shadow-emerald-950/50"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-[var(--color-accent)] text-[var(--color-text-primary)] shadow-sm"
+              : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
           }`}
         >
           <span>🔢</span>
-          <span>Barcode / GTIN Lookup</span>
+          <span>Barcode / GTIN lookup</span>
         </button>
       </div>
 
       {/* Main Scan Card */}
-      <div className="glass-card p-6 rounded-2xl space-y-6">
+      <div className="glass-card p-6 space-y-6">
         {/* Category selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
-          <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-            Commodity Category
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--color-border)] pb-4">
+          <label className="text-xs font-semibold text-[var(--color-text-secondary)]">
+            Commodity category
           </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="rounded-xl bg-black border border-slate-700 px-3 py-1.5 text-white text-xs focus:outline-none focus:border-emerald-500 dropdown-select"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] px-3 py-1.5 text-[var(--color-text-primary)] text-xs focus:outline-none focus:border-[var(--color-accent)]"
           >
-            <option value="general" className="bg-black text-white">General Commodities</option>
-            <option value="food" className="bg-black text-white">Food & Beverages</option>
-            <option value="electronics" className="bg-black text-white">Electronics</option>
-            <option value="medical_device" className="bg-black text-white">Medical Devices</option>
-            <option value="import" className="bg-black text-white">Imported Goods</option>
+            <option value="general">General Commodities</option>
+            <option value="food">Food & Beverages</option>
+            <option value="electronics">Electronics</option>
+            <option value="medical_device">Medical Devices</option>
+            <option value="import">Imported Goods</option>
           </select>
         </div>
 
@@ -160,12 +158,12 @@ export default function ScanSearchPage() {
         {activeTab === "camera" && (
           <div className="space-y-5 animate-fade-in">
             {needsPhoto && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 space-y-1">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs">
-                  <span>📸 First-Time Scan Required</span>
+              <div className="p-3.5 rounded-lg bg-[var(--color-accent-subtle)] border border-[var(--color-accent)] space-y-1">
+                <div className="flex items-center gap-2 text-[var(--color-accent)] font-semibold text-xs">
+                  <span>📸 First-time scan required</span>
                 </div>
-                <p className="text-xs text-slate-300">
-                  Barcode <span className="font-mono text-white">{barcode}</span> has not been scanned yet. Snap a clear photo of the declaration panel to analyze.
+                <p className="text-xs text-[var(--color-text-secondary)]">
+                  Barcode <span className="font-mono text-[var(--color-text-primary)]">{barcode}</span> has not been scanned yet. Snap a clear photo of the declaration panel to analyze.
                 </p>
               </div>
             )}
@@ -185,16 +183,15 @@ export default function ScanSearchPage() {
 
             {/* Optional Barcode association field */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
-                Barcode Number (Optional, if visible on package)
+              <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">
+                Barcode number (optional, if visible on package)
               </label>
               <input
                 type="text"
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
                 placeholder="e.g. 8901030865412 (optional)"
-                className="w-full rounded-xl bg-black border border-slate-700 px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 font-mono text-xs search-input"
-                style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                className={`${inputClasses} font-mono text-xs`}
               />
             </div>
 
@@ -204,15 +201,16 @@ export default function ScanSearchPage() {
                 type="button"
                 onClick={handleSubmitPhotoScan}
                 disabled={scanMutation.isPending}
-                className="w-full py-3.5 px-4 rounded-xl font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-lg shadow-emerald-950/50 disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                className="w-full py-3.5 px-4 rounded-lg font-semibold text-[var(--color-text-primary)] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+                style={{ background: 'linear-gradient(135deg, #e8730c, #d4670a)' }}
               >
                 {scanMutation.isPending ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Running OCR & Rules Engine...</span>
+                    <span>Running OCR and rules engine...</span>
                   </>
                 ) : (
-                  <span>⚡ Analyze Label Photo & Verify Compliance</span>
+                  <span>⚡ Analyze label photo and verify compliance</span>
                 )}
               </button>
             )}
@@ -233,14 +231,14 @@ export default function ScanSearchPage() {
               defaultFacingMode="environment"
             />
 
-            <div className="text-center text-xs text-slate-400">
+            <div className="text-center text-xs text-[var(--color-text-muted)]">
               The product record and compliance result will load automatically when the barcode is detected.
             </div>
 
             <form onSubmit={handleBarcodeSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">
-                Scan or Enter Barcode (GTIN)
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
+                Scan or enter barcode (GTIN)
               </label>
               <div className="relative">
                 <input
@@ -248,16 +246,15 @@ export default function ScanSearchPage() {
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
                   placeholder="e.g. 8901234567890"
-                  className="w-full rounded-xl bg-black border border-slate-700 px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono text-base search-input"
-                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                  className={`${inputClasses} font-mono text-base py-3`}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setBarcode("8901030865412")}
-                  className="absolute right-2 top-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition-colors"
+                  className="absolute right-2 top-2 px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--color-surface-tertiary)] hover:bg-gray-200 text-[var(--color-accent)] border border-[var(--color-border)] transition-colors"
                 >
-                  Fill Sample
+                  Fill sample
                 </button>
               </div>
             </div>
@@ -265,16 +262,17 @@ export default function ScanSearchPage() {
             <button
               type="submit"
               disabled={scanMutation.isPending || !barcode.trim()}
-              className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-lg shadow-emerald-950/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 rounded-lg font-semibold text-[var(--color-text-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #e8730c, #d4670a)' }}
             >
               {scanMutation.isPending ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Checking Compliance Database...</span>
+                  <span>Checking compliance database...</span>
                 </>
               ) : (
                 <>
-                  <span>🔍 Verify Barcode</span>
+                  <span>🔍 Verify barcode</span>
                 </>
               )}
             </button>
@@ -283,15 +281,15 @@ export default function ScanSearchPage() {
         )}
 
         {errorMessage && (
-          <div className="p-3.5 rounded-xl text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300">
+          <div className="p-3.5 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700">
             {errorMessage}
           </div>
         )}
 
         {/* Quick Sample Barcodes */}
         <div className="pt-2">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-            Try Demo Barcodes
+          <p className="text-xs font-semibold text-[var(--color-text-muted)] mb-2">
+            Try demo barcodes
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {POPULAR_DEMO_BARCODES.map((item) => (
@@ -304,12 +302,12 @@ export default function ScanSearchPage() {
                   setNeedsPhoto(false);
                   setErrorMessage(null);
                 }}
-                className="text-left p-2.5 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/30 transition-all text-xs group"
+                className="text-left p-2.5 rounded-lg bg-[var(--color-surface-tertiary)] hover:bg-gray-200 border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all text-xs group"
               >
-                <div className="font-semibold text-slate-200 group-hover:text-emerald-400 truncate">
+                <div className="font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] truncate">
                   {item.name}
                 </div>
-                <div className="font-mono text-slate-400 text-[11px]">{item.barcode}</div>
+                <div className="font-mono text-[var(--color-text-muted)] text-[11px]">{item.barcode}</div>
               </button>
             ))}
           </div>
@@ -317,12 +315,12 @@ export default function ScanSearchPage() {
       </div>
 
       {/* Manual Search Fallback */}
-      <div className="glass-card p-6 rounded-2xl space-y-4">
+      <div className="glass-card p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-200">
-            Or Search Product Directory
+          <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
+            Or search product directory
           </h2>
-          <span className="text-xs text-slate-400">By name, brand, or manufacturer</span>
+          <span className="text-xs text-[var(--color-text-muted)]">By name, brand, or manufacturer</span>
         </div>
 
         <div className="relative">
@@ -331,10 +329,10 @@ export default function ScanSearchPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type brand or product name (e.g. Amul, Tata, Dabur)..."
-            className="w-full rounded-xl bg-slate-900/80 border border-slate-700/80 px-4 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+            className={inputClasses}
           />
           {isSearching && (
-            <div className="absolute right-3 top-3 w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+            <div className="absolute right-3 top-3 w-4 h-4 border-2 border-[var(--color-accent)]/30 border-t-[var(--color-accent)] rounded-full animate-spin" />
           )}
         </div>
 
@@ -344,18 +342,18 @@ export default function ScanSearchPage() {
               <div
                 key={p.id}
                 onClick={() => navigate(`/citizen/product/${p.id}/snapshot`)}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-slate-800/80 hover:border-emerald-500/30 cursor-pointer transition-all"
+                className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-surface-tertiary)] hover:bg-gray-200 border border-[var(--color-border)] hover:border-[var(--color-accent)] cursor-pointer transition-all"
               >
                 <div className="space-y-0.5">
-                  <div className="font-medium text-sm text-white">{p.product_name}</div>
-                  <div className="text-xs text-slate-400 flex gap-2">
-                    <span className="text-emerald-400 font-medium">{p.brand_name}</span>
+                  <div className="font-medium text-sm text-[var(--color-text-primary)]">{p.product_name}</div>
+                  <div className="text-xs text-[var(--color-text-muted)] flex gap-2">
+                    <span className="text-[var(--color-accent)] font-medium">{p.brand_name}</span>
                     <span>·</span>
                     <span className="font-mono">{p.gtin_barcode || "No barcode"}</span>
                   </div>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-300">
-                  View Snapshot →
+                <span className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
+                  View snapshot →
                 </span>
               </div>
             ))}
@@ -363,7 +361,7 @@ export default function ScanSearchPage() {
         )}
 
         {query.trim().length >= 2 && searchResults && searchResults.length === 0 && !isSearching && (
-          <div className="text-center py-4 text-xs text-slate-400">
+          <div className="text-center py-4 text-xs text-[var(--color-text-muted)]">
             No products found matching &ldquo;{query}&rdquo;. Try entering the barcode directly above.
           </div>
         )}

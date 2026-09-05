@@ -67,16 +67,16 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="glass-card p-6 border-l-4 border-indigo-500 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-card card-accent-left p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
               National Command Console &middot; Phase 4.3
             </span>
-            <span className="text-xs text-slate-400">Department of Consumer Affairs</span>
+            <span className="text-xs text-[var(--color-text-muted)]">Department of Consumer Affairs</span>
           </div>
-          <h1 className="text-2xl font-bold text-white mt-1">Rule Engine Admin Dashboard</h1>
-          <p className="text-sm text-slate-300 mt-0.5">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">Rule Engine Admin Dashboard</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
             Centralized policy oversight, automated rule drafting, and nationwide enforcement analytics.
           </p>
         </div>
@@ -84,31 +84,31 @@ export default function AdminDashboardPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/admin/rules/notifications')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-md transition-all cursor-pointer"
+            className="px-4 py-2 rounded-lg text-xs font-semibold text-[var(--color-text-primary)] shadow-sm transition-colors cursor-pointer"
+            style={{ background: 'var(--color-accent)' }}
           >
-            🔔 Amendment Notifications ({kpis?.new_notifications || 0})
+            🔔 Amendment notifications ({kpis?.new_notifications || 0})
           </button>
           <button
             onClick={() => navigate('/admin/rules')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-all cursor-pointer"
+            className="px-4 py-2 rounded-lg text-xs font-semibold bg-[var(--color-surface-tertiary)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:bg-gray-200 transition-colors cursor-pointer"
           >
-            📜 Rule Repository
+            📜 Rule repository
           </button>
         </div>
       </div>
 
       {/* Quick Search & Filter Controls */}
-      <div className="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+      <div className="glass-card p-4 space-y-3">
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">🔍</span>
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm pointer-events-none">🔍</span>
             <input
               type="text"
               value={adminSearch}
               onChange={(e) => setAdminSearch(e.target.value)}
               placeholder="Search state divisions, product categories, or officers..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black border border-slate-700 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-indigo-500 transition-all font-mono search-input"
-              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors font-mono"
             />
           </div>
 
@@ -116,16 +116,15 @@ export default function AdminDashboardPage() {
             <select
               value={adminFilter}
               onChange={(e) => setAdminFilter(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-black border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500 transition-all dropdown-select"
-              style={{ backgroundColor: '#000000', color: '#ffffff' }}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors"
             >
-              <option value="all" className="bg-black text-white">All Divisions & Categories</option>
-              <option value="food" className="bg-black text-white">Food & Beverages</option>
-              <option value="electronics" className="bg-black text-white">Electronics</option>
-              <option value="general" className="bg-black text-white">General Goods</option>
-              <option value="medical_device" className="bg-black text-white">Medical Devices</option>
-              <option value="import" className="bg-black text-white">Imported Goods</option>
-              <option value="ecommerce" className="bg-black text-white">E-Commerce</option>
+              <option value="all">All Divisions & Categories</option>
+              <option value="food">Food & Beverages</option>
+              <option value="electronics">Electronics</option>
+              <option value="general">General Goods</option>
+              <option value="medical_device">Medical Devices</option>
+              <option value="import">Imported Goods</option>
+              <option value="ecommerce">E-Commerce</option>
             </select>
           </div>
         </div>
@@ -133,50 +132,50 @@ export default function AdminDashboardPage() {
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-card p-5 border border-slate-800 space-y-1">
-          <span className="text-xs font-semibold uppercase text-slate-400">Active Live Rules</span>
-          <div className="text-2xl md:text-3xl font-extrabold text-indigo-400">
+        <div className="glass-card p-5 space-y-1">
+          <span className="text-xs font-semibold text-[var(--color-text-muted)]">Active live rules</span>
+          <div className="text-2xl md:text-3xl font-bold text-[var(--color-accent)]">
             {summaryLoading ? '...' : kpis?.total_active_rules || 20}
           </div>
-          <p className="text-[11px] text-slate-500">In-force Legal Metrology rules</p>
+          <p className="text-[11px] text-[var(--color-text-muted)]">In-force Legal Metrology rules</p>
         </div>
 
-        <div className="glass-card p-5 border border-slate-800 space-y-1">
-          <span className="text-xs font-semibold uppercase text-slate-400">Pending Rule Drafts</span>
-          <div className="text-2xl md:text-3xl font-extrabold text-amber-400">
+        <div className="glass-card p-5 space-y-1">
+          <span className="text-xs font-semibold text-[var(--color-text-muted)]">Pending rule drafts</span>
+          <div className="text-2xl md:text-3xl font-bold text-amber-600">
             {summaryLoading ? '...' : kpis?.pending_drafts || 0}
           </div>
-          <p className="text-[11px] text-slate-500">Drafts awaiting approval</p>
+          <p className="text-[11px] text-[var(--color-text-muted)]">Drafts awaiting approval</p>
         </div>
 
-        <div className="glass-card p-5 border border-slate-800 space-y-1">
-          <span className="text-xs font-semibold uppercase text-slate-400">Enforcement Cases</span>
-          <div className="text-2xl md:text-3xl font-extrabold text-rose-400">
+        <div className="glass-card p-5 space-y-1">
+          <span className="text-xs font-semibold text-[var(--color-text-muted)]">Enforcement cases</span>
+          <div className="text-2xl md:text-3xl font-bold text-red-600">
             {summaryLoading ? '...' : kpis?.total_cases || 0}
           </div>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-[var(--color-text-muted)]">
             {kpis?.escalated_cases || 0} escalated to penalty
           </p>
         </div>
 
-        <div className="glass-card p-5 border border-slate-800 space-y-1">
-          <span className="text-xs font-semibold uppercase text-slate-400">National Compliance</span>
-          <div className="text-2xl md:text-3xl font-extrabold text-emerald-400">
+        <div className="glass-card p-5 space-y-1">
+          <span className="text-xs font-semibold text-[var(--color-text-muted)]">National compliance</span>
+          <div className="text-2xl md:text-3xl font-bold text-green-600">
             {summaryLoading ? '...' : `${kpis?.national_compliance_rate || 88.5}%`}
           </div>
-          <p className="text-[11px] text-slate-500">Aggregated across all states</p>
+          <p className="text-[11px] text-[var(--color-text-muted)]">Aggregated across all states</p>
         </div>
       </div>
 
       {/* Breakdown: Violations by Category & Regional Map */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category Breakdown */}
-        <div className="glass-card p-5 border border-slate-800 space-y-4">
+        <div className="glass-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Violations by Product Category (Step H)
+            <h3 className="text-xs font-bold text-[var(--color-text-primary)]">
+              Violations by product category (Step H)
             </h3>
-            <span className="text-xs text-slate-400">All Active Checks</span>
+            <span className="text-xs text-[var(--color-text-muted)]">All active checks</span>
           </div>
 
           <div className="space-y-3">
@@ -188,13 +187,16 @@ export default function AdminDashboardPage() {
               .map((catItem) => (
               <div key={catItem.category} className="space-y-1 text-xs">
                 <div className="flex justify-between">
-                  <span className="capitalize text-slate-300">{catItem.category}</span>
-                  <span className="font-mono text-slate-400">{catItem.violations} Violations</span>
+                  <span className="capitalize text-[var(--color-text-secondary)]">{catItem.category}</span>
+                  <span className="font-mono text-[var(--color-text-muted)]">{catItem.violations} Violations</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-[var(--color-surface-tertiary)] overflow-hidden">
                   <div
-                    className="bg-indigo-500 h-full rounded-full"
-                    style={{ width: `${Math.min(100, catItem.violations * 5 + 10)}%` }}
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.min(100, catItem.violations * 5 + 10)}%`,
+                      background: 'var(--color-accent)',
+                    }}
                   />
                 </div>
               </div>
@@ -203,17 +205,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Violations by Region / State */}
-        <div className="glass-card p-5 border border-slate-800 space-y-4">
+        <div className="glass-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-              Regional Enforcement & State Jurisdiction
+            <h3 className="text-xs font-bold text-[var(--color-text-primary)]">
+              Regional enforcement and state jurisdiction
             </h3>
-            <span className="text-xs text-slate-400">State Division</span>
+            <span className="text-xs text-[var(--color-text-muted)]">State Division</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="text-slate-500 border-b border-slate-800">
+              <thead className="text-[var(--color-text-muted)] border-b border-[var(--color-border)]">
                 <tr>
                   <th className="pb-2">State / Division</th>
                   <th className="pb-2">Complaints</th>
@@ -221,15 +223,15 @@ export default function AdminDashboardPage() {
                   <th className="pb-2 text-right">Compliance</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-[var(--color-border)]">
                 {(summary?.violations_by_region || [])
                   .filter((reg) => !adminSearch || reg.region.toLowerCase().includes(adminSearch.toLowerCase()))
                   .map((reg) => (
                   <tr key={reg.region}>
-                    <td className="py-2.5 font-medium text-slate-200">{reg.region}</td>
-                    <td className="py-2.5 text-slate-400 font-mono">{reg.complaints}</td>
-                    <td className="py-2.5 text-slate-400 font-mono">{reg.inspections}</td>
-                    <td className="py-2.5 text-right font-mono text-emerald-400">
+                    <td className="py-2.5 font-medium text-[var(--color-text-primary)]">{reg.region}</td>
+                    <td className="py-2.5 text-[var(--color-text-muted)] font-mono">{reg.complaints}</td>
+                    <td className="py-2.5 text-[var(--color-text-muted)] font-mono">{reg.inspections}</td>
+                    <td className="py-2.5 text-right font-mono text-green-600">
                       {reg.compliance_rate}%
                     </td>
                   </tr>
@@ -243,9 +245,9 @@ export default function AdminDashboardPage() {
       {/* Officer Performance Leaderboard & Inspection Weight Controls */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Officer Performance Leaderboard */}
-        <div className="glass-card p-5 border border-slate-800 space-y-4">
-          <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-            Field Officer Enforcement Activity
+        <div className="glass-card p-5 space-y-4">
+          <h3 className="text-xs font-bold text-[var(--color-text-primary)]">
+            Field officer enforcement activity
           </h3>
 
           <div className="space-y-2">
@@ -258,24 +260,24 @@ export default function AdminDashboardPage() {
               .map((officer) => (
               <div
                 key={officer.officer_id}
-                className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs"
+                className="p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] flex items-center justify-between text-xs"
               >
                 <div>
-                  <p className="font-semibold text-white">{officer.name}</p>
-                  <p className="text-[11px] text-slate-500 font-mono">@{officer.username}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)]">{officer.name}</p>
+                  <p className="text-[11px] text-[var(--color-text-muted)] font-mono">@{officer.username}</p>
                 </div>
                 <div className="flex items-center gap-4 text-right">
                   <div>
-                    <span className="text-[10px] uppercase text-slate-500 block">Scans</span>
-                    <span className="font-mono text-slate-300">{officer.scans_conducted}</span>
+                    <span className="text-[10px] text-[var(--color-text-muted)] block">Scans</span>
+                    <span className="font-mono text-[var(--color-text-secondary)]">{officer.scans_conducted}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase text-slate-500 block">Cases</span>
-                    <span className="font-mono text-rose-400">{officer.cases_opened}</span>
+                    <span className="text-[10px] text-[var(--color-text-muted)] block">Cases</span>
+                    <span className="font-mono text-red-600">{officer.cases_opened}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase text-slate-500 block">Done</span>
-                    <span className="font-mono text-emerald-400">{officer.inspections_completed}</span>
+                    <span className="text-[10px] text-[var(--color-text-muted)] block">Done</span>
+                    <span className="font-mono text-green-600">{officer.inspections_completed}</span>
                   </div>
                 </div>
               </div>
@@ -284,29 +286,29 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Step I: Inspection Priority Weight Adjuster */}
-        <div className="glass-card p-5 border border-slate-800 space-y-4">
+        <div className="glass-card p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-              Inspection Priority Adjustment &middot; Step I
+            <h3 className="text-xs font-bold text-[var(--color-accent)]">
+              Inspection priority adjustment &middot; Step I
             </h3>
-            <span className="text-xs text-slate-400 font-mono">Risk Scoring Engine</span>
+            <span className="text-xs text-[var(--color-text-muted)] font-mono">Risk Scoring Engine</span>
           </div>
 
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[var(--color-text-muted)]">
             Tune the weights feeding the automated field inspection risk queue and target prioritization.
           </p>
 
           {weightSaveMsg && (
-            <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-700 text-xs text-emerald-300">
+            <div className="p-2.5 rounded-lg bg-green-50 border border-green-200 text-xs text-green-700">
               ✓ {weightSaveMsg}
             </div>
           )}
 
           <form onSubmit={handleSaveWeights} className="space-y-3 text-xs">
             <div>
-              <div className="flex justify-between mb-1 text-slate-300">
+              <div className="flex justify-between mb-1 text-[var(--color-text-secondary)]">
                 <span>Risk Engine Weight: {riskEngineWeight}</span>
-                <span className="text-slate-500">Historical violation patterns</span>
+                <span className="text-[var(--color-text-muted)]">Historical violation patterns</span>
               </div>
               <input
                 type="range"
@@ -315,14 +317,14 @@ export default function AdminDashboardPage() {
                 step="0.05"
                 value={riskEngineWeight}
                 onChange={(e) => setRiskEngineWeight(parseFloat(e.target.value))}
-                className="w-full accent-indigo-500"
+                className="w-full accent-[var(--color-accent)]"
               />
             </div>
 
             <div>
-              <div className="flex justify-between mb-1 text-slate-300">
+              <div className="flex justify-between mb-1 text-[var(--color-text-secondary)]">
                 <span>Citizen Complaint Weight: {complaintWeight}</span>
-                <span className="text-slate-500">Public grievances & escalations</span>
+                <span className="text-[var(--color-text-muted)]">Public grievances & escalations</span>
               </div>
               <input
                 type="range"
@@ -336,9 +338,9 @@ export default function AdminDashboardPage() {
             </div>
 
             <div>
-              <div className="flex justify-between mb-1 text-slate-300">
+              <div className="flex justify-between mb-1 text-[var(--color-text-secondary)]">
                 <span>E-Commerce Flag Weight: {ecommerceWeight}</span>
-                <span className="text-slate-500">Digital catalog discrepancies</span>
+                <span className="text-[var(--color-text-muted)]">Digital catalog discrepancies</span>
               </div>
               <input
                 type="range"
@@ -352,15 +354,16 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="flex justify-between items-center pt-2">
-              <span className="text-[11px] text-slate-400">
+              <span className="text-[11px] text-[var(--color-text-muted)]">
                 Repeat Offense Multiplier: <strong>{repeatMultiplier}x</strong>
               </span>
               <button
                 type="submit"
                 disabled={updateWeightsMutation.isPending}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-[var(--color-text-primary)] cursor-pointer disabled:opacity-50"
+                style={{ background: 'var(--color-accent)' }}
               >
-                {updateWeightsMutation.isPending ? 'Saving...' : 'Save Priority Weights'}
+                {updateWeightsMutation.isPending ? 'Saving...' : 'Save priority weights'}
               </button>
             </div>
           </form>

@@ -107,7 +107,7 @@ export default function DraftReviewPage() {
 
   if (isLoading) {
     return (
-      <div className="glass-card p-12 text-center text-slate-400 animate-pulse">
+      <div className="glass-card p-12 text-center text-[var(--color-text-muted)] animate-pulse">
         Loading rule draft review data...
       </div>
     );
@@ -119,7 +119,7 @@ export default function DraftReviewPage() {
         <p className="text-red-400">Failed to load rule draft #{id}.</p>
         <button
           onClick={() => navigate('/admin/rules/notifications')}
-          className="px-4 py-2 rounded-xl text-xs bg-slate-800 text-slate-200"
+          className="px-4 py-2 rounded-xl text-xs bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]"
         >
           &larr; Back to Notifications
         </button>
@@ -133,25 +133,25 @@ export default function DraftReviewPage() {
       <div className="glass-card p-6 border-l-4 border-indigo-500 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-[var(--color-accent)]">
               Admin Review &middot; Steps C & D
             </span>
             <span
               className={`text-xs px-2 py-0.5 rounded font-semibold ${
                 draft.status === 'approved'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  ? 'bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-200'
                   : draft.status === 'revised'
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                  ? 'bg-amber-50 text-amber-600 border border-amber-200'
                   : draft.status === 'published'
-                  ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                  : 'bg-slate-700 text-slate-300'
+                  ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                  : 'bg-gray-100 text-[var(--color-text-secondary)]'
               }`}
             >
               Status: {draft.status.replace('_', ' ').toUpperCase()}
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-white mt-1">{draft.rule_id_code}</h1>
-          <p className="text-xs text-slate-300 font-mono mt-0.5">{draft.section_ref}</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">{draft.rule_id_code}</h1>
+          <p className="text-xs text-[var(--color-text-secondary)] font-mono mt-0.5">{draft.section_ref}</p>
         </div>
 
         {/* Quick Action Navigation */}
@@ -164,7 +164,7 @@ export default function DraftReviewPage() {
           </button>
           <button
             onClick={() => navigate(`/admin/rules/${draft.id}/publish`)}
-            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-md transition-all cursor-pointer"
+            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white shadow-sm transition-all cursor-pointer"
           >
             🚀 Publish Rule Live
           </button>
@@ -173,7 +173,7 @@ export default function DraftReviewPage() {
 
       {/* Messages */}
       {successMessage && (
-        <div className="glass-card p-4 bg-emerald-950/40 border border-emerald-700 text-xs text-emerald-300">
+        <div className="glass-card p-4 bg-green-50 border border-green-200 text-xs text-[var(--color-accent)]">
           ✓ {successMessage}
         </div>
       )}
@@ -186,13 +186,13 @@ export default function DraftReviewPage() {
       {/* Main Diff Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left: Old Clause (In Force) */}
-        <div className="glass-card p-5 border border-rose-900/40 space-y-3 bg-slate-950/40">
+        <div className="glass-card p-5 border border-rose-900/40 space-y-3 bg-[var(--color-surface-primary)]/40">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-rose-500"></span> Old Clause (In-Force)
             </span>
             {draft.supersedes_rule_code && (
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-[var(--color-text-muted)] font-mono">
                 Replaces: {draft.supersedes_rule_code}
               </span>
             )}
@@ -203,22 +203,22 @@ export default function DraftReviewPage() {
               rows={4}
               value={oldClauseText}
               onChange={(e) => setOldClauseText(e.target.value)}
-              className="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 font-mono"
+              className="w-full p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)] font-mono"
             />
           ) : (
-            <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/30 text-xs text-slate-300 font-serif leading-relaxed min-h-[100px]">
+            <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/30 text-xs text-[var(--color-text-secondary)] font-serif leading-relaxed min-h-[100px]">
               {draft.old_clause_text || 'No previous specific clause (new regulation addition).'}
             </div>
           )}
         </div>
 
         {/* Right: New Clause (Proposed Amendment) */}
-        <div className="glass-card p-5 border border-emerald-900/40 space-y-3 bg-slate-950/40">
+        <div className="glass-card p-5 border border-emerald-900/40 space-y-3 bg-[var(--color-surface-primary)]/40">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Proposed New Clause
+            <span className="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]"></span> Proposed New Clause
             </span>
-            <span className="text-xs text-slate-400">Category: {draft.category}</span>
+            <span className="text-xs text-[var(--color-text-muted)]">Category: {draft.category}</span>
           </div>
 
           {isEditing ? (
@@ -226,10 +226,10 @@ export default function DraftReviewPage() {
               rows={4}
               value={newClauseText}
               onChange={(e) => setNewClauseText(e.target.value)}
-              className="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 font-mono"
+              className="w-full p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)] font-mono"
             />
           ) : (
-            <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-900/30 text-xs text-slate-100 font-serif leading-relaxed min-h-[100px]">
+            <div className="p-4 rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)] font-serif leading-relaxed min-h-[100px]">
               {draft.new_clause_text}
             </div>
           )}
@@ -237,12 +237,12 @@ export default function DraftReviewPage() {
       </div>
 
       {/* Proposed Condition Schema Card */}
-      <div className="glass-card p-5 space-y-3 border border-slate-800">
+      <div className="glass-card p-5 space-y-3 border border-[var(--color-border)]">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)]">
             Engine Condition Schema (JSONB)
           </h3>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-[var(--color-text-muted)] font-mono">
             Type: {draft.proposed_condition?.type || 'required_field'}
           </span>
         </div>
@@ -252,18 +252,18 @@ export default function DraftReviewPage() {
             rows={5}
             value={conditionJsonStr}
             onChange={(e) => setConditionJsonStr(e.target.value)}
-            className="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 text-xs text-emerald-400 font-mono"
+            className="w-full p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-accent)] font-mono"
           />
         ) : (
-          <pre className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-emerald-400 font-mono overflow-x-auto">
+          <pre className="p-4 rounded-xl bg-[var(--color-surface-primary)]/80 border border-[var(--color-border)] text-xs text-[var(--color-accent)] font-mono overflow-x-auto">
             {JSON.stringify(draft.proposed_condition, null, 2)}
           </pre>
         )}
       </div>
 
       {/* Decision Section: Revise (E) vs Approve (F) */}
-      <div className="glass-card p-6 border border-slate-800 space-y-4">
-        <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+      <div className="glass-card p-6 border border-[var(--color-border)] space-y-4">
+        <h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider">
           Admin Decision Workflow &middot; Step D
         </h3>
 
@@ -271,52 +271,52 @@ export default function DraftReviewPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Approve form */}
-              <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-                <h4 className="text-xs font-bold text-emerald-400 uppercase">
+              <div className="p-4 rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] space-y-3">
+                <h4 className="text-xs font-bold text-[var(--color-accent)] uppercase">
                   Approve Draft (Yes Branch &middot; Step F)
                 </h4>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Effective Date *</label>
+                  <label className="block text-xs text-[var(--color-text-muted)] mb-1">Effective Date *</label>
                   <input
                     type="date"
                     value={effectiveDate}
                     onChange={(e) => setEffectiveDate(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Approval Comment</label>
+                  <label className="block text-xs text-[var(--color-text-muted)] mb-1">Approval Comment</label>
                   <input
                     type="text"
                     placeholder="e.g. Approved after legal metrology review."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white"
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)]"
                   />
                 </div>
                 <button
                   onClick={handleApproveSubmit}
                   disabled={approveMutation.isPending}
-                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer disabled:opacity-50"
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[var(--color-accent)] hover:bg-[var(--color-accent)] text-[var(--color-text-primary)] cursor-pointer disabled:opacity-50"
                 >
                   {approveMutation.isPending ? 'Approving...' : '✓ Approve Draft'}
                 </button>
               </div>
 
               {/* Revise option */}
-              <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3 flex flex-col justify-between">
+              <div className="p-4 rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] space-y-3 flex flex-col justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-amber-400 uppercase">
+                  <h4 className="text-xs font-bold text-amber-600 uppercase">
                     Revise Draft (No Branch &middot; Step E)
                   </h4>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">
                     Edit the proposed legal clause, condition thresholds, or category scope in-place.
                     No duplicate rows will be created.
                   </p>
                 </div>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-600/40 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-amber-600 border border-amber-600/40 cursor-pointer"
                 >
                   ✎ Edit & Revise Draft Clauses
                 </button>
@@ -328,11 +328,11 @@ export default function DraftReviewPage() {
           <form onSubmit={handleReviseSubmit} className="space-y-4 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Target Category</label>
+                <label className="block text-xs text-[var(--color-text-muted)] mb-1">Target Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)]"
                 >
                   <option value="general">General</option>
                   <option value="food">Food & Beverages</option>
@@ -343,14 +343,14 @@ export default function DraftReviewPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Revision Comment / Justification *</label>
+                <label className="block text-xs text-[var(--color-text-muted)] mb-1">Revision Comment / Justification *</label>
                 <input
                   type="text"
                   placeholder="Explain legal rationale for revision..."
                   required
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-primary)]"
                 />
               </div>
             </div>
@@ -359,14 +359,14 @@ export default function DraftReviewPage() {
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={reviseMutation.isPending}
-                className="px-5 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white cursor-pointer disabled:opacity-50"
+                className="px-5 py-2 rounded-xl text-xs font-semibold bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-[var(--color-text-primary)] cursor-pointer disabled:opacity-50"
               >
                 {reviseMutation.isPending ? 'Saving Revision...' : 'Save In-Place Revision'}
               </button>
@@ -377,23 +377,23 @@ export default function DraftReviewPage() {
 
       {/* Revision & Audit History Log */}
       {draft.comments && draft.comments.length > 0 && (
-        <div className="glass-card p-5 border border-slate-800 space-y-3">
-          <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+        <div className="glass-card p-5 border border-[var(--color-border)] space-y-3">
+          <h4 className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">
             Revision & Audit History
           </h4>
           <div className="space-y-2">
             {draft.comments.map((entry, idx) => (
-              <div key={idx} className="p-3 rounded-lg bg-slate-900/50 border border-slate-800 text-xs flex justify-between items-start">
+              <div key={idx} className="p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">@{entry.admin}</span>
-                    <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono bg-slate-800 text-indigo-300">
+                    <span className="font-semibold text-[var(--color-text-primary)]">@{entry.admin}</span>
+                    <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono bg-[var(--color-surface-tertiary)] text-[var(--color-accent)]">
                       {entry.action}
                     </span>
                   </div>
-                  <p className="text-slate-300 mt-1">{entry.comment}</p>
+                  <p className="text-[var(--color-text-secondary)] mt-1">{entry.comment}</p>
                 </div>
-                <span className="text-[10px] text-slate-500 font-mono">
+                <span className="text-[10px] text-[var(--color-text-muted)] font-mono">
                   {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ''}
                 </span>
               </div>

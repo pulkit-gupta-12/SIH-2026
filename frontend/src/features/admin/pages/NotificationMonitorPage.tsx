@@ -33,20 +33,20 @@ export default function NotificationMonitorPage() {
       <div className="glass-card p-6 border-l-4 border-amber-500 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">
               Regulatory Feed &middot; Step A
             </span>
-            <span className="text-xs text-slate-400">e-Gazette & DoCA Monitor</span>
+            <span className="text-xs text-[var(--color-text-muted)]">e-Gazette & DoCA Monitor</span>
           </div>
-          <h1 className="text-2xl font-bold text-white mt-1">Legal Metrology Amendment Notifications</h1>
-          <p className="text-sm text-slate-300 mt-0.5">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mt-1">Legal Metrology Amendment Notifications</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
             Incoming gazette notifications requiring legal review, rule diffing, and system activation.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/admin/rules')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-[var(--color-text-primary)] border border-[var(--color-border)] transition-all cursor-pointer"
           >
             Live Rule Repository &rarr;
           </button>
@@ -55,7 +55,7 @@ export default function NotificationMonitorPage() {
 
       {/* Notifications List */}
       {isLoading ? (
-        <div className="glass-card p-12 text-center text-slate-400 animate-pulse">
+        <div className="glass-card p-12 text-center text-[var(--color-text-muted)] animate-pulse">
           Loading incoming amendment notifications...
         </div>
       ) : error ? (
@@ -63,7 +63,7 @@ export default function NotificationMonitorPage() {
           Failed to load notifications. Please check backend connection.
         </div>
       ) : notifications.length === 0 ? (
-        <div className="glass-card p-12 text-center text-slate-400">
+        <div className="glass-card p-12 text-center text-[var(--color-text-muted)]">
           No new amendment notifications found.
         </div>
       ) : (
@@ -74,48 +74,48 @@ export default function NotificationMonitorPage() {
             return (
               <div
                 key={notif.id}
-                className="glass-card p-5 border border-slate-800 hover:border-slate-700 transition-all space-y-4"
+                className="glass-card p-5 border border-[var(--color-border)] hover:border-[var(--color-border)] transition-all space-y-4"
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 font-semibold border border-indigo-500/30">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-semibold border border-[var(--color-accent)]">
                         {notif.notification_no}
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 uppercase tracking-wider font-medium">
+                      <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-surface-tertiary)] text-[var(--color-text-secondary)] uppercase tracking-wider font-medium">
                         {notif.category}
                       </span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded font-semibold ${
                           notif.status === 'published'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            ? 'bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-200'
                             : notif.status === 'approved'
-                            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                            ? 'bg-blue-50 text-blue-600 border border-blue-200'
                             : notif.status === 'drafted'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                            ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                            : 'bg-red-50 text-red-600 border border-red-200'
                         }`}
                       >
                         Status: {notif.status.toUpperCase()}
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-[var(--color-text-muted)]">
                         Published: {notif.published_date}
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-white">{notif.title}</h3>
+                    <h3 className="text-base font-bold text-[var(--color-text-primary)]">{notif.title}</h3>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setSelectedNotification(notif)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-[var(--color-text-secondary)] transition-all cursor-pointer"
                     >
                       View Gazette Text
                     </button>
                     <button
                       onClick={() => draftMutation.mutate(notif.id)}
                       disabled={isDrafting}
-                      className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-md transition-all cursor-pointer disabled:opacity-50"
+                      className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-[var(--color-text-primary)] shadow-md transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isDrafting ? 'Generating AI Draft...' : '⚡ Generate AI Rule Draft'}
                     </button>
@@ -123,7 +123,7 @@ export default function NotificationMonitorPage() {
                 </div>
 
                 {/* Snippet */}
-                <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80 text-xs text-slate-300 font-mono line-clamp-2 leading-relaxed">
+                <div className="p-3 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] font-mono line-clamp-2 leading-relaxed">
                   "{notif.source_text}"
                 </div>
               </div>
@@ -134,34 +134,34 @@ export default function NotificationMonitorPage() {
 
       {/* Gazette Text Modal */}
       {selectedNotification && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto border border-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-surface-tertiary)]/80 backdrop-blur-sm animate-fade-in">
+          <div className="glass-card max-w-2xl w-full p-6 space-y-4 max-h-[85vh] overflow-y-auto border border-[var(--color-border)]">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-indigo-400 font-semibold">
+              <span className="text-xs font-mono text-[var(--color-accent)] font-semibold">
                 {selectedNotification.notification_no}
               </span>
               <button
                 onClick={() => setSelectedNotification(null)}
-                className="text-slate-400 hover:text-white text-lg font-bold cursor-pointer"
+                className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] text-lg font-bold cursor-pointer"
               >
                 &times;
               </button>
             </div>
 
-            <h2 className="text-lg font-bold text-white">{selectedNotification.title}</h2>
-            <div className="text-xs text-slate-400 flex items-center gap-4">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">{selectedNotification.title}</h2>
+            <div className="text-xs text-[var(--color-text-muted)] flex items-center gap-4">
               <span>Category: <strong>{selectedNotification.category}</strong></span>
               <span>Published: <strong>{selectedNotification.published_date}</strong></span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-200 font-serif leading-relaxed whitespace-pre-wrap">
+            <div className="p-4 rounded-xl bg-[var(--color-surface-tertiary)]/90 border border-[var(--color-border)] text-xs text-[var(--color-text-primary)] font-serif leading-relaxed whitespace-pre-wrap">
               {selectedNotification.source_text}
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setSelectedNotification(null)}
-                className="px-4 py-2 rounded-xl text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-medium bg-[var(--color-surface-tertiary)] hover:bg-gray-100 text-[var(--color-text-secondary)] cursor-pointer"
               >
                 Close
               </button>
@@ -171,7 +171,7 @@ export default function NotificationMonitorPage() {
                   setSelectedNotification(null);
                   draftMutation.mutate(id);
                 }}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-[var(--color-text-primary)] cursor-pointer"
               >
                 ⚡ Generate AI Draft from this Text
               </button>

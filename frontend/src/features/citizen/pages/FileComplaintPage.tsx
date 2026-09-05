@@ -114,14 +114,14 @@ export default function FileComplaintPage() {
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 animate-fade-in">
       {/* Top Banner */}
-      <div className="rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-rose-950/50 via-slate-900 to-slate-950 border border-rose-500/30 shadow-xl space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+      <div className="rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-rose-950/50 via-slate-900 to-slate-950 border border-red-200 shadow-xl space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">
           <span>⚖️ Statutory Consumer Grievance</span>
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">
           File a Metrology Complaint
         </h1>
-        <p className="text-xs sm:text-sm text-slate-300">
+        <p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
           Report overcharging (above MRP), missing mandatory declarations, dual-pricing, tampered labels, or deceptive packaging directly to State Legal Metrology Officers.
         </p>
       </div>
@@ -130,20 +130,20 @@ export default function FileComplaintPage() {
       <form onSubmit={handleSubmit} className="glass-card p-6 rounded-2xl space-y-5">
         {/* Product Selection */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
             Target Product
           </label>
           {selectedProductId ? (
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-emerald-500/40">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--color-surface-tertiary)] border border-green-300/40">
               <div className="space-y-0.5">
-                <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider block">
+                <span className="text-xs text-[var(--color-accent)] font-semibold uppercase tracking-wider block">
                   Selected Product #{selectedProductId}
                 </span>
-                <span className="text-sm font-medium text-white">
+                <span className="text-sm font-medium text-[var(--color-text-primary)]">
                   {stateData.productName || `Product ID: ${selectedProductId}`}
                 </span>
                 {stateData.barcode && (
-                  <span className="text-xs text-slate-400 font-mono block">
+                  <span className="text-xs text-[var(--color-text-muted)] font-mono block">
                     GTIN: {stateData.barcode}
                   </span>
                 )}
@@ -154,7 +154,7 @@ export default function FileComplaintPage() {
                   setSelectedProductId(null);
                   setProductSearch("");
                 }}
-                className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-slate-800"
+                className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] px-2.5 py-1 rounded-lg bg-[var(--color-surface-tertiary)]"
               >
                 Change
               </button>
@@ -166,11 +166,11 @@ export default function FileComplaintPage() {
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
                 placeholder="Search product name or brand to attach..."
-                className="w-full rounded-xl bg-black border border-slate-700 px-4 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 search-input"
-                style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                className="w-full rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] px-4 py-2.5 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-accent)]"
+                style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
               />
               {searchResults && searchResults.length > 0 && (
-                <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-700 bg-black divide-y divide-slate-800" style={{ backgroundColor: '#000000' }}>
+                <div className="max-h-48 overflow-y-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-tertiary)] divide-y divide-[var(--color-border)]" style={{ backgroundColor: 'var(--color-surface-tertiary)' }}>
                   {searchResults.map((p) => (
                     <div
                       key={p.id}
@@ -178,14 +178,14 @@ export default function FileComplaintPage() {
                         setSelectedProductId(p.id);
                         setProductSearch(p.product_name);
                       }}
-                      className="p-2.5 hover:bg-slate-900 cursor-pointer flex justify-between items-center text-xs bg-black text-white"
-                      style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                      className="p-2.5 hover:bg-[var(--color-surface-tertiary)] cursor-pointer flex justify-between items-center text-xs bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]"
+                      style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
                     >
                       <div>
-                        <span className="font-semibold text-white block">{p.product_name}</span>
-                        <span className="text-slate-300">{p.brand_name}</span>
+                        <span className="font-semibold text-[var(--color-text-primary)] block">{p.product_name}</span>
+                        <span className="text-[var(--color-text-secondary)]">{p.brand_name}</span>
                       </div>
-                      <span className="font-mono text-emerald-400">{p.gtin_barcode}</span>
+                      <span className="font-mono text-[var(--color-accent)]">{p.gtin_barcode}</span>
                     </div>
                   ))}
                 </div>
@@ -196,22 +196,22 @@ export default function FileComplaintPage() {
 
         {/* Complaint Description */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1.5">
-            Description of Grievance / Violation <span className="text-rose-400">*</span>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
+            Description of Grievance / Violation <span className="text-red-600">*</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="E.g., The retailer charged ₹120 when the printed MRP was ₹100, or the manufacturing date & consumer care details were completely missing on the package..."
-            className="w-full rounded-xl bg-slate-900/80 border border-slate-700 px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 leading-relaxed"
+            className="w-full rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-accent)] leading-relaxed"
             required
           />
         </div>
 
         {/* Photo Evidence */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-300">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)]">
             Attach Evidence Photo / Bill / Label
           </label>
           <input
@@ -219,10 +219,10 @@ export default function FileComplaintPage() {
             accept="image/*"
             capture="environment"
             onChange={handlePhotoSelect}
-            className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-emerald-400 hover:file:bg-slate-700 file:cursor-pointer cursor-pointer border border-dashed border-slate-700 rounded-xl p-3 bg-slate-900/50"
+            className="w-full text-xs text-[var(--color-text-muted)] file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[var(--color-surface-tertiary)] file:text-[var(--color-accent)] hover:file:bg-gray-200 file:cursor-pointer cursor-pointer border border-dashed border-[var(--color-border)] rounded-xl p-3 bg-[var(--color-surface-tertiary)]"
           />
           {photoPreview && (
-            <div className="mt-2 relative rounded-xl overflow-hidden max-h-36 border border-slate-700 bg-black/40 flex items-center justify-center">
+            <div className="mt-2 relative rounded-xl overflow-hidden max-h-36 border border-[var(--color-border)] bg-[var(--color-surface-tertiary)]/40 flex items-center justify-center">
               <img src={photoPreview} alt="Evidence preview" className="object-contain max-h-36" />
             </div>
           )}
@@ -230,12 +230,12 @@ export default function FileComplaintPage() {
 
         {/* Geolocation Tagging */}
         <div className="pt-1">
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--color-surface-tertiary)] border border-[var(--color-border)]">
             <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-slate-300 block">
+              <span className="text-xs font-semibold text-[var(--color-text-secondary)] block">
                 Store / Purchase Location
               </span>
-              <span className="text-xs text-slate-400 block font-mono">
+              <span className="text-xs text-[var(--color-text-muted)] block font-mono">
                 {geoCoords ? geoCoords.address : "Location not attached"}
               </span>
             </div>
@@ -243,7 +243,7 @@ export default function FileComplaintPage() {
               type="button"
               onClick={handleUseLocation}
               disabled={isLocating}
-              className="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 font-medium transition-all"
+              className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-200 hover:bg-[var(--color-accent)]/30 font-medium transition-all"
             >
               {isLocating ? "Detecting..." : geoCoords ? "✓ Attached" : "📍 Auto-Detect GPS"}
             </button>
@@ -251,7 +251,7 @@ export default function FileComplaintPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-3 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300">
+          <div className="p-3 rounded-xl text-xs bg-red-50 border border-red-200 text-red-600">
             {errorMessage}
           </div>
         )}
@@ -260,7 +260,7 @@ export default function FileComplaintPage() {
         <button
           type="submit"
           disabled={complaintMutation.isPending || !selectedProductId || !description.trim()}
-          className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-950/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 rounded-xl font-semibold text-[var(--color-text-primary)] bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 shadow-lg shadow-rose-950/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
         >
           {complaintMutation.isPending ? (
             <>

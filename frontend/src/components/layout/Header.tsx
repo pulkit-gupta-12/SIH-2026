@@ -10,29 +10,23 @@ export default function Header() {
 
   return (
     <header
-      style={{
-        background: 'var(--color-surface-secondary)',
-        borderBottom: '1px solid var(--color-border)',
-      }}
-      className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between backdrop-blur-md"
+      className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between bg-white border-b border-[var(--color-border)]"
     >
       {/* Logo & Title */}
       <div className="flex items-center gap-3">
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center text-lg font-bold"
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-lg font-bold text-[var(--color-text-primary)]"
           style={{
-            background: roleConfig
-              ? `linear-gradient(135deg, ${roleConfig.color}, ${roleConfig.colorDark})`
-              : 'linear-gradient(135deg, #6366f1, #4f46e5)',
+            background: 'linear-gradient(135deg, #e8730c, #d4670a)',
           }}
         >
           ⚖
         </div>
         <div className="hidden sm:block">
-          <h1 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+          <h1 className="text-sm font-semibold text-[var(--color-text-primary)]">
             Legal Metrology
           </h1>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-xs text-[var(--color-text-muted)]">
             Compliance Platform
           </p>
         </div>
@@ -44,9 +38,9 @@ export default function Header() {
           <span
             className="px-3 py-1 rounded-full text-xs font-medium hidden sm:inline-flex items-center gap-1.5"
             style={{
-              background: `${roleConfig.color}20`,
+              background: `${roleConfig.color}12`,
               color: roleConfig.color,
-              border: `1px solid ${roleConfig.color}30`,
+              border: `1px solid ${roleConfig.color}25`,
             }}
           >
             <span>{roleConfig.icon}</span>
@@ -55,34 +49,19 @@ export default function Header() {
         )}
 
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+          <p className="text-sm font-medium text-[var(--color-text-primary)]">
             {user?.name}
           </p>
-          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+          <p className="text-xs text-[var(--color-text-muted)]">
             {user?.email}
           </p>
         </div>
 
         <button
           onClick={logout}
-          className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer"
-          style={{
-            background: 'var(--color-surface-tertiary)',
-            color: 'var(--color-text-secondary)',
-            border: '1px solid var(--color-border)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--color-non-compliant)';
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = 'var(--color-non-compliant)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'var(--color-surface-tertiary)';
-            e.currentTarget.style.color = 'var(--color-text-secondary)';
-            e.currentTarget.style.borderColor = 'var(--color-border)';
-          }}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-150 cursor-pointer bg-[var(--color-surface-tertiary)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:bg-red-50 hover:text-red-600 hover:border-red-200"
         >
-          Logout
+          Sign out
         </button>
       </div>
     </header>

@@ -168,7 +168,7 @@ export default function GuidedCapturePage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold">
               Lane 2 Guided Inspection
             </span>
             <span className="text-xs text-muted-foreground">Legal Metrology Packaged Commodities (PC) Rules</span>
@@ -192,8 +192,8 @@ export default function GuidedCapturePage() {
             type="text"
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white font-mono text-sm search-input"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="mt-1 w-full px-3 py-1.5 rounded bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-mono text-sm"
+            style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
           />
         </div>
         <div>
@@ -201,14 +201,14 @@ export default function GuidedCapturePage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white text-sm dropdown-select"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="mt-1 w-full px-3 py-1.5 rounded bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm"
+            style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
           >
-            <option value="food" className="bg-black text-white">Food & Edibles</option>
-            <option value="medical_device" className="bg-black text-white">Medical Devices</option>
-            <option value="electronics" className="bg-black text-white">Electronics & IT</option>
-            <option value="import" className="bg-black text-white">Imported Commodities</option>
-            <option value="general" className="bg-black text-white">General Packaged Goods</option>
+            <option value="food" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Food & Edibles</option>
+            <option value="medical_device" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Medical Devices</option>
+            <option value="electronics" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Electronics & IT</option>
+            <option value="import" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Imported Commodities</option>
+            <option value="general" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">General Packaged Goods</option>
           </select>
         </div>
         <div>
@@ -217,8 +217,8 @@ export default function GuidedCapturePage() {
             type="text"
             value={locationStr}
             onChange={(e) => setLocationStr(e.target.value)}
-            className="mt-1 w-full px-3 py-1.5 rounded bg-black border border-slate-700 text-white text-sm search-input"
-            style={{ backgroundColor: '#000000', color: '#ffffff' }}
+            className="mt-1 w-full px-3 py-1.5 rounded bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm"
+            style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
           />
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function GuidedCapturePage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
           <span>Step {currentStepIndex + 1} of {CAPTURE_STEPS.length}: {currentStep.title}</span>
-          <span className="text-emerald-400 font-semibold">{totalCapturedCount} of {CAPTURE_STEPS.length} angles captured</span>
+          <span className="text-[var(--color-accent)] font-semibold">{totalCapturedCount} of {CAPTURE_STEPS.length} angles captured</span>
         </div>
         <div className="grid grid-cols-6 gap-2">
           {CAPTURE_STEPS.map((s, idx) => {
@@ -242,7 +242,7 @@ export default function GuidedCapturePage() {
                   isCurrent
                     ? 'bg-primary ring-2 ring-primary/40'
                     : isCaptured
-                    ? 'bg-emerald-500'
+                    ? 'bg-[var(--color-accent)]'
                     : 'bg-muted/40 hover:bg-muted/60'
                 }`}
                 title={`Step ${s.step}: ${s.title} ${isCaptured ? '(Captured)' : '(Pending)'}`}
@@ -253,12 +253,12 @@ export default function GuidedCapturePage() {
       </div>
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between gap-2 animate-fade-in">
+        <div className="p-3.5 rounded-xl text-xs bg-red-50 border border-red-200 text-red-600 flex items-center justify-between gap-2 animate-fade-in">
           <span>⚠️ {errorMessage}</span>
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-rose-400 hover:text-rose-200 text-xs px-2 py-0.5"
+            className="text-red-600 hover:text-rose-200 text-xs px-2 py-0.5"
           >
             ✕
           </button>
@@ -292,7 +292,7 @@ export default function GuidedCapturePage() {
                   Angle {currentStep.step} of 6
                 </span>
                 {capturedImages[currentStep.id] && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-200">
                     ✓ Photo Captured
                   </span>
                 )}
@@ -320,26 +320,26 @@ export default function GuidedCapturePage() {
             <div className="p-3.5 rounded-xl bg-card/60 border border-border/50 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-foreground">Computer Vision Quality Check</span>
-                <span className="text-emerald-400 font-mono font-bold">
+                <span className="text-[var(--color-accent)] font-mono font-bold">
                   {capturedImages[currentStep.id] ? 'READY TO PROCESS' : 'AWAITING CAPTURE'}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-[11px] pt-1">
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Sharpness</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">
+                  <div className="font-bold text-[var(--color-accent)] mt-0.5">
                     {capturedImages[currentStep.id] ? `${qualityFeedback.blurScore}% (Pass)` : '--'}
                   </div>
                 </div>
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Glare</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">
+                  <div className="font-bold text-[var(--color-accent)] mt-0.5">
                     {capturedImages[currentStep.id] ? 'None' : '--'}
                   </div>
                 </div>
                 <div className="p-2 rounded bg-background/50 border border-border/40 text-center">
                   <div className="text-muted-foreground">Lighting</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">
+                  <div className="font-bold text-[var(--color-accent)] mt-0.5">
                     {capturedImages[currentStep.id] ? 'Optimal' : '--'}
                   </div>
                 </div>
@@ -362,7 +362,7 @@ export default function GuidedCapturePage() {
               type="button"
               onClick={handleNext}
               disabled={scanMutation.isPending}
-              className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all flex items-center gap-2 shadow-md disabled:opacity-50"
+              className="px-5 py-2.5 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent)] text-[var(--color-text-primary)] font-semibold text-xs transition-all flex items-center gap-2 shadow-md disabled:opacity-50"
             >
               {scanMutation.isPending ? (
                 <>

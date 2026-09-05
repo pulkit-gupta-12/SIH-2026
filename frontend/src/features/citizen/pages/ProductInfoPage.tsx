@@ -19,8 +19,8 @@ export default function ProductInfoPage() {
   if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto p-6 space-y-4 text-center py-20 animate-fade-in">
-        <div className="w-10 h-10 border-3 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto" />
-        <p className="text-sm text-slate-400">Loading product information...</p>
+        <div className="w-10 h-10 border-3 border-green-200 border-t-emerald-500 rounded-full animate-spin mx-auto" />
+        <p className="text-sm text-[var(--color-text-muted)]">Loading product information...</p>
       </div>
     );
   }
@@ -30,11 +30,11 @@ export default function ProductInfoPage() {
       <div className="max-w-2xl mx-auto p-6 space-y-4">
         <div className="glass-card p-6 rounded-2xl text-center space-y-3">
           <div className="text-4xl">⚠️</div>
-          <h2 className="text-lg font-semibold text-white">Product Not Found</h2>
-          <p className="text-sm text-slate-400">Unable to retrieve product master records.</p>
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Product Not Found</h2>
+          <p className="text-sm text-[var(--color-text-muted)]">Unable to retrieve product master records.</p>
           <button
             onClick={() => navigate("/citizen/scan")}
-            className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold"
+            className="px-4 py-2 rounded-xl bg-[var(--color-accent)] text-[var(--color-text-primary)] text-sm font-semibold"
           >
             Back to Scanner
           </button>
@@ -68,7 +68,7 @@ export default function ProductInfoPage() {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(`/citizen/product/${product.id}/snapshot`)}
-          className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
         >
           <span>←</span>
           <span>Back to Snapshot</span>
@@ -84,38 +84,38 @@ export default function ProductInfoPage() {
               },
             })
           }
-          className="text-xs px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 transition-all font-medium"
+          className="text-xs px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-rose-500/30 transition-all font-medium"
         >
           Report Issue
         </button>
       </div>
 
       {/* Product Title Card */}
-      <div className="glass-card p-6 rounded-2xl border border-slate-800 space-y-2">
-        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-emerald-400 border border-slate-700">
+      <div className="glass-card p-6 rounded-2xl border border-[var(--color-border)] space-y-2">
+        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-surface-tertiary)] text-[var(--color-accent)] border border-[var(--color-border)]">
           <span>🏛️ National Product Registry</span>
         </div>
-        <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+        <h1 className="text-xl md:text-2xl font-bold text-[var(--color-text-primary)] tracking-tight">
           {product.product_name}
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-[var(--color-text-muted)]">
           Official manufacturer registration details verified under Legal Metrology portal.
         </p>
       </div>
 
       {/* Specifications Table */}
-      <div className="glass-card rounded-2xl border border-slate-800 overflow-hidden divide-y divide-slate-800">
+      <div className="glass-card rounded-2xl border border-[var(--color-border)] overflow-hidden divide-y divide-[var(--color-border)]">
         {detailRows.map((row, idx) => (
           <div
             key={idx}
-            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 text-sm gap-1 hover:bg-slate-900/40 transition-colors"
+            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 text-sm gap-1 hover:bg-[var(--color-surface-tertiary)] transition-colors"
           >
-            <span className="text-xs sm:text-sm font-medium text-slate-400 w-44">
+            <span className="text-xs sm:text-sm font-medium text-[var(--color-text-muted)] w-44">
               {row.label}
             </span>
             <span
-              className={`text-slate-200 font-semibold sm:text-right ${
-                row.mono ? "font-mono text-emerald-400 text-xs sm:text-sm" : ""
+              className={`text-[var(--color-text-primary)] font-semibold sm:text-right ${
+                row.mono ? "font-mono text-[var(--color-accent)] text-xs sm:text-sm" : ""
               }`}
             >
               {row.value || "—"}
@@ -128,7 +128,7 @@ export default function ProductInfoPage() {
       <div className="flex gap-3">
         <button
           onClick={() => navigate(`/citizen/product/${product.id}/snapshot`)}
-          className="flex-1 py-3 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-950/50 transition-all text-sm text-center"
+          className="flex-1 py-3 rounded-xl font-semibold text-[var(--color-text-primary)] bg-[var(--color-accent)] hover:bg-[var(--color-accent)] shadow-lg shadow-sm transition-all text-sm text-center"
         >
           View Compliance Verdict →
         </button>

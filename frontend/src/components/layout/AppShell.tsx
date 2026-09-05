@@ -9,7 +9,7 @@ import BottomNav from './BottomNav';
 
 export default function AppShell() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--color-surface-primary)' }}>
+    <div className="min-h-screen flex flex-col bg-[var(--color-surface-primary)]">
       <Header />
       <div className="flex flex-1">
         <Sidebar />

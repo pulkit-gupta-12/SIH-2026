@@ -125,20 +125,20 @@ export default function CaseCreationPage() {
 
       {/* Success Notification / Case Result Card */}
       {createdCase && (
-        <div className="glass-card p-6 rounded-2xl border border-emerald-500/40 bg-emerald-950/30 text-emerald-200 space-y-4 shadow-xl">
+        <div className="glass-card p-6 rounded-2xl border border-green-200 bg-green-50 text-green-800 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-3xl">⚖️</span>
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-[var(--color-text-primary)]">
                   Case #{createdCase.id} Successfully Opened
                 </h3>
-                <p className="text-xs text-emerald-300">
+                <p className="text-xs text-[var(--color-accent)]">
                   Target Product: {createdCase.brand_name} — {createdCase.product_name} (GTIN: {createdCase.gtin_barcode})
                 </p>
               </div>
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-300/40 uppercase">
               {createdCase.classification === 'first_time' ? 'Section 29 Notice Issued' : 'Section 39 Penalty Escalated'}
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function CaseCreationPage() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={() => setCreatedCase(null)}
-              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all"
+              className="px-4 py-2 rounded-lg bg-[var(--color-accent)] hover:bg-[var(--color-accent)] text-[var(--color-text-primary)] text-xs font-bold transition-all"
             >
               + File Another Notice
             </button>
@@ -199,7 +199,7 @@ export default function CaseCreationPage() {
             {/* Product Selection */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-foreground uppercase tracking-wider">
-                Target Commodity / Product <span className="text-rose-400">*</span>
+                Target Commodity / Product <span className="text-red-600">*</span>
               </label>
               <select
                 value={productId}
@@ -208,12 +208,12 @@ export default function CaseCreationPage() {
                   setViolationId('');
                 }}
                 required
-                className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none dropdown-select"
-                style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                className="w-full px-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
               >
-                <option value="" className="bg-black text-white">Select target product...</option>
+                <option value="" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Select target product...</option>
                 {products.map((p) => (
-                  <option key={p.id} value={p.id} className="bg-black text-white">
+                  <option key={p.id} value={p.id} className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">
                     {p.brand_name} - {p.product_name} ({p.gtin_barcode})
                   </option>
                 ))}
@@ -229,12 +229,12 @@ export default function CaseCreationPage() {
                 <select
                   value={violationId}
                   onChange={(e) => setViolationId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none dropdown-select"
-                  style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                  className="w-full px-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                  style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
                 >
-                  <option value="" className="bg-black text-white">Apply to product general non-compliance</option>
+                  <option value="" className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">Apply to product general non-compliance</option>
                   {historyList.map((h) => (
-                    <option key={h.violation_id} value={h.violation_id} className="bg-black text-white">
+                    <option key={h.violation_id} value={h.violation_id} className="bg-[var(--color-surface-tertiary)] text-[var(--color-text-primary)]">
                       [{h.rule_id_code}] {h.section_ref}: {h.description.slice(0, 60)}... ({h.is_first_time ? '1st Offense' : 'Repeat'})
                     </option>
                   ))}
@@ -275,8 +275,8 @@ export default function CaseCreationPage() {
                     max={90}
                     value={rectificationDays}
                     onChange={(e) => setRectificationDays(Number(e.target.value))}
-                    className="w-32 px-4 py-2 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
-                    style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                    className="w-32 px-4 py-2 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none"
+                    style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
                   />
                   <span className="text-xs text-muted-foreground">Standard statutory window: 30 days</span>
                 </div>
@@ -293,8 +293,8 @@ export default function CaseCreationPage() {
                 placeholder="Enter field inspection observations, retail premises name, batch details, or non-compliance remarks..."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg bg-black border border-slate-700 text-white text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none placeholder:text-slate-400"
-                style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                className="w-full px-4 py-2.5 rounded-lg bg-[var(--color-surface-tertiary)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none placeholder:text-[var(--color-text-muted)]"
+                style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-primary)' }}
               />
             </div>
 
@@ -343,8 +343,8 @@ export default function CaseCreationPage() {
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           c.classification === 'first_time'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                            ? 'bg-amber-50 text-amber-600 border border-amber-200'
+                            : 'bg-red-50 text-red-600 border border-red-200'
                         }`}
                       >
                         {c.classification === 'first_time' ? 'Sec 29 Notice' : 'Sec 39 Penalty'}

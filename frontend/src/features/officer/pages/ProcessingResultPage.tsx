@@ -111,7 +111,7 @@ export default function ProcessingResultPage() {
   // 2. Error State
   if (error || !scan) {
     return (
-      <div className="max-w-2xl mx-auto p-8 glass-card rounded-2xl border border-rose-500/40 text-rose-300 space-y-4 animate-fade-in">
+      <div className="max-w-2xl mx-auto p-8 glass-card rounded-2xl border border-rose-500/40 text-red-600 space-y-4 animate-fade-in">
         <div className="flex items-center gap-3">
           <span className="text-3xl">⚠</span>
           <div>
@@ -149,7 +149,7 @@ export default function ProcessingResultPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold">
               Inspection Scan #{scan.id}
             </span>
             <span className="text-xs text-muted-foreground capitalize">
@@ -180,8 +180,8 @@ export default function ProcessingResultPage() {
 
       {/* 3. Empty / Partial State */}
       {!report ? (
-        <div className="p-12 glass-card rounded-2xl border border-amber-500/30 text-center space-y-3">
-          <div className="text-3xl text-amber-400">⏳</div>
+        <div className="p-12 glass-card rounded-2xl border border-amber-200 text-center space-y-3">
+          <div className="text-3xl text-amber-600">⏳</div>
           <h3 className="text-lg font-bold text-foreground">Compliance Evaluation Pending</h3>
           <p className="text-xs text-muted-foreground max-w-md mx-auto">
             Optical character recognition completed, but the Legal Metrology compliance evaluation is still processing or awaiting data.

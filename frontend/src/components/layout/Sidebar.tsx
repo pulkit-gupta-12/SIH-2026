@@ -25,12 +25,7 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Capture', path: '/officer/capture', icon: '📷' },
     { label: 'Cases', path: '/officer/cases', icon: '📁' },
   ],
-  state_controller: [
-    { label: 'Dashboard', path: '/controller', icon: '🏠' },
-    { label: 'Heatmap', path: '/controller/heatmap', icon: '🗺️' },
-    { label: 'Assignments', path: '/controller/assign', icon: '📋' },
-    { label: 'Escalations', path: '/controller/escalations', icon: '⚠️' },
-  ],
+
   national_admin: [
     { label: 'Admin Console', path: '/admin', icon: '🇮🇳' },
     { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
@@ -42,11 +37,7 @@ const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Compliance', path: '/business/compliance', icon: '📋' },
     { label: 'Notices', path: '/business/notices', icon: '📨' },
   ],
-  ecommerce_partner: [
-    { label: 'Dashboard', path: '/ecommerce', icon: '🏠' },
-    { label: 'Upload', path: '/ecommerce/upload', icon: '📤' },
-    { label: 'Flagged', path: '/ecommerce/flagged', icon: '🚩' },
-  ],
+
   rule_admin: [
     { label: 'Admin Console', path: '/admin', icon: '⚖️' },
     { label: 'Notifications', path: '/admin/rules/notifications', icon: '🔔' },
@@ -63,18 +54,14 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-60 min-h-screen py-4 px-3"
-      style={{
-        background: 'var(--color-surface-secondary)',
-        borderRight: '1px solid var(--color-border)',
-      }}
+      className="hidden md:flex flex-col w-60 min-h-screen py-4 px-3 border-r border-[var(--color-border)] bg-white"
     >
       {/* Role label */}
       <div className="mb-6 px-3">
         <div
-          className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold"
           style={{
-            background: `${roleConfig.color}15`,
+            background: `${roleConfig.color}12`,
             color: roleConfig.color,
           }}
         >
@@ -89,13 +76,14 @@ export default function Sidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            end={item.path === '/admin' || item.path === '/citizen' || item.path === '/officer' || item.path === '/controller' || item.path === '/business' || item.path === '/ecommerce'}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 no-underline"
-            style={({ isActive }) => ({
-              background: isActive ? `${roleConfig.color}20` : 'transparent',
-              color: isActive ? roleConfig.color : 'var(--color-text-secondary)',
-              border: isActive ? `1px solid ${roleConfig.color}30` : '1px solid transparent',
-            })}
+            end={item.path === '/admin' || item.path === '/citizen' || item.path === '/officer' || item.path === '/business'}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150 no-underline ${
+                isActive
+                  ? 'bg-[var(--color-accent-subtle)] text-[var(--color-accent)] font-semibold'
+                  : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-tertiary)] hover:text-[var(--color-text-primary)]'
+              }`
+            }
           >
             <span className="text-base">{item.icon}</span>
             {item.label}
@@ -104,7 +92,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom: platform version */}
-      <div className="px-3 py-2 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+      <div className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
         v1.0.0 · Phase 4.3
       </div>
     </aside>

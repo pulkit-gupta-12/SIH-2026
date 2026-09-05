@@ -25,7 +25,7 @@ export default function ViolationHistoryPage() {
 
   if (error || !timeline) {
     return (
-      <div className="p-8 glass-card rounded-2xl border border-rose-500/30 text-rose-300 space-y-3">
+      <div className="p-8 glass-card rounded-2xl border border-red-200 text-red-600 space-y-3">
         <h2 className="text-lg font-bold">Failed to load product violation history.</h2>
         <button onClick={() => navigate(-1)} className="px-4 py-2 bg-card border rounded-lg text-xs">
           ← Go Back
@@ -80,15 +80,15 @@ export default function ViolationHistoryPage() {
           <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Offense Classification</span>
           <div className="flex items-center gap-2 pt-1">
             {timeline.has_repeat_offenses ? (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-rose-500/40">
                 ⚠️ Repeat Offender (Section 39 Penalty)
               </span>
             ) : timeline.total_violations > 0 ? (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-500/40">
                 1st Offense (Section 29 Notice)
               </span>
             ) : (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-green-300/40">
                 Clean Compliance Record
               </span>
             )}
@@ -131,8 +131,8 @@ export default function ViolationHistoryPage() {
                 <div
                   className={`absolute -left-6 top-1.5 w-5 h-5 rounded-full border-2 bg-card flex items-center justify-center text-[10px] ${
                     event.is_first_time
-                      ? 'border-amber-400 text-amber-400'
-                      : 'border-rose-500 text-rose-400 font-bold'
+                      ? 'border-amber-400 text-amber-600'
+                      : 'border-rose-500 text-red-600 font-bold'
                   }`}
                 >
                   {index + 1}
@@ -146,11 +146,11 @@ export default function ViolationHistoryPage() {
                       </span>
                       <span className="text-xs text-muted-foreground font-semibold">{event.section_ref}</span>
                       {event.is_first_time ? (
-                        <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-200">
                           1st Offense
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                        <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-50 text-red-600 border border-red-200">
                           ⚠️ Repeat Offense
                         </span>
                       )}
@@ -168,7 +168,7 @@ export default function ViolationHistoryPage() {
                       {event.case_id ? (
                         <span className="font-semibold text-primary">Case #{event.case_id} ({event.case_status || 'Active'})</span>
                       ) : (
-                        <span className="text-amber-400">Pending Case Filing</span>
+                        <span className="text-amber-600">Pending Case Filing</span>
                       )}
                     </div>
                     {!event.case_id && (

@@ -38,17 +38,6 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     homePath: '/officer',
     description: 'Inspect products, capture labels, create cases',
   },
-  state_controller: {
-    id: 'state_controller',
-    label: 'State Controller',
-    shortLabel: 'Controller',
-    color: 'var(--color-controller)',
-    colorLight: 'var(--color-controller-light)',
-    colorDark: 'var(--color-controller-dark)',
-    icon: '🏛️',
-    homePath: '/controller',
-    description: 'Manage state-level enforcement, approve escalations',
-  },
   national_admin: {
     id: 'national_admin',
     label: 'National Admin / DoCA',
@@ -71,17 +60,6 @@ export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
     homePath: '/business',
     description: 'Pre-market checks, compliance records, notices',
   },
-  ecommerce_partner: {
-    id: 'ecommerce_partner',
-    label: 'E-commerce Integration',
-    shortLabel: 'E-commerce',
-    color: 'var(--color-ecommerce)',
-    colorLight: 'var(--color-ecommerce-light)',
-    colorDark: 'var(--color-ecommerce-dark)',
-    icon: '🛒',
-    homePath: '/ecommerce',
-    description: 'Bulk upload listings, review flagged products',
-  },
   rule_admin: {
     id: 'rule_admin',
     label: 'Rule Engine Admin',
@@ -102,9 +80,7 @@ export const getRoleConfig = (role: UserRole): RoleConfig => {
 export const ALL_ROLES: UserRole[] = [
   'citizen',
   'field_officer',
-  'state_controller',
   'national_admin',
   'business',
-  'ecommerce_partner',
   'rule_admin',
 ];

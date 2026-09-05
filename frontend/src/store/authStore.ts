@@ -8,10 +8,8 @@ import type { AuthUser } from '../services/authService';
 export type UserRole =
   | 'citizen'
   | 'field_officer'
-  | 'state_controller'
   | 'national_admin'
   | 'business'
-  | 'ecommerce_partner'
   | 'rule_admin';
 
 interface AuthState {
