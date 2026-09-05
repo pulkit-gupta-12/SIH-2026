@@ -2,6 +2,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProcessingResult, type ScanProcessingResult, type ComplianceReport } from '../api';
 import ComplianceReportView from '../components/ComplianceReportView';
+import ReportDownloadButton from '../components/ReportDownloadButton';
 
 function getOrBuildReport(scan: ScanProcessingResult): ComplianceReport | null {
   if (scan.compliance_check?.report_data && scan.compliance_check.report_data.overall_status) {
@@ -177,6 +178,11 @@ export default function ProcessingResultPage() {
           )}
         </div>
       </div>
+
+      {/* Official Legal Metrology Inspection Report Bar */}
+      {check && (
+        <ReportDownloadButton complianceCheckId={check.id} />
+      )}
 
       {/* 3. Empty / Partial State */}
       {!report ? (

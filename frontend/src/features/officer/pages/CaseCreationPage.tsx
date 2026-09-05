@@ -9,6 +9,7 @@ import {
   type ProductViolationTimeline,
 } from '../api';
 import apiClient from '../../../services/apiClient';
+import ReportDownloadButton from '../components/ReportDownloadButton';
 
 interface ProductSummary {
   id: number;
@@ -169,6 +170,9 @@ export default function CaseCreationPage() {
               <p className="font-bold text-foreground">{createdCase.opened_by_username}</p>
             </div>
           </div>
+
+          {/* Statutory PDF Report Action for Created Case */}
+          <ReportDownloadButton caseId={createdCase.id} />
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
@@ -358,6 +362,9 @@ export default function CaseCreationPage() {
                       <span className="font-mono">
                         {c.created_at ? new Date(c.created_at).toLocaleDateString('en-IN') : ''}
                       </span>
+                    </div>
+                    <div className="pt-1">
+                      <ReportDownloadButton caseId={c.id} compact />
                     </div>
                   </div>
                 ))}

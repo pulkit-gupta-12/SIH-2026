@@ -19,6 +19,15 @@ class Report(models.Model):
         "cases.Case",
         on_delete=models.CASCADE,
         related_name="reports",
+        null=True,
+        blank=True,
+    )
+    compliance_check = models.ForeignKey(
+        "compliance.ComplianceCheck",
+        on_delete=models.CASCADE,
+        related_name="reports",
+        null=True,
+        blank=True,
     )
     file_url = models.CharField(max_length=500)
     format = models.CharField(
@@ -35,4 +44,5 @@ class Report(models.Model):
 
     def __str__(self):
         sign_status = "Signed" if self.signed else "Unsigned"
-        return f"Report #{self.id} for Case #{self.case_id} [{self.format.upper()}, {sign_status}]"
+        target = f"Case #{self.case_id}" if self.case_id else f"Check #{self.compliance_check_id}"
+        return f"Report #{self.id} for {target} [{self.format.upper()}, {sign_status}]"

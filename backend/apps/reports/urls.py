@@ -1,8 +1,10 @@
 """
 Reports URL configuration.
 """
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import ReportViewSet
 
-urlpatterns = [
-    # Endpoints to be added in later phases.
-]
+router = DefaultRouter()
+router.register(r"", ReportViewSet, basename="report")
+
+urlpatterns = router.urls

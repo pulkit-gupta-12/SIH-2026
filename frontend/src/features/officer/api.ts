@@ -331,3 +331,40 @@ export async function fetchOfficerCases(): Promise<EnforcementCaseResult[]> {
   }
   return [];
 }
+
+export interface ReportResult {
+  id: number;
+  report_code: string;
+  case_id?: number | null;
+  compliance_check_id?: number | null;
+  file_url: string;
+  format: string;
+  signed: boolean;
+  generated_at: string;
+}
+
+export async function generateCaseReport(caseId: string | number, regenerate = false): Promise<ReportResult> {
+  const { data } = await apiClient.post<ReportResult>(`/cases/${caseId}/generate-report/`, { regenerate });
+  return data;
+}
+
+export async function generateCheckReport(checkId: string | number, regenerate = false): Promise<ReportResult> {
+  const { data } = await apiClient.post<ReportResult>(`/compliance-checks/${checkId}/generate-report/`, { regenerate });
+  return data;
+}
+
+export async function fetchLatestReport(params: { caseId?: string | number; checkId?: string | number }): Promise<ReportResult | null> {
+  try {
+    if (params.caseId) {
+      const { data } = await apiClient.get<ReportResult>(`/cases/${params.caseId}/report/`);
+      return data;
+    }
+    if (params.checkId) {
+      const { data } = await apiClient.get<ReportResult>(`/compliance-checks/${params.checkId}/report/`);
+      return data;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

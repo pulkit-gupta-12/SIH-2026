@@ -90,3 +90,44 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+    @action(detail=True, methods=["post"], url_path="generate-report")
+    def generate_report(self, request, pk=None):
+        """
+        POST /api/compliance-checks/{id}/generate-report/
+        Body: {"regenerate": false} (optional)
+        """
+        check = self.get_object()
+        regenerate = request.data.get("regenerate", False)
+
+        from apps.reports.models import Report
+        from apps.reports.serializers import ReportSerializer
+        from apps.reports.services import generate_and_save_report
+
+        if not regenerate:
+            existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
+            if existing and existing.file_url:
+                return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
+
+        try:
+            report = generate_and_save_report(compliance_check=check, officer=request.user)
+            return Response(ReportSerializer(report).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {"error": f"Report generation failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=True, methods=["get"], url_path="report")
+    def get_report(self, request, pk=None):
+        """
+        GET /api/compliance-checks/{id}/report/
+        """
+        check = self.get_object()
+        from apps.reports.models import Report
+        from apps.reports.serializers import ReportSerializer
+
+        existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
+        if not existing or not existing.file_url:
+            return Response({"detail": "No report found for this compliance check."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)

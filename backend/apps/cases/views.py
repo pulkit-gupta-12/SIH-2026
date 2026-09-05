@@ -3,6 +3,7 @@ Views for Cases app: CaseViewSet with dynamic statutory pathing.
 """
 from datetime import date, timedelta
 from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Case, ImprovementNotice, PenaltyCase
@@ -115,3 +116,95 @@ class CaseViewSet(viewsets.ModelViewSet):
 
         detail_serializer = CaseDetailSerializer(case)
         return Response(detail_serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["post"], url_path="generate-report")
+    def generate_report(self, request, pk=None):
+        """
+        POST /api/cases/{id}/generate-report/
+        Body: {"regenerate": false} (optional)
+        """
+        case = self.get_object()
+        regenerate = request.data.get("regenerate", False)
+
+        from apps.reports.models import Report
+        from apps.reports.serializers import ReportSerializer
+        from apps.reports.services import generate_and_save_report
+
+        if not regenerate:
+            existing = Report.objects.filter(case=case).order_by("-generated_at").first()
+            if existing and existing.file_url:
+                return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
+
+        try:
+            report = generate_and_save_report(case=case, officer=request.user)
+            return Response(ReportSerializer(report).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {"error": f"Report generation failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=False, methods=["post"], url_path="generate-report")
+    def generate_report_from_check(self, request):
+        """
+        POST /api/cases/generate-report/
+        Allows generating report directly from a compliance_check_id for pre-case inspections.
+        Body: {"compliance_check_id": 123, "regenerate": false}
+        """
+        check_id = request.data.get("compliance_check_id")
+        case_id = request.data.get("case_id")
+        regenerate = request.data.get("regenerate", False)
+
+        if not check_id and not case_id:
+            return Response(
+                {"error": "Provide 'compliance_check_id' or 'case_id'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from apps.reports.models import Report
+        from apps.reports.serializers import ReportSerializer
+        from apps.reports.services import generate_and_save_report
+        from apps.compliance.models import ComplianceCheck
+
+        case = None
+        check = None
+        if case_id:
+            case = Case.objects.filter(id=case_id).first()
+            if not case:
+                return Response({"error": f"Case #{case_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+        if check_id:
+            check = ComplianceCheck.objects.filter(id=check_id).first()
+            if not check:
+                return Response({"error": f"ComplianceCheck #{check_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not regenerate:
+            existing = None
+            if case:
+                existing = Report.objects.filter(case=case).order_by("-generated_at").first()
+            elif check:
+                existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
+            if existing and existing.file_url:
+                return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
+
+        try:
+            report = generate_and_save_report(case=case, compliance_check=check, officer=request.user)
+            return Response(ReportSerializer(report).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {"error": f"Report generation failed: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=True, methods=["get"], url_path="report")
+    def get_report(self, request, pk=None):
+        """
+        GET /api/cases/{id}/report/
+        """
+        case = self.get_object()
+        from apps.reports.models import Report
+        from apps.reports.serializers import ReportSerializer
+
+        existing = Report.objects.filter(case=case).order_by("-generated_at").first()
+        if not existing or not existing.file_url:
+            return Response({"detail": "No report found for this case."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)

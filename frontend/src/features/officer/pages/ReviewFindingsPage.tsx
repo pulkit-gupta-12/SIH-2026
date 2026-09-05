@@ -9,6 +9,7 @@ import {
 } from '../api';
 import StatusPill from '../../../components/ui/StatusPill';
 import RuleFindingCard from '../components/RuleFindingCard';
+import ReportDownloadButton from '../components/ReportDownloadButton';
 
 export default function ReviewFindingsPage() {
   const { checkId } = useParams<{ checkId: string }>();
@@ -109,6 +110,11 @@ export default function ReviewFindingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Inspection PDF Report Generation Banner */}
+      {checkId && (
+        <ReportDownloadButton complianceCheckId={checkId} />
+      )}
 
       {/* Success Notification */}
       {successMessage && (

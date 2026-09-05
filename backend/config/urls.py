@@ -64,7 +64,12 @@ urlpatterns = [
     path("api/dashboards/", include("apps.dashboards.urls")),
 ]
 
-# Debug toolbar & Media serving (dev only)
+from django.conf.urls.static import static
+
+# Serve media files in development
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Debug toolbar (dev only)
 if settings.DEBUG:
     try:
         import debug_toolbar

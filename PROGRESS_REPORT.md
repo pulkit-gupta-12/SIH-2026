@@ -75,6 +75,19 @@ The remaining 4 dashboards from the original multi-portal specification (**State
   - **First-Time Offense** (`classification="first_time"`): Automatically spawns a **Section 29 Improvement Notice** with a 30-day statutory rectification window (`status="notice_sent"`).
   - **Repeat Offense** (`classification="repeat"`): Automatically spawns a **Section 39 Penalty Case** escalated to legal enforcement (`status="escalated"`).
   - **Double-Counting Prevention**: Reads the `ProductComplianceHistory` classification determined at scan time without re-invoking `classify_and_record()`.
+- **Statutory PDF Report Generation (`POST /api/cases/{id}/generate-report/` & `POST /api/compliance-checks/{id}/generate-report/`)**:
+  - Built with **ReportLab Platypus** layout engine (`SimpleDocTemplate`, `Paragraph`, `Table`, `Image`, `NumberedCanvas`) generating A4 statutory reports persisted to media storage (`/media/reports/report_{id}_{timestamp}.pdf`) and tracked in the `reports` table.
+  - **Real Data Sourcing (100% Real ORM Data)**:
+    1. *Header*: Real Report ID (`LMR-XXXXX`), actual generation timestamp, and statutory reference.
+    2. *Officer Details*: Officer full name, username/ID, and jurisdiction/state queried live from `users` and `role_assignments`.
+    3. *Inspection Details*: Scan ID, inspection date/time, location, and capture method from `scans`.
+    4. *Product Details*: Product name, brand name, GTIN barcode, category, manufacturer name, and address from `product_master`.
+    5. *Extracted Fields*: All mandatory declarations from `extracted_fields` including field type, extracted value, confidence score, font size in mm, placement zone, and pass/fail status against rules.
+    6. *Violations Section*: Real citations with both `rule_id_code` AND `section_ref`, statutory violation descriptions, and evidence image references from `compliance.Violation`. When zero violations exist, renders a prominent `[COMPLIANT] No violations found` banner.
+    7. *Case & Enforcement Outcome*: Classification (`first_time` / `repeat`), case status, improvement notice rectification deadlines/outcomes, or penalty payment/appeal statuses from `cases`. If no case exists, explicitly notes compliant inspection without formal case opening.
+    8. *Evidence Appendix*: Embeds real scan images from `scan_images` (resolving bytes via `resolve_image_bytes` and validating via PIL), labeled by angle and timestamp; if an image URL is broken/unresolvable, renders a clear `[Image unavailable]` placeholder box without crashing.
+  - **Officer Certification Block (Status: Placeholder)**:
+    - **Note on Digital Signatures**: The officer certification block contains officer name, date, and statutory certification statement, but is **honestly labeled as an internal placeholder** (*"Officer confirmation on file"*). It is **NOT** a cryptographic digital signature (PyHanko / DSC / e-Sign remains a planned production integration).
 
 ### 3.3 Rule Engine Admin Console (Phase 4.3 & 5)
 - **Gazette Notification Ingestion (`GET /api/rules/incoming-notifications/`)**:
