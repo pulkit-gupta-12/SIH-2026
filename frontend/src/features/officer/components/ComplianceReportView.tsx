@@ -64,10 +64,10 @@ export default function ComplianceReportView({
       <div
         className={`p-6 rounded-2xl border transition-all ${
           isNonCompliant
-            ? 'bg-red-50 border-rose-500/40 text-rose-200 shadow-lg shadow-rose-950/20'
+            ? 'bg-red-50 border-rose-200 text-rose-900 shadow-lg shadow-rose-900/5'
             : isNeedsReview
-            ? 'bg-amber-50 border-amber-500/40 text-amber-200 shadow-lg shadow-amber-950/20'
-            : 'bg-[var(--color-accent)]/10 border-green-300/40 text-emerald-200 shadow-lg shadow-emerald-950/20'
+            ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-lg shadow-amber-900/5'
+            : 'bg-green-50 border-green-200 text-green-900 shadow-lg shadow-green-900/5'
         }`}
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -231,7 +231,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'violations'
                 ? 'bg-rose-500 text-[var(--color-text-primary)] shadow-sm'
-                : 'bg-surface-secondary/60 text-red-600 hover:text-rose-200'
+                : 'bg-surface-secondary/60 text-red-600 hover:text-rose-800'
             }`}
           >
             Violations ({violations.length})
@@ -242,7 +242,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'warnings'
                 ? 'bg-orange-500 text-[var(--color-text-primary)] shadow-sm'
-                : 'bg-surface-secondary/60 text-orange-300 hover:text-orange-200'
+                : 'bg-surface-secondary/60 text-orange-600 hover:text-orange-800'
             }`}
           >
             Warnings ({warnings.length})
@@ -253,7 +253,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'reviews'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
-                : 'bg-surface-secondary/60 text-amber-600 hover:text-amber-200'
+                : 'bg-surface-secondary/60 text-amber-600 hover:text-amber-800'
             }`}
           >
             Needs Review ({reviews.length})
@@ -264,7 +264,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'passed'
                 ? 'bg-[var(--color-accent)] text-[var(--color-text-primary)] shadow-sm'
-                : 'bg-surface-secondary/60 text-[var(--color-accent)] hover:text-emerald-200'
+                : 'bg-surface-secondary/60 text-[var(--color-accent)] hover:brightness-75'
             }`}
           >
             Passed Checks ({passedRules.length})
@@ -275,7 +275,7 @@ export default function ComplianceReportView({
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'evidence'
                 ? 'bg-blue-600 text-[var(--color-text-primary)] shadow-sm'
-                : 'bg-surface-secondary/60 text-blue-600 hover:text-blue-200'
+                : 'bg-surface-secondary/60 text-blue-600 hover:text-blue-800'
             }`}
           >
             OCR Raw Evidence ({evidenceList.length})
