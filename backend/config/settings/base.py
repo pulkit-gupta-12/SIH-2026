@@ -88,14 +88,25 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database — PostgreSQL
+# Database — PostgreSQL (Neon Cloud)
 # ---------------------------------------------------------------------------
 import dj_database_url
 from decouple import config
 
+DEFAULT_NEON_DATABASE_URL = (
+    "postgresql://neondb_owner:npg_Tso3lV2NmhGi@"
+    "ep-fancy-butterfly-b3qqckkc-pooler.c-4.ap-southeast-1.aws.neon.tech/"
+    "parakh?sslmode=require&channel_binding=require"
+)
+
+DATABASE_URL = os.environ.get("DATABASE_URL") or config(
+    "DATABASE_URL",
+    default=DEFAULT_NEON_DATABASE_URL,
+)
+
 DATABASES = {
     "default": dj_database_url.parse(
-        config("DATABASE_URL", default="postgres://legalmetro:legalmetro_dev@localhost:5432/legalmetro"),
+        DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
     )
