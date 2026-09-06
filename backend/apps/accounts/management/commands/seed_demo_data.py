@@ -11,7 +11,13 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.product_master.models import Product
 from apps.scans.models import Scan, ScanImage, ExtractedField
-from apps.rules_engine.models import Rule
+from apps.rules_engine.models import (
+    Rule,
+    RuleNotification,
+    RuleDraft,
+    RuleSimulationResult,
+    InspectionWeightConfig,
+)
 from apps.compliance.models import ComplianceCheck, Violation, ProductComplianceHistory
 from apps.cases.models import Case, ImprovementNotice, PenaltyCase
 from apps.complaints.models import Complaint
@@ -43,6 +49,25 @@ class Command(BaseCommand):
         with transaction.atomic():
             today = date.today()
             now = timezone.now()
+
+            # Refresh previous transient demo data so database remains clean and reproducible
+            self.stdout.write("  -> Refreshing demo data tables...")
+            InspectionTarget.objects.all().delete()
+            ImprovementNotice.objects.all().delete()
+            PenaltyCase.objects.all().delete()
+            Case.objects.all().delete()
+            Violation.objects.all().delete()
+            ProductComplianceHistory.objects.all().delete()
+            ComplianceCheck.objects.all().delete()
+            ExtractedField.objects.all().delete()
+            ScanImage.objects.all().delete()
+            Scan.objects.all().delete()
+            Complaint.objects.all().delete()
+            Report.objects.all().delete()
+            EcommerceListing.objects.all().delete()
+            Notification.objects.all().delete()
+            RuleSimulationResult.objects.all().delete()
+            RuleDraft.objects.all().delete()
 
             # -----------------------------------------------------------------
             # 1. Product Master
@@ -374,11 +399,35 @@ class Command(BaseCommand):
                 filed_by=citizen,
                 product=p_turmeric,
                 description="Purchased turmeric powder packet with no manufacturing date or best before date.",
-                photo_urls=[],
+                photo_urls=[
+                    "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=800"
+                ],
                 location="Karol Bagh, New Delhi",
                 risk_score=65.0,
                 routed_to_state="Delhi",
                 status="open",
+            )
+            complaint3 = Complaint.objects.create(
+                filed_by=citizen,
+                product=p_honey,
+                description="Wild Honey package label font for net quantity was unreadable and illegible (<1.5mm).",
+                photo_urls=[
+                    "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800"
+                ],
+                location="FC Road, Pune, Maharashtra",
+                risk_score=45.0,
+                routed_to_state="Maharashtra",
+                status="resolved",
+            )
+            complaint4 = Complaint.objects.create(
+                filed_by=citizen,
+                product=p_earbuds,
+                description="Imported earbuds packaging did not disclose country of origin or consumer care details.",
+                photo_urls=[],
+                location="Indiranagar, Bengaluru, Karnataka",
+                risk_score=82.0,
+                routed_to_state="Karnataka",
+                status="action_taken",
             )
 
             # -----------------------------------------------------------------
@@ -509,6 +558,152 @@ class Command(BaseCommand):
                     metadata=meta,
                 )
 
+            # -----------------------------------------------------------------
+            # 11. Rule Engine Admin Console (Drafts, Simulations, Weights)
+            # -----------------------------------------------------------------
+            self.stdout.write("  -> Seeding Rule Admin Drafts and Simulations...")
+            n1, _ = RuleNotification.objects.get_or_create(
+                notification_no="G.S.R. 248(E)/2026",
+                defaults={
+                    "title": "Legal Metrology (Packaged Commodities) Fourth Amendment Rules, 2026",
+                    "source_text": (
+                        "In exercise of powers conferred by sub-section (1) read with clause (j) and (q) of sub-section (2) "
+                        "of section 52 of the Legal Metrology Act, 2009, the Central Government hereby makes the following rules "
+                        "further to amend the Legal Metrology (Packaged Commodities) Rules, 2011. In Rule 18, Table II, "
+                        "the minimum height of numerals for net quantity and MRP shall be increased to 2.5 mm for packages up to 1000g."
+                    ),
+                    "gazette_url": "https://egazette.gov.in/notifications/gsr248e.pdf",
+                    "published_date": date(2026, 2, 10),
+                    "category": "general",
+                    "status": "drafted",
+                },
+            )
+            n2, _ = RuleNotification.objects.get_or_create(
+                notification_no="G.S.R. 185(E)/2026",
+                defaults={
+                    "title": "Mandatory Digital QR & Unit Sale Price Display Guidelines for E-Commerce",
+                    "source_text": (
+                        "Amendments to Rule 6(10): All e-commerce marketplace entities and pre-packaged commodity packers "
+                        "must display unit sale price per gram/ml prominently alongside MRP, and provide a scannable QR Code "
+                        "for direct National Legal Metrology database authentication."
+                    ),
+                    "gazette_url": "https://egazette.gov.in/notifications/gsr185e.pdf",
+                    "published_date": date(2026, 1, 20),
+                    "category": "ecommerce",
+                    "status": "approved",
+                },
+            )
+            n3, _ = RuleNotification.objects.get_or_create(
+                notification_no="G.S.R. 89(E)/2026",
+                defaults={
+                    "title": "Harmonized Food Declaration Standards & Expiry Prominence Regulations",
+                    "source_text": (
+                        "In Rule 6(1)(d), Month and Year of manufacture or packing shall be declared in words or numerals "
+                        "with high contrast and minimum font height 2.0 mm across all food & beverage commodities."
+                    ),
+                    "gazette_url": "https://egazette.gov.in/notifications/gsr89e.pdf",
+                    "published_date": date(2026, 1, 5),
+                    "category": "food",
+                    "status": "new",
+                },
+            )
+
+            draft1 = RuleDraft.objects.create(
+                notification=n1,
+                rule_id_code="PCR2026-NETQTY-HEIGHT-V2",
+                section_ref="PC Rules 2011, Rule 18(2)",
+                category="general",
+                old_clause_text="In Table II of Rule 18, the minimum height of numerals for net quantity declarations shall be 2.0 mm for net quantity up to 1000g.",
+                new_clause_text="In Table II of Rule 18, the minimum height of numerals for net quantity declarations shall be increased to 2.5 mm for net quantity up to 1000g.",
+                proposed_condition={"type": "font_size_check", "field": "net_quantity", "min_height_mm": 2.5},
+                status="pending_review",
+                comments=[{"author": "System AI", "comment": "Auto-extracted from Gazette notification G.S.R. 248(E)/2026", "timestamp": str(now)}],
+                reviewing_admin=ruleadmin,
+                supersedes_rule=rule_font,
+            )
+            RuleSimulationResult.objects.create(
+                draft=draft1,
+                total_scans_evaluated=150,
+                before_compliance_rate=88.0,
+                after_compliance_rate=72.5,
+                projected_violation_diff=23,
+                metrics={
+                    "category_breakdown": {
+                        "food": {"evaluated": 70, "violations_before": 8, "violations_after": 18},
+                        "general": {"evaluated": 50, "violations_before": 6, "violations_after": 14},
+                        "electronics": {"evaluated": 30, "violations_before": 4, "violations_after": 9},
+                    },
+                    "impacted_brands": ["PureFoods", "SparkleMax", "DailyDelight", "SuperClean"],
+                },
+            )
+
+            draft2 = RuleDraft.objects.create(
+                notification=n2,
+                rule_id_code="PCR2026-ECOM-UNIT-SALE-PRICE",
+                section_ref="PC Rules 2011, Rule 6(10)",
+                category="ecommerce",
+                old_clause_text="Mandatory display of MRP and manufacturer details on product page.",
+                new_clause_text="Mandatory declaration of Unit Sale Price per gram/ml and a scannable verification QR Code on digital product display pages.",
+                proposed_condition={"type": "required_field", "field": "unit_sale_price"},
+                status="approved",
+                effective_date=today + timedelta(days=60),
+                comments=[{"author": "Sunil Verma", "comment": "Approved following stakeholder consultation with E-Commerce council.", "timestamp": str(now)}],
+                reviewing_admin=ruleadmin,
+            )
+            RuleSimulationResult.objects.create(
+                draft=draft2,
+                total_scans_evaluated=80,
+                before_compliance_rate=92.5,
+                after_compliance_rate=85.0,
+                projected_violation_diff=6,
+                metrics={
+                    "category_breakdown": {
+                        "food": {"evaluated": 40, "violations_before": 3, "violations_after": 7},
+                        "general": {"evaluated": 40, "violations_before": 3, "violations_after": 5},
+                    },
+                    "impacted_brands": ["QuickCart Sellers", "EuroImports Direct"],
+                },
+            )
+
+            draft3 = RuleDraft.objects.create(
+                notification=n3,
+                rule_id_code="PCR2026-FOOD-MFG-DATE-FORMAT",
+                section_ref="PC Rules 2011, Rule 6(1)(d)",
+                category="food",
+                old_clause_text="Month and Year of manufacture or packing shall be declared in standard font.",
+                new_clause_text="Month and Year of manufacture or packing shall be declared in words or numerals with high contrast and minimum font height 2.0 mm across all food commodities.",
+                proposed_condition={"type": "font_size_check", "field": "mfg_date", "min_height_mm": 2.0},
+                status="revised",
+                comments=[{"author": "Sunil Verma", "comment": "Revised font height threshold from 2.2mm down to 2.0mm to align with industry standard packaging tolerances.", "timestamp": str(now)}],
+                reviewing_admin=ruleadmin,
+            )
+            RuleSimulationResult.objects.create(
+                draft=draft3,
+                total_scans_evaluated=120,
+                before_compliance_rate=85.0,
+                after_compliance_rate=80.0,
+                projected_violation_diff=6,
+                metrics={
+                    "category_breakdown": {
+                        "food": {"evaluated": 120, "violations_before": 6, "violations_after": 12},
+                    },
+                    "impacted_brands": ["PureFoods", "DailyDelight"],
+                },
+            )
+
+            # Ensure InspectionWeightConfig singleton exists
+            InspectionWeightConfig.objects.get_or_create(
+                id=1,
+                defaults={
+                    "risk_engine_weight": 0.50,
+                    "complaint_weight": 0.30,
+                    "ecommerce_weight": 0.20,
+                    "repeat_offense_multiplier": 1.50,
+                    "category_multipliers": {"food": 1.2, "medical_device": 1.4, "import": 1.3},
+                    "updated_by": admin,
+                },
+            )
+
         self.stdout.write(
             self.style.SUCCESS(
                 f"\nDemo data seeding complete! Summary:\n"
@@ -528,5 +723,10 @@ class Command(BaseCommand):
                 f"  - E-commerce Listings: {EcommerceListing.objects.count()}\n"
                 f"  - Notifications: {Notification.objects.count()}\n"
                 f"  - Audit Logs: {AuditLog.objects.count()}\n"
+                f"  - Rule Notifications: {RuleNotification.objects.count()}\n"
+                f"  - Rule Drafts: {RuleDraft.objects.count()}\n"
+                f"  - Rule Simulations: {RuleSimulationResult.objects.count()}\n"
+                f"  - Inspection Weight Configs: {InspectionWeightConfig.objects.count()}\n"
             )
         )
+
