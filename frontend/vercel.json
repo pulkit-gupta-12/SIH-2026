@@ -2,11 +2,11 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://legalmetro-backend.onrender.com/api/:path*"
+            "destination": "https://sih-2026-0a82.onrender.com/api/:path*"
         },
         {
             "source": "/media/:path*",
-            "destination": "https://sih-2026-0a82.onrender.com"
+            "destination": "https://sih-2026-0a82.onrender.com/media/:path*"
         },
         {
             "source": "/(.*)",
