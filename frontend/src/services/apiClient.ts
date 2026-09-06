@@ -75,6 +75,11 @@ apiClient.interceptors.response.use(
           throw new Error('No refresh token');
         }
 
+        if (refreshToken.startsWith('demo_')) {
+          // Demo session doesn't require JWT refresh from backend
+          return Promise.reject(error);
+        }
+
         const { data } = await axios.post(`${API_BASE_URL}/auth/refresh/`, {
           refresh: refreshToken,
         });
@@ -92,11 +97,14 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        // Clear tokens and redirect to login
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('auth_user');
-        window.location.href = '/login';
+        // Only clear tokens and redirect to login if not in demo session
+        const currentRefresh = localStorage.getItem('refresh_token');
+        if (!currentRefresh?.startsWith('demo_')) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('auth_user');
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
