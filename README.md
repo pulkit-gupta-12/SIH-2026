@@ -136,6 +136,11 @@ Verify that the OCR microservice is running and models are loaded into memory:
 curl http://localhost:8001/health
 ```
 
+The service root (`/`) returns service information. OCR requests must be sent
+as `POST /process` with one or more image files in the `images` form field;
+opening `/process` in a browser with `GET` will return `{"detail":"Method Not
+Allowed"}`.
+
 Expected JSON Response:
 ```json
 {
