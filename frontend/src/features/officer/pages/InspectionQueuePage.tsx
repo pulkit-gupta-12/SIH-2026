@@ -53,6 +53,8 @@ export default function InspectionQueuePage() {
         return { label: 'Citizen Complaint', icon: '📢', color: 'text-amber-700 border-amber-200 bg-amber-50' };
       case 'ecommerce_flag':
         return { label: 'E-commerce Flag', icon: '🛒', color: 'text-purple-700 border-purple-200 bg-purple-50' };
+      case 'guided_capture':
+        return { label: 'Guided Capture Verified', icon: '✅', color: 'text-green-700 border-green-200 bg-green-50' };
       default:
         return { label: 'Risk Engine', icon: '⚡', color: 'text-blue-700 border-blue-200 bg-blue-50' };
     }
@@ -171,6 +173,7 @@ export default function InspectionQueuePage() {
                   <option value="complaint">Citizen Complaints</option>
                   <option value="risk_engine">Risk Engine Prioritization</option>
                   <option value="ecommerce_flag">E-commerce Flagged</option>
+                  <option value="guided_capture">Guided Capture Verified</option>
                 </select>
               </div>
             </div>
@@ -210,7 +213,43 @@ export default function InspectionQueuePage() {
                             Priority Risk: {item.priority_score.toFixed(1)}
                           </span>
                           <StatusPill verdict={item.status} />
+                          {item.verification && (
+                            <span className={`px-2 py-0.5 rounded text-xs font-bold border ${
+                              item.verification.verdict === 'compliant'
+                                ? 'text-green-700 border-green-200 bg-green-50'
+                                : item.verification.verdict === 'non_compliant'
+                                ? 'text-red-700 border-red-200 bg-red-50'
+                                : 'text-amber-700 border-amber-200 bg-amber-50'
+                            }`}>
+                              {item.verification.verdict.replace('_', ' ')}
+                            </span>
+                          )}
                         </div>
+
+                        {item.verification && (
+                          <div className="space-y-2 text-xs">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[var(--color-text-secondary)]">
+                              <span>Rule verification: {item.verification.summary.passed ?? 0} passed</span>
+                              <span className="text-red-600">{item.verification.summary.failed ?? 0} failed</span>
+                              <span className="text-amber-600">{item.verification.summary.warnings ?? 0} warnings</span>
+                              <span>Confidence: {(item.verification.overall_confidence * 100).toFixed(0)}%</span>
+                            </div>
+                            {(item.verification.violations.length > 0 || item.verification.warnings.length > 0) && (
+                              <div className="rounded border border-[var(--color-border)] bg-[var(--color-surface-tertiary)] p-2 space-y-1">
+                                {[...item.verification.violations, ...item.verification.warnings].map((finding, index) => (
+                                  <div key={`${finding.rule_id}-${index}`} className="flex gap-2">
+                                    <span className={finding.status === 'FAIL' ? 'text-red-600' : 'text-amber-600'}>
+                                      {finding.status}
+                                    </span>
+                                    <span className="text-[var(--color-text-secondary)]">
+                                      <strong>{finding.rule_id}</strong>: {finding.reason || finding.title}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <h3 className="text-base font-bold text-[var(--color-text-primary)]">
                           {item.product_detail?.brand_name ?? 'Target'} — {item.product_detail?.product_name ?? 'Market Inspection'}
@@ -252,11 +291,13 @@ export default function InspectionQueuePage() {
                               },
                             })
                           }
+                          disabled={Boolean(item.verification)}
+                          title={item.verification ? 'This guided capture has already been verified' : undefined}
                           className="px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 text-[var(--color-text-primary)]"
                           style={{ background: 'var(--color-accent)' }}
                         >
-                          <span>Start guided inspection</span>
-                          <span>→</span>
+                          <span>{item.verification ? 'Verified in database' : 'Start guided inspection'}</span>
+                          {!item.verification && <span>→</span>}
                         </button>
                       </div>
                     </div>

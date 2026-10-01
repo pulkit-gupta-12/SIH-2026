@@ -1,18 +1,24 @@
-"""
-Production settings — extends base.py.
-Placeholder: configure before deploying.
-"""
+"""Production settings for a Render-hosted Django service."""
+import os
+
 from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
-# TODO: Set a real secret key via environment variable
-# TODO: Configure ALLOWED_HOSTS properly
-# TODO: Set up HTTPS, HSTS, secure cookies
+if SECRET_KEY.startswith("django-insecure-"):
+    raise RuntimeError("DJANGO_SECRET_KEY must be set in production.")
 
-CORS_ALLOWED_ORIGINS = [
-    # Add production frontend URL here
-]
+if ALLOWED_HOSTS == ["*"]:
+    render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+    if render_hostname:
+        ALLOWED_HOSTS = [render_hostname]
+
+frontend_url = os.environ.get("FRONTEND_URL")
+CORS_ALLOWED_ORIGINS = [frontend_url] if frontend_url else []
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Use WhiteNoise for static files in production
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405

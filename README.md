@@ -39,7 +39,34 @@ npm install
 
 ---
 
-## 2. How to Start PostgreSQL & Redis
+## 2. Deploy the database and backend on Render
+
+The repository includes [`render.yaml`](./render.yaml), which provisions a Render
+PostgreSQL database and connects it to the Django web service through
+`DATABASE_URL`. The application consumes Render's PostgreSQL connection string
+through `dj-database-url`.
+
+1. Push the repository to GitHub.
+2. In Render, choose **New > Blueprint** and select the repository.
+3. Review the `legalmetro-db` PostgreSQL database and `legalmetro-api` web service.
+4. Set `FRONTEND_URL` to the deployed frontend origin in the web service environment.
+5. Deploy. The web service runs migrations before Gunicorn starts.
+
+For a manually configured Render web service:
+
+```text
+Root directory: backend
+Build command: pip install -r requirements/prod.txt && python manage.py collectstatic --noinput
+Start command: python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+Set `DATABASE_URL` to the **Internal Database URL** from the Render PostgreSQL
+service. Also set `DJANGO_SETTINGS_MODULE=config.settings.prod`,
+`DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, and `FRONTEND_URL`.
+
+---
+
+## 3. How to Start PostgreSQL & Redis
 
 ### Option A: Docker (Recommended)
 From the root repository directory:
