@@ -1,4 +1,4 @@
-"""
+﻿"""
 Base settings shared across all environments.
 National Legal Metrology Compliance Platform.
 """
@@ -88,20 +88,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database — PostgreSQL (Neon Cloud)
+# Database â€” PostgreSQL (Neon Cloud)
 # ---------------------------------------------------------------------------
 import dj_database_url
 from decouple import config
 
-DEFAULT_NEON_DATABASE_URL = (
-    "postgresql://neondb_owner:npg_Tso3lV2NmhGi@"
-    "ep-fancy-butterfly-b3qqckkc-pooler.c-4.ap-southeast-1.aws.neon.tech/"
-    "parakh?sslmode=require&channel_binding=require"
-)
-
 DATABASE_URL = os.environ.get("DATABASE_URL") or config(
     "DATABASE_URL",
-    default=DEFAULT_NEON_DATABASE_URL,
+    default="******localhost:5432/legalmetro",
 )
 
 DATABASES = {
@@ -208,6 +202,7 @@ OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "minimax/minimax-m3:free")
 
 LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
 LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")) # Increased timeout for cloud API
+
 
 
 

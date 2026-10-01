@@ -1,13 +1,12 @@
-"""Production settings for a Render-hosted Django service."""
+﻿"""Production settings for a Render-hosted Django service."""
 import os
 
 from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", SECRET_KEY)
-if SECRET_KEY.startswith("django-insecure-"):
-    raise RuntimeError("DJANGO_SECRET_KEY must be set in production.")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
+if not SECRET_KEY or SECRET_KEY.startswith("django-insecure-"):`r`n    raise RuntimeError("DJANGO_SECRET_KEY must be set in production.")`r`n`r`nif not os.environ.get("DATABASE_URL"):`r`n    raise RuntimeError("DATABASE_URL must be set in production.")
 
 allowed_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS")
 if allowed_hosts:
@@ -50,3 +49,4 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
