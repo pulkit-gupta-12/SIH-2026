@@ -10,12 +10,14 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_BACKEND_URL || 'https://sih-2026-0a82.onrender.com',
         changeOrigin: true,
+        secure: false,
       },
       '/media': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_BACKEND_URL || 'https://sih-2026-0a82.onrender.com',
         changeOrigin: true,
+        secure: false,
       },
     },
   },
