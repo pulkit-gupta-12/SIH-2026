@@ -88,7 +88,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database â€” PostgreSQL (Neon Cloud)
+# Database - PostgreSQL
 # ---------------------------------------------------------------------------
 import dj_database_url
 from decouple import config
@@ -202,7 +202,6 @@ OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "minimax/minimax-m3:free")
 
 LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
 LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")) # Increased timeout for cloud API
-
 
 
 
