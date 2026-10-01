@@ -15,11 +15,11 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY ml_services/ocr_stub/requirements.txt /app/requirements.txt
+COPY backend/ml_services/ocr_stub/requirements.txt /app/requirements.txt
 RUN python -m pip install --upgrade pip \
     && python -m pip install -r /app/requirements.txt
 
-COPY ml_services/ocr_stub /app/ml_services/ocr_stub
+COPY backend/ml_services/ocr_stub /app/ml_services/ocr_stub
 
 EXPOSE 10000
 

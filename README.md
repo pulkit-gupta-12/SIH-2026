@@ -32,8 +32,9 @@ environment variables, clear the build cache, and deploy again.
 If Render's native Python builder still reports that no PaddlePaddle version is
 available, deploy OCR as a Docker Web Service instead. Set the Dockerfile path
 to `backend/ml_services/ocr_stub/Dockerfile` and the Docker build context to
-the repository root. This image pins Python 3.12 directly and avoids Render's
-native Python runtime resolution.
+the repository root. The Dockerfile uses repository-root-relative paths,
+pins Python 3.12 directly, and avoids Render's native Python runtime
+resolution.
 Key packages installed:
 - `fastapi` & `uvicorn`
 - `python-multipart`
