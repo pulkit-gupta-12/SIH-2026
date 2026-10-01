@@ -12,14 +12,28 @@ if not SECRET_KEY or SECRET_KEY.startswith("django-insecure-"):
 if not os.environ.get("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL must be set in production.")
 
-allowed_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS")
-if allowed_hosts:
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts.split(",") if host.strip()]
-else:
-    render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+def _hostnames_from_env(value):
+    hosts = []
+    for raw_host in value.split(","):
+        host = raw_host.strip().lower()
+        if not host:
+            continue
+        if "://" in host:
+            host = host.split("://", 1)[1]
+        host = host.split("/", 1)[0]
+        if host.count(":") == 1:
+            host = host.split(":", 1)[0]
+        if host and host not in hosts:
+            hosts.append(host)
+    return hosts
+
+
+ALLOWED_HOSTS = _hostnames_from_env(os.environ.get("DJANGO_ALLOWED_HOSTS", ""))
+render_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+if render_hostname and render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_hostname)
+if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com"]
-    if render_hostname:
-        ALLOWED_HOSTS.append(render_hostname)
 
 CORS_ALLOW_CREDENTIALS = True
 cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")
