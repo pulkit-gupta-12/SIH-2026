@@ -23,6 +23,9 @@ pip install -r requirements/base.txt
 ```bash
 pip install -r ml_services/ocr_stub/requirements.txt
 ```
+The OCR service is pinned to Python 3.12 in `backend/runtime.txt`, matching the
+published PaddlePaddle 3.3.1 Linux wheel. On Render, keep the OCR service root
+directory set to `backend` so Render detects this runtime file.
 Key packages installed:
 - `fastapi` & `uvicorn`
 - `python-multipart`
