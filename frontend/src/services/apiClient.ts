@@ -4,7 +4,9 @@
  */
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? 'https://parakh-backend-ar5z.onrender.com/api' : '/api');
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
