@@ -1,7 +1,8 @@
-"""
+﻿"""
 Base settings shared across all environments.
 National Legal Metrology Compliance Platform.
 """
+
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -16,9 +17,11 @@ SECRET_KEY = os.environ.get(
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
+
 # ---------------------------------------------------------------------------
 # Application definition
 # ---------------------------------------------------------------------------
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -53,9 +56,11 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+
 # ---------------------------------------------------------------------------
 # Middleware
 # ---------------------------------------------------------------------------
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -87,21 +92,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+
 # ---------------------------------------------------------------------------
-# Database — PostgreSQL (Neon Cloud)
+# Database - PostgreSQL
 # ---------------------------------------------------------------------------
+
 import dj_database_url
 from decouple import config
 
-DEFAULT_NEON_DATABASE_URL = (
-    "postgresql://neondb_owner:npg_Tso3lV2NmhGi@"
-    "ep-fancy-butterfly-b3qqckkc-pooler.c-4.ap-southeast-1.aws.neon.tech/"
-    "parakh?sslmode=require&channel_binding=require"
-)
-
 DATABASE_URL = os.environ.get("DATABASE_URL") or config(
     "DATABASE_URL",
-    default=DEFAULT_NEON_DATABASE_URL,
+    default="",
 )
 
 DATABASES = {
@@ -112,43 +113,61 @@ DATABASES = {
     )
 }
 
+
 # ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
+
 AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
+    },
 ]
+
 
 # ---------------------------------------------------------------------------
 # Internationalization
 # ---------------------------------------------------------------------------
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
+
 # ---------------------------------------------------------------------------
 # Static files
 # ---------------------------------------------------------------------------
+
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+
 # ---------------------------------------------------------------------------
 # Default primary key
 # ---------------------------------------------------------------------------
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 # ---------------------------------------------------------------------------
 # Django REST Framework
 # ---------------------------------------------------------------------------
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -168,9 +187,11 @@ REST_FRAMEWORK = {
     ),
 }
 
+
 # ---------------------------------------------------------------------------
 # Simple JWT
 # ---------------------------------------------------------------------------
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=2),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -180,34 +201,85 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "apps.accounts.serializers.CustomTokenObtainPairSerializer",
 }
 
+
 # ---------------------------------------------------------------------------
 # Celery (placeholder for future async tasks)
 # ---------------------------------------------------------------------------
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL",
+    "redis://localhost:6379/0",
+)
+
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND",
+    "redis://localhost:6379/0",
+)
+
 
 # ---------------------------------------------------------------------------
 # OCR Service Configuration (PaddleOCR Microservice on port 8001)
 # ---------------------------------------------------------------------------
-OCR_SERVICE_URL = os.environ.get("OCR_SERVICE_URL", "http://localhost:8001")
-OCR_TIMEOUT_SECONDS = float(os.environ.get("OCR_TIMEOUT_SECONDS", "300.0"))
-OCR_USE_MOCK = os.environ.get("OCR_USE_MOCK", "false").lower() in ("true", "1", "yes")
-OCR_MAX_UPLOAD_BYTES = int(os.environ.get("OCR_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024)))
+
+OCR_SERVICE_URL = os.environ.get(
+    "OCR_SERVICE_URL",
+    "http://localhost:8001",
+)
+
+OCR_TIMEOUT_SECONDS = float(
+    os.environ.get("OCR_TIMEOUT_SECONDS", "300.0")
+)
+
+OCR_USE_MOCK = os.environ.get(
+    "OCR_USE_MOCK",
+    "false",
+).lower() in ("true", "1", "yes")
+
+OCR_MAX_UPLOAD_BYTES = int(
+    os.environ.get(
+        "OCR_MAX_UPLOAD_BYTES",
+        str(20 * 1024 * 1024),
+    )
+)
+
 
 # ---------------------------------------------------------------------------
 # Local LLM Semantic-Validation Layer (Auxiliary Reasoning Layer)
 # ---------------------------------------------------------------------------
-LLM_ENABLED = os.environ.get("LLM_ENABLED", "true").lower() in ("true", "1", "yes")
-LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openrouter").lower()
+
+LLM_ENABLED = os.environ.get(
+    "LLM_ENABLED",
+    "true",
+).lower() in ("true", "1", "yes")
+
+LLM_PROVIDER = os.environ.get(
+    "LLM_PROVIDER",
+    "openrouter",
+).lower()
+
 
 # OpenRouter Settings
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "minimax/minimax-m3:free")
+
+OPENROUTER_API_KEY = os.environ.get(
+    "OPENROUTER_API_KEY",
+    "",
+)
+
+OPENROUTER_BASE_URL = os.environ.get(
+    "OPENROUTER_BASE_URL",
+    "https://openrouter.ai/api/v1",
+)
+
+OPENROUTER_MODEL = os.environ.get(
+    "OPENROUTER_MODEL",
+    "minimax/minimax-m3:free",
+)
 
 
-LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
-LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")) # Increased timeout for cloud API
+LLM_CONFIDENCE_THRESHOLD = float(
+    os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70")
+)
 
-
-
+LLM_TIMEOUT_SECONDS = float(
+    os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")
+)

@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: legalmetro-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements/prod.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: legalmetro-db
+          property: connectionString
+      - key: DJANGO_ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: legalmetro-api
+          property: host
+      - key: OCR_SERVICE_URL
+        value: https://parakh-ocr.onrender.com
+      - key: OCR_USE_MOCK
+        value: "false"
+      - key: FRONTEND_URL
+        value: https://parakhh.vercel.app
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://parakhh.vercel.app
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://parakhh.vercel.app
+
+databases:
+  - name: legalmetro-db
+    plan: free
+    databaseName: legalmetro
+    user: legalmetro

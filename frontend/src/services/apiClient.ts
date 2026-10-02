@@ -17,12 +17,15 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('access_token');
+
     if (config.data instanceof FormData && config.headers) {
       delete config.headers['Content-Type'];
     }
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -30,12 +33,16 @@ apiClient.interceptors.request.use(
 
 // ---- Response interceptor: auto-refresh on 401 ----
 let isRefreshing = false;
+
 let failedQueue: Array<{
   resolve: (token: string) => void;
   reject: (error: unknown) => void;
 }> = [];
 
-const processQueue = (error: unknown, token: string | null = null) => {
+const processQueue = (
+  error: unknown,
+  token: string | null = null
+) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -43,13 +50,18 @@ const processQueue = (error: unknown, token: string | null = null) => {
       prom.resolve(token!);
     }
   });
+
   failedQueue = [];
 };
 
 apiClient.interceptors.response.use(
   (response) => response,
+
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest =
+      error.config as InternalAxiosRequestConfig & {
+        _retry?: boolean;
+      };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -59,6 +71,7 @@ apiClient.interceptors.response.use(
               if (originalRequest.headers) {
                 originalRequest.headers.Authorization = `Bearer ${token}`;
               }
+
               resolve(apiClient(originalRequest));
             },
             reject,
@@ -71,6 +84,7 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refresh_token');
+
         if (!refreshToken) {
           throw new Error('No refresh token');
         }
@@ -80,11 +94,15 @@ apiClient.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh/`, {
-          refresh: refreshToken,
-        });
+        const { data } = await axios.post(
+          `${API_BASE_URL}/auth/refresh/`,
+          {
+            refresh: refreshToken,
+          }
+        );
 
         localStorage.setItem('access_token', data.access);
+
         if (data.refresh) {
           localStorage.setItem('refresh_token', data.refresh);
         }
@@ -94,17 +112,23 @@ apiClient.interceptors.response.use(
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${data.access}`;
         }
+
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+
         // Only clear tokens and redirect to login if not in demo session
-        const currentRefresh = localStorage.getItem('refresh_token');
+        const currentRefresh =
+          localStorage.getItem('refresh_token');
+
         if (!currentRefresh?.startsWith('demo_')) {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('auth_user');
+
           window.location.href = '/login';
         }
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
