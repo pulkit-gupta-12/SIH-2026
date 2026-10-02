@@ -174,12 +174,24 @@ export default function LoginPage() {
     } catch (err: unknown) {
       let msg = 'Registration failed. Please check the entered details.';
       if (err && typeof err === 'object' && 'response' in err) {
-        const resData = (err as { response?: { data?: Record<string, string[] | string> } }).response?.data;
-        if (resData) {
+        const response = (err as {
+          response?: {
+            status?: number;
+            data?: Record<string, string[] | string> | string;
+          };
+        }).response;
+        const resData = response?.data;
+        if (typeof resData === 'string') {
+          msg = response?.status
+            ? `Registration failed (${response.status}). Please check the backend deployment.`
+            : 'Registration failed. Please check the backend deployment.';
+        } else if (resData) {
           const firstKey = Object.keys(resData)[0];
           const val = resData[firstKey];
           msg = Array.isArray(val) ? `${firstKey}: ${val[0]}` : typeof val === 'string' ? val : msg;
         }
+      } else if (err instanceof Error && err.message) {
+        msg = err.message;
       }
       setError(msg);
     } finally {
