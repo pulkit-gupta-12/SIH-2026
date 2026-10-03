@@ -125,8 +125,10 @@ export default function LoginPage() {
       // Non-demo credentials error handling
       const msg =
         err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail ||
-            (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error ||
+          ? (typeof (err as { response?: { data?: unknown } }).response?.data === 'string'
+            ? (err as { response?: { data?: string } }).response?.data
+            : (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail ||
+              (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error) ||
             'Login failed. Please check your credentials.'
           : 'Network error — backend is not reachable.';
       setError(msg);
