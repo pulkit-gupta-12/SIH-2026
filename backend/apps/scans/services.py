@@ -17,6 +17,7 @@ from apps.rules_engine.evaluate import evaluate_scan
 from apps.compliance.models import ComplianceCheck, Violation
 from apps.compliance.history import classify_and_record
 from apps.compliance.report import generate_compliance_report
+from apps.inspections.models import InspectionTarget
 
 logger = logging.getLogger(__name__)
 
@@ -410,8 +411,24 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
         except Exception as e:
             logger.error("Auto report generation failed for new case %s: %s", case.id, e)
 
+    if not is_citizen_scan and product:
+        priority_score = {
+            "non_compliant": 100.0,
+            "needs_review": 75.0,
+            "compliant": 25.0,
+        }.get(verdict, 50.0)
+        InspectionTarget.objects.update_or_create(
+            scan=scan,
+            defaults={
+                "product": product,
+                "assigned_to": scan.performed_by,
+                "source": "guided_capture",
+                "priority_score": priority_score,
+                "status": "done",
+            },
+        )
+
     scan.status = "processed"
     scan.save(update_fields=["status", "canonical_data"])
 
     return check
-

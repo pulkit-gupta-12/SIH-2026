@@ -140,11 +140,12 @@ export default function GuidedCapturePage() {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
       // Final Step: Submit all captured images to officer scan pipeline
-      const urls = Object.values(capturedImages);
-      if (urls.length === 0) {
-        setErrorMessage('Please capture at least one package angle photo before running OCR processing.');
+      const missingStep = CAPTURE_STEPS.find((step) => !capturedImages[step.id]);
+      if (missingStep) {
+        setErrorMessage(`Please capture step ${missingStep.step} before running OCR processing.`);
         return;
       }
+      const urls = CAPTURE_STEPS.map((step) => capturedImages[step.id]);
       scanMutation.mutate({
         barcode,
         category,

@@ -14,7 +14,7 @@ export interface InspectionQueueItem {
   };
   assigned_to: number;
   assigned_to_username: string;
-  source: 'risk_engine' | 'complaint' | 'ecommerce_flag';
+  source: 'risk_engine' | 'complaint' | 'ecommerce_flag' | 'guided_capture';
   priority_score: number;
   complaint?: number;
   complaint_detail?: {
@@ -29,6 +29,27 @@ export interface InspectionQueueItem {
   };
   status: 'pending' | 'in_progress' | 'done';
   created_at: string;
+  scan_id?: number;
+  compliance_check_id?: number;
+  verification?: {
+    verdict: 'compliant' | 'non_compliant' | 'needs_review';
+    overall_confidence: number;
+    capture_method: string;
+    location?: string | null;
+    evaluated_against_rule_set_date: string;
+    summary: {
+      total_rules?: number;
+      passed?: number;
+      failed?: number;
+      warnings?: number;
+      review_required?: number;
+    };
+    violations: RuleFinding[];
+    warnings: RuleFinding[];
+    reviews: RuleFinding[];
+    passed_rules: RuleFinding[];
+    evidence: EvidenceItem[];
+  } | null;
 }
 
 export interface ExtractedFieldItem {

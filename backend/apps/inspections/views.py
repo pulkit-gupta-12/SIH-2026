@@ -70,7 +70,7 @@ class InspectionTargetViewSet(viewsets.ModelViewSet):
             InspectionTarget.objects.filter(
                 Q(assigned_to=user) | Q(assigned_to__isnull=True)
             )
-            .select_related("product", "assigned_to", "complaint")
+            .select_related("product", "assigned_to", "complaint", "scan", "scan__compliance_check")
             .order_by("-priority_score", "-created_at")
         )
         target_serializer = InspectionTargetSerializer(target_qs, many=True)

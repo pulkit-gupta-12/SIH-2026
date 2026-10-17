@@ -23,6 +23,18 @@ pip install -r requirements/base.txt
 ```bash
 pip install -r ml_services/ocr_stub/requirements.txt
 ```
+The OCR service is pinned to Python 3.12 in `backend/runtime.txt`, matching the
+published PaddlePaddle 3.3.1 Linux wheel. On Render, keep the OCR service root
+directory set to `backend` so Render detects this runtime file. If Render still
+uses another Python version, add `PYTHON_VERSION=3.12.10` in the OCR service
+environment variables, clear the build cache, and deploy again.
+
+If Render's native Python builder still reports that no PaddlePaddle version is
+available, deploy OCR as a Docker Web Service instead. Set the Dockerfile path
+to `backend/ml_services/ocr_stub/Dockerfile` and the Docker build context to
+the repository root. The Dockerfile uses repository-root-relative paths,
+pins Python 3.12 directly, and avoids Render's native Python runtime
+resolution.
 Key packages installed:
 - `fastapi` & `uvicorn`
 - `python-multipart`
@@ -39,7 +51,34 @@ npm install
 
 ---
 
-## 2. How to Start PostgreSQL & Redis
+## 2. Deploy the database and backend on Render
+
+The repository includes [`render.yaml`](./render.yaml), which provisions a Render
+PostgreSQL database and connects it to the Django web service through
+`DATABASE_URL`. The application consumes Render's PostgreSQL connection string
+through `dj-database-url`.
+
+1. Push the repository to GitHub.
+2. In Render, choose **New > Blueprint** and select the repository.
+3. Review the `legalmetro-db` PostgreSQL database and `legalmetro-api` web service.
+4. Set `FRONTEND_URL` to the deployed frontend origin in the web service environment.
+5. Deploy. The web service runs migrations before Gunicorn starts.
+
+For a manually configured Render web service:
+
+```text
+Root directory: backend
+Build command: pip install -r requirements/prod.txt && python manage.py collectstatic --noinput
+Start command: python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+Set `DATABASE_URL` to the **Internal Database URL** from the Render PostgreSQL
+service. Also set `DJANGO_SETTINGS_MODULE=config.settings.prod`,
+`DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, and `FRONTEND_URL`.
+
+---
+
+## 3. How to Start PostgreSQL & Redis
 
 ### Option A: Docker (Recommended)
 From the root repository directory:
@@ -96,6 +135,11 @@ Verify that the OCR microservice is running and models are loaded into memory:
 ```bash
 curl http://localhost:8001/health
 ```
+
+The service root (`/`) returns service information. OCR requests must be sent
+as `POST /process` with one or more image files in the `images` form field;
+opening `/process` in a browser with `GET` will return `{"detail":"Method Not
+Allowed"}`.
 
 Expected JSON Response:
 ```json

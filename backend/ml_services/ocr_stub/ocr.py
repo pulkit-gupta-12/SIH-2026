@@ -860,6 +860,20 @@ def merge_multi_image_results(results: List[Dict[str, Any]]) -> Dict[str, Any]:
 # ==========================================
 # FASTAPI ENDPOINTS
 # ==========================================
+@app.get("/")
+async def service_info():
+    """Return a friendly response when the deployed service URL is opened directly."""
+    return {
+        "service": "paddleocr",
+        "status": "ok",
+        "endpoints": {
+            "health": "/health",
+            "process": "/process",
+            "docs": "/docs",
+        },
+    }
+
+
 @app.get("/health")
 async def health_check(request: Request):
     """Health check endpoint displaying PaddleOCR model status and device info."""

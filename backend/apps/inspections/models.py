@@ -16,6 +16,7 @@ class InspectionTarget(models.Model):
         ("risk_engine", "Risk Engine Prioritization"),
         ("complaint", "Citizen Complaint"),
         ("ecommerce_flag", "E-commerce Flagged Listing"),
+        ("guided_capture", "Guided Capture Verification"),
     ]
     STATUS_CHOICES = [
         ("pending", "Pending Inspection"),
@@ -27,6 +28,13 @@ class InspectionTarget(models.Model):
         "product_master.Product",
         on_delete=models.CASCADE,
         related_name="inspection_targets",
+    )
+    scan = models.OneToOneField(
+        "scans.Scan",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="inspection_target",
     )
     assigned_to = models.ForeignKey(
         settings.AUTH_USER_MODEL,

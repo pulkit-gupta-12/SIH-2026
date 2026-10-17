@@ -1,5 +1,15 @@
 # Legal Metrology Compliance Platform — Consolidated Progress Report
 
+## Deployment Verification — 2026-10-02
+
+- Verified `https://parakhh.vercel.app` serves the frontend.
+- Verified `https://parakh-backend-ar5z.onrender.com/api/` returns the Django API health response.
+- Verified `https://parakh-ocr.onrender.com/health` reports the OCR service as healthy with PaddleOCR loaded.
+- Fixed production frontend API selection so Vite production builds call the deployed backend directly when `VITE_API_BASE_URL` is not supplied.
+- Added Render environment configuration for the deployed OCR service and the frontend CORS/CSRF origins.
+- No database credentials were added to source control. Configure `DATABASE_URL` only in Render's encrypted environment settings.
+- The supplied database credentials should be rotated because they were shared in chat.
+
 **Version:** 1.0 (Final Submission)  
 **Database:** PostgreSQL 16 (`legalmetro_db` on port 5432, Redis on 6379)  
 **Backend:** Django 5.1 / Django REST Framework (Python 3.13)  

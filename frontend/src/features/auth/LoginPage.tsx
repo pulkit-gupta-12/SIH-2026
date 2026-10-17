@@ -125,8 +125,10 @@ export default function LoginPage() {
       // Non-demo credentials error handling
       const msg =
         err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail ||
-            (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error ||
+          ? (typeof (err as { response?: { data?: unknown } }).response?.data === 'string'
+            ? (err as { response?: { data?: string } }).response?.data
+            : (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail ||
+              (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error) ||
             'Login failed. Please check your credentials.'
           : 'Network error — backend is not reachable.';
       setError(msg);
@@ -174,12 +176,24 @@ export default function LoginPage() {
     } catch (err: unknown) {
       let msg = 'Registration failed. Please check the entered details.';
       if (err && typeof err === 'object' && 'response' in err) {
-        const resData = (err as { response?: { data?: Record<string, string[] | string> } }).response?.data;
-        if (resData) {
+        const response = (err as {
+          response?: {
+            status?: number;
+            data?: Record<string, string[] | string> | string;
+          };
+        }).response;
+        const resData = response?.data;
+        if (typeof resData === 'string') {
+          msg = response?.status
+            ? `Registration failed (${response.status}). Please check the backend deployment.`
+            : 'Registration failed. Please check the backend deployment.';
+        } else if (resData) {
           const firstKey = Object.keys(resData)[0];
           const val = resData[firstKey];
           msg = Array.isArray(val) ? `${firstKey}: ${val[0]}` : typeof val === 'string' ? val : msg;
         }
+      } else if (err instanceof Error && err.message) {
+        msg = err.message;
       }
       setError(msg);
     } finally {
