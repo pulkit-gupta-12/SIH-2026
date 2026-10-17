@@ -77,7 +77,7 @@ Parakh connects image-based label reading with legal rule checks and a traceable
 
 **Technical approach: the 10-step Digital Enforcement Loop**
 
-![Technical approach](docs/images/technical-approach (1).png)
+![Technical approach](docs/images/technical-approach.png)
 
 **Five-dimensional audit**
 
