@@ -13,6 +13,7 @@ from apps.complaints.models import Complaint
 from apps.product_master.models import Product
 from apps.common.permissions import IsOfficerOrController
 from apps.notifications.models import AuditLog
+from apps.reports.storage import report_file_exists
 
 
 class CaseViewSet(viewsets.ModelViewSet):
@@ -87,7 +88,7 @@ class CaseViewSet(viewsets.ModelViewSet):
 
         if not regenerate:
             existing = Report.objects.filter(case=case).order_by("-generated_at").first()
-            if existing and existing.file_url:
+            if existing and report_file_exists(existing):
                 return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
 
         try:
@@ -138,7 +139,7 @@ class CaseViewSet(viewsets.ModelViewSet):
                 existing = Report.objects.filter(case=case).order_by("-generated_at").first()
             elif check:
                 existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
-            if existing and existing.file_url:
+            if existing and report_file_exists(existing):
                 return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
 
         try:
@@ -160,6 +161,6 @@ class CaseViewSet(viewsets.ModelViewSet):
         from apps.reports.serializers import ReportSerializer
 
         existing = Report.objects.filter(case=case).order_by("-generated_at").first()
-        if not existing or not existing.file_url:
+        if not existing or not report_file_exists(existing):
             return Response({"detail": "No report found for this case."}, status=status.HTTP_404_NOT_FOUND)
         return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)

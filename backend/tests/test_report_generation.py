@@ -4,8 +4,9 @@ Verifies report generation for violations, compliant zero-violation scans, and A
 """
 import os
 import io
+import tempfile
 from datetime import date
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
@@ -240,3 +241,50 @@ class ReportGenerationTests(TestCase):
         resp3 = self.client.post(f"/api/compliance-checks/{check.id}/generate-report/", {"regenerate": True}, format="json")
         self.assertEqual(resp3.status_code, status.HTTP_201_CREATED)
         self.assertNotEqual(resp3.json()["id"], rep1_id)
+
+    def test_missing_report_file_is_not_returned_as_downloadable(self):
+        scan = Scan.objects.create(
+            product=self.product,
+            performed_by=self.officer,
+            role_context="officer",
+            status="processed",
+        )
+        check = ComplianceCheck.objects.create(
+            scan=scan,
+            verdict="compliant",
+            overall_confidence=0.95,
+            evaluated_against_rule_set_date=date.today(),
+        )
+
+        with tempfile.TemporaryDirectory() as media_root, override_settings(MEDIA_ROOT=media_root):
+            generated = self.client.post(
+                f"/api/compliance-checks/{check.id}/generate-report/",
+                format="json",
+            )
+            self.assertEqual(generated.status_code, status.HTTP_201_CREATED)
+            report = Report.objects.get(pk=generated.json()["id"])
+            report_path = os.path.join(media_root, "reports", os.path.basename(report.file_url))
+            self.assertTrue(os.path.isfile(report_path))
+
+            os.remove(report_path)
+
+            latest = self.client.get(f"/api/compliance-checks/{check.id}/report/")
+            self.assertEqual(latest.status_code, status.HTTP_404_NOT_FOUND)
+
+            stale_list = self.client.get("/api/reports/")
+            self.assertEqual(stale_list.status_code, status.HTTP_200_OK)
+            report_data = next(item for item in stale_list.json()["results"] if item["id"] == report.id)
+            self.assertEqual(report_data["file_url"], "")
+
+            regenerated = self.client.post(
+                f"/api/compliance-checks/{check.id}/generate-report/",
+                format="json",
+            )
+            self.assertEqual(regenerated.status_code, status.HTTP_201_CREATED)
+            self.assertNotEqual(regenerated.json()["id"], report.id)
+            regenerated_path = os.path.join(
+                media_root,
+                "reports",
+                os.path.basename(regenerated.json()["file_url"]),
+            )
+            self.assertTrue(os.path.isfile(regenerated_path))

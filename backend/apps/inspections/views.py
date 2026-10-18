@@ -14,6 +14,7 @@ from apps.compliance.models import ComplianceCheck
 from apps.reports.models import Report
 from apps.cases.models import Case
 from apps.common.permissions import IsFieldOfficer, IsStateController, IsNationalAdmin
+from apps.reports.storage import report_file_exists
 
 
 class InspectionTargetViewSet(viewsets.ModelViewSet):
@@ -235,7 +236,7 @@ class InspectionTargetViewSet(viewsets.ModelViewSet):
                     report_obj = case_with_report.reports.order_by("-generated_at").first()
 
             report_data = None
-            if report_obj and report_obj.file_url:
+            if report_obj and report_file_exists(report_obj):
                 report_data = {
                     "id": report_obj.id,
                     "file_url": report_obj.file_url,

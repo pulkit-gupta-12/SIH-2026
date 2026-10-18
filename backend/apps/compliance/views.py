@@ -9,6 +9,7 @@ from .models import ComplianceCheck, Violation, ProductComplianceHistory
 from .serializers import ComplianceCheckDetailSerializer, ProductViolationHistorySerializer
 from apps.common.permissions import IsFieldOfficer, IsStateController, IsNationalAdmin
 from apps.notifications.models import AuditLog
+from apps.reports.storage import report_file_exists
 
 
 class ComplianceCheckViewSet(viewsets.ModelViewSet):
@@ -106,7 +107,7 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
 
         if not regenerate:
             existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
-            if existing and existing.file_url:
+            if existing and report_file_exists(existing):
                 return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)
 
         try:
@@ -128,6 +129,6 @@ class ComplianceCheckViewSet(viewsets.ModelViewSet):
         from apps.reports.serializers import ReportSerializer
 
         existing = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
-        if not existing or not existing.file_url:
+        if not existing or not report_file_exists(existing):
             return Response({"detail": "No report found for this compliance check."}, status=status.HTTP_404_NOT_FOUND)
         return Response(ReportSerializer(existing).data, status=status.HTTP_200_OK)

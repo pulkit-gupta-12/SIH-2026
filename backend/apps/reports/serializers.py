@@ -9,6 +9,7 @@ class ReportSerializer(serializers.ModelSerializer):
     report_code = serializers.SerializerMethodField()
     case_id = serializers.IntegerField(source="case.id", read_only=True, allow_null=True)
     compliance_check_id = serializers.IntegerField(source="compliance_check.id", read_only=True, allow_null=True)
+    file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Report
@@ -28,3 +29,8 @@ class ReportSerializer(serializers.ModelSerializer):
 
     def get_report_code(self, obj):
         return f"LMR-{obj.id:05d}"
+
+    def get_file_url(self, obj):
+        from .storage import report_file_exists
+
+        return obj.file_url if report_file_exists(obj) else ""

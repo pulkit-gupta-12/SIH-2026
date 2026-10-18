@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from .models import Report
 from .serializers import ReportSerializer
 from .services import generate_and_save_report
+from .storage import report_file_exists
 from apps.cases.models import Case
 from apps.compliance.models import ComplianceCheck
 from apps.common.permissions import IsOfficerOrController
@@ -64,7 +65,7 @@ class ReportViewSet(viewsets.ReadOnlyModelViewSet):
         elif check and not regenerate:
             existing_report = Report.objects.filter(compliance_check=check).order_by("-generated_at").first()
 
-        if existing_report and existing_report.file_url:
+        if existing_report and report_file_exists(existing_report):
             serializer = ReportSerializer(existing_report)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -100,7 +101,7 @@ class ReportViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"error": "Provide case_id or compliance_check_id"}, status=status.HTTP_400_BAD_REQUEST)
 
         latest_rep = query.order_by("-generated_at").first()
-        if not latest_rep:
+        if not latest_rep or not report_file_exists(latest_rep):
             return Response({"detail": "No report found."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(ReportSerializer(latest_rep).data)
