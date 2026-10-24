@@ -88,10 +88,11 @@ export default function LoginPage() {
     );
 
     try {
-      // 1. Attempt real authentication with backend (with timeout)
+      // Render can take several seconds to wake from an idle state. Keep the
+      // request alive long enough to receive the actual authentication result.
       const loginPromise = authService.login({ username: user.trim(), password: pass });
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Login timeout')), 3500)
+        setTimeout(() => reject(new Error('Login timeout')), 15000)
       );
 
       const data = await Promise.race([loginPromise, timeoutPromise]);
@@ -130,6 +131,8 @@ export default function LoginPage() {
             : (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail ||
               (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error) ||
             'Login failed. Please check your credentials.'
+          : err instanceof Error && err.message === 'Login timeout'
+            ? 'The backend is waking up. Please try again in a few seconds.'
           : 'Network error — backend is not reachable.';
       setError(msg);
     } finally {
