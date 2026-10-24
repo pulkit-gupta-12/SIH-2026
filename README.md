@@ -518,14 +518,14 @@ through `dj-database-url`.
 2. In Render, choose **New > Blueprint** and select the repository.
 3. Review the `legalmetro-db` PostgreSQL database and `legalmetro-api` web service.
 4. Set `FRONTEND_URL` to the deployed frontend origin in the web service environment.
-5. Deploy. The web service runs migrations and seeds the predefined demo accounts before Gunicorn starts.
+5. Deploy. The web service runs migrations, loads rules, creates missing demo accounts, and seeds demo data only when the product table is empty before Gunicorn starts.
 
 For a manually configured Render web service:
 
 ```text
 Root directory: backend
 Build command: pip install -r requirements/prod.txt && python manage.py collectstatic --noinput
-Start command: python manage.py migrate --noinput && python manage.py seed_roles && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+Start command: python manage.py migrate --noinput && python manage.py seed_roles && python manage.py seed_rules && python manage.py seed_demo_data --if-empty && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
 ```
 
 Set `DATABASE_URL` to the **Internal Database URL** from the Render PostgreSQL

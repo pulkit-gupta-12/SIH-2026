@@ -103,8 +103,9 @@ export default function LoginPage() {
       const config = ROLE_CONFIGS[activeRole];
       navigate(config?.homePath || '/');
     } catch (err: unknown) {
-      // 2. If this is a demo user, guarantee instant one-click entry to dashboards!
-      if (matchedRole && DEMO_USERS[matchedRole]) {
+      // Local development can use the demo cards without a running backend.
+      // Production must use a real JWT so dashboard data comes from the API.
+      if (!import.meta.env.PROD && matchedRole && DEMO_USERS[matchedRole]) {
         const demo = DEMO_USERS[matchedRole];
         const demoUser: AuthUser = {
           id: matchedRole === 'citizen' ? 1 : matchedRole === 'field_officer' ? 2 : 3,

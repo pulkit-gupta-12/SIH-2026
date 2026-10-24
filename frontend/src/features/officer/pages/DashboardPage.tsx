@@ -13,13 +13,21 @@ export default function OfficerDashboardPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSource, setFilterSource] = useState('all');
 
-  const { data: queueData = [], isLoading: isLoadingQueue } = useQuery<InspectionQueueItem[]>({
+  const {
+    data: queueData = [],
+    isLoading: isLoadingQueue,
+    isError: isQueueError,
+  } = useQuery<InspectionQueueItem[]>({
     queryKey: ['inspection-queue'],
     queryFn: fetchInspectionQueue,
     staleTime: 30_000,
   });
 
-  const { data: casesData = [], isLoading: isLoadingCases } = useQuery<EnforcementCaseResult[]>({
+  const {
+    data: casesData = [],
+    isLoading: isLoadingCases,
+    isError: isCasesError,
+  } = useQuery<EnforcementCaseResult[]>({
     queryKey: ['officer-cases-list'],
     queryFn: fetchOfficerCases,
     staleTime: 30_000,
@@ -37,6 +45,7 @@ export default function OfficerDashboardPage() {
   const citizenComplaintsCount = queue.filter((q) => q.source === 'complaint').length;
   const section29Notices = cases.filter((c) => c.classification === 'first_time');
   const section39Penalties = cases.filter((c) => c.classification === 'repeat');
+  const hasDataError = isQueueError || isCasesError;
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6 animate-fade-in">
@@ -46,6 +55,13 @@ export default function OfficerDashboardPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-accent-subtle)] text-[var(--color-accent)]">
             <span>🛡️ Legal Metrology Enforcement Command</span>
           </div>
+
+          {hasDataError && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              Unable to load live officer data from the backend. Please sign in again after the
+              backend deployment finishes.
+            </div>
+          )}
           <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] tracking-tight leading-tight">
             Field Officer Console
           </h1>

@@ -30,7 +30,18 @@ from apps.notifications.models import Notification, AuditLog
 class Command(BaseCommand):
     help = "Populates realistic demo data across all platform tables for the 7 demo users."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--if-empty",
+            action="store_true",
+            help="Seed only when the product table is empty; preserve existing data.",
+        )
+
     def handle(self, *args, **options):
+        if options["if_empty"] and Product.objects.exists():
+            self.stdout.write("Demo data already exists; leaving the database unchanged.")
+            return
+
         self.stdout.write("Seeding demo data across all 10 apps...")
 
         # Ensure demo users exist
@@ -729,4 +740,3 @@ class Command(BaseCommand):
                 f"  - Inspection Weight Configs: {InspectionWeightConfig.objects.count()}\n"
             )
         )
-
