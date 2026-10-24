@@ -230,7 +230,10 @@ def process_scan_pipeline(scan, image_urls=None, image_files=None, category="gen
             quality_check_passed=True,
         )
 
-    ocr_url = f"{getattr(settings, 'OCR_SERVICE_URL', 'http://localhost:8001')}/process"
+    ocr_base_url = str(getattr(settings, "OCR_SERVICE_URL", "http://localhost:8001")).strip().rstrip("/")
+    if "://" not in ocr_base_url:
+        ocr_base_url = f"https://{ocr_base_url}"
+    ocr_url = f"{ocr_base_url}/process"
     timeout_sec = getattr(settings, "OCR_TIMEOUT_SECONDS", 30.0)
     use_mock = getattr(settings, "OCR_USE_MOCK", False)
 

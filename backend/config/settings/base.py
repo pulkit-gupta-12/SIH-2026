@@ -183,7 +183,9 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localho
 # ---------------------------------------------------------------------------
 # OCR Service Configuration (PaddleOCR Microservice on port 8001)
 # ---------------------------------------------------------------------------
-OCR_SERVICE_URL = os.environ.get("OCR_SERVICE_URL", "http://localhost:8001")
+OCR_SERVICE_URL = os.environ.get("OCR_SERVICE_URL", "http://localhost:8001").strip().rstrip("/")
+if OCR_SERVICE_URL and "://" not in OCR_SERVICE_URL:
+    OCR_SERVICE_URL = f"https://{OCR_SERVICE_URL}"
 OCR_TIMEOUT_SECONDS = float(os.environ.get("OCR_TIMEOUT_SECONDS", "300.0"))
 OCR_USE_MOCK = os.environ.get("OCR_USE_MOCK", "false").lower() in ("true", "1", "yes")
 OCR_MAX_UPLOAD_BYTES = int(os.environ.get("OCR_MAX_UPLOAD_BYTES", str(20 * 1024 * 1024)))
@@ -202,6 +204,5 @@ OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "minimax/minimax-m3:free")
 
 LLM_CONFIDENCE_THRESHOLD = float(os.environ.get("LLM_CONFIDENCE_THRESHOLD", "0.70"))
 LLM_TIMEOUT_SECONDS = float(os.environ.get("LLM_TIMEOUT_SECONDS", "30.0")) # Increased timeout for cloud API
-
 
 
